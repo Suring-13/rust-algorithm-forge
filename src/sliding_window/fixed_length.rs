@@ -23,3 +23,21 @@ pub mod n1456 {
         ans
     }
 }
+
+// 643. 子数组最大平均数 I
+pub mod n643 {
+    pub fn find_max_average(nums: Vec<i32>, k: i32) -> f64 {
+        let k = k as usize;
+        let n = nums.len();
+
+        let mut sum: i32 = nums.iter().take(k).sum();
+        let mut max_sum = sum;
+
+        for i in k..n {
+            sum += nums[i] - nums[i - k];
+            max_sum = max_sum.max(sum);
+        }
+
+        max_sum as f64 / k as f64
+    }
+}
