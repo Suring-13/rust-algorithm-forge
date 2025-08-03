@@ -41,3 +41,26 @@ pub mod n643 {
         max_sum as f64 / k as f64
     }
 }
+
+// 1343. 大小为 K 且平均值大于等于阈值的子数组数目
+pub mod n1343 {
+    pub fn num_of_subarrays(arr: Vec<i32>, k: i32, threshold: i32) -> i32 {
+        let k = k as usize;
+        let n = arr.len();
+
+        let mut ans = 0;
+        let mut sum: i32 = arr.iter().take(k).sum();
+        if sum >= k as i32 * threshold && n >= k {
+            ans += 1;
+        }
+
+        for i in k..n {
+            sum += arr[i] - arr[i - k];
+            if sum >= k as i32 * threshold {
+                ans += 1;
+            }
+        }
+
+        ans
+    }
+}
