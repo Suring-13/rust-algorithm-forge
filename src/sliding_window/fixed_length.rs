@@ -64,3 +64,30 @@ pub mod n1343 {
         ans
     }
 }
+
+// 2090. 半径为 k 的子数组平均值
+pub mod n2090 {
+    pub fn get_averages(nums: Vec<i32>, k: i32) -> Vec<i32> {
+        let k = k as usize;
+        let window_size = 2 * k + 1; // 窗口大小
+        let n = nums.len();
+        let mut avgs = vec![-1; n];
+
+        // 如果数组长度小于窗口大小，直接返回全-1的结果
+        if n < window_size {
+            return avgs;
+        }
+
+        // 计算初始窗口的和
+        let mut sum: i64 = nums.iter().take(window_size).map(|&x| x as i64).sum();
+        avgs[k] = (sum / window_size as i64) as i32;
+
+        // 滑动窗口计算后续平均值
+        for i in window_size..n {
+            sum += (nums[i] - nums[i - window_size]) as i64;
+            avgs[i - k] = (sum / window_size as i64) as i32;
+        }
+
+        avgs
+    }
+}
