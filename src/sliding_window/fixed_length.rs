@@ -91,3 +91,33 @@ pub mod n2090 {
         avgs
     }
 }
+
+// 2379. 得到 K 个黑块的最少涂色次数
+pub mod n2379 {
+    pub fn minimum_recolors(blocks: String, k: i32) -> i32 {
+        fn is_w(ch: char) -> i32 {
+            match ch {
+                'W' => 1,
+                _ => 0,
+            }
+        }
+
+        let chars: Vec<char> = blocks.chars().collect();
+        let n = chars.len();
+        let k = k as usize;
+
+        if n < k {
+            return -1;
+        }
+
+        let mut vowel_count: i32 = chars.iter().take(k).map(|&ch| is_w(ch)).sum();
+        let mut ans = vowel_count;
+
+        for i in k..n {
+            vowel_count += is_w(chars[i]) - is_w(chars[i - k]);
+            ans = ans.min(vowel_count);
+        }
+
+        ans
+    }
+}
