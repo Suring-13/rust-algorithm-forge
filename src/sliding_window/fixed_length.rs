@@ -121,3 +121,45 @@ pub mod n2379 {
         ans
     }
 }
+
+// 2841. 几乎唯一子数组的最大和
+pub mod n2841 {
+    use std::collections::HashMap;
+
+    pub fn max_sum(nums: Vec<i32>, m: i32, k: i32) -> i64 {
+        let n = nums.len();
+        let m = m as usize;
+        let k = k as usize;
+        let mut ans = 0;
+        if n < k {
+            return ans;
+        }
+        let mut sum = 0;
+        let mut count = HashMap::new();
+
+        nums.iter().take(k).for_each(|&x| {
+            sum += x as i64;
+            *count.entry(x).or_insert(0) += 1;
+        });
+
+        if count.len() >= m {
+            ans = sum;
+        }
+
+        for i in k..n {
+            sum += nums[i] as i64 - nums[i - k] as i64;
+            *count.entry(nums[i]).or_insert(0) += 1;
+            let c = count.entry(nums[i - k]).or_insert(0);
+            *c -= 1;
+            if *c == 0 {
+                count.remove(&nums[i - k]);
+            }
+
+            if count.len() >= m {
+                ans = ans.max(sum);
+            }
+        }
+
+        ans
+    }
+}
