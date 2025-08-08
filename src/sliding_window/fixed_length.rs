@@ -204,3 +204,21 @@ pub mod n2461 {
         ans
     }
 }
+
+// 1423. 可获得的最大点数
+pub mod n1423 {
+    pub fn max_score(card_points: Vec<i32>, k: i32) -> i32 {
+        let n = card_points.len();
+        if n < k as usize {
+            return 0;
+        }
+        let window_size = n - k as usize;
+        let mut sum = card_points.iter().take(window_size).sum::<i32>();
+        let mut min_sum = sum;
+        for i in window_size..n {
+            sum += card_points[i] - card_points[i - window_size];
+            min_sum = min_sum.min(sum);
+        }
+        card_points.iter().sum::<i32>() - min_sum
+    }
+}
