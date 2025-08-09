@@ -222,3 +222,40 @@ pub mod n1423 {
         card_points.iter().sum::<i32>() - min_sum
     }
 }
+
+// 1052. 爱生气的书店老板
+pub mod n1052 {
+    pub fn max_satisfied(customers: Vec<i32>, grumpy: Vec<i32>, minutes: i32) -> i32 {
+        let window_size = minutes as usize;
+        let mut s = [0, 0]; // s[0] 老板不生气时的顾客数量，s[1] 老板生气时的顾客数量
+        let mut max_s1 = 0;
+
+        customers
+            .iter()
+            .zip(grumpy.iter())
+            .take(window_size)
+            .for_each(|(&c, &g)| {
+                s[g as usize] += c;
+            });
+        if customers.len() < window_size {
+            return s[0] + s[1];
+        } else {
+            max_s1 = s[1];
+        }
+
+        for (i, (&c, &g)) in customers
+            .iter()
+            .zip(grumpy.iter())
+            .enumerate()
+            .skip(window_size)
+        {
+            s[g as usize] += c;
+            if grumpy[i - window_size] == 1 {
+                s[1] -= customers[i - window_size];
+            }
+            max_s1 = max_s1.max(s[1]);
+        }
+
+        s[0] + max_s1
+    }
+}
