@@ -25,3 +25,32 @@ pub mod n3 {
         ans as _
     }
 }
+
+// 3090. 每个字符最多出现两次的最长子字符串
+pub mod n3090 {
+    use std::collections::HashMap;
+
+    pub fn maximum_length_substring(s: String) -> i32 {
+        let mut ans = 0;
+        let mut left = 0;
+        let mut cnt = HashMap::new();
+        let chars: Vec<char> = s.chars().collect();
+
+        for (i, &c) in chars.iter().enumerate() {
+            // 增加当前字符计数
+            *cnt.entry(c).or_insert(0) += 1;
+
+            // 如果当前字符出现次数超过2，移动左指针
+            while *cnt.get(&c).unwrap() > 2 {
+                let left_char = chars[left];
+                *cnt.get_mut(&left_char).unwrap() -= 1;
+                left += 1;
+            }
+
+            // 更新最大长度
+            ans = ans.max(i - left + 1);
+        }
+
+        ans as i32
+    }
+}
