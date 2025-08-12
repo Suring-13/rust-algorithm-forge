@@ -54,3 +54,24 @@ pub mod n3090 {
         ans as i32
     }
 }
+
+// 1493. 删掉一个元素以后全为 1 的最长子数组
+pub mod n1493 {
+    pub fn longest_subarray(nums: Vec<i32>) -> i32 {
+        let mut ans = 0;
+        let mut cnt0 = 0;
+        let mut left = 0;
+        for (right, &x) in nums.iter().enumerate() {
+            // 1. 入，nums[right] 进入窗口
+            cnt0 += 1 - x; // 维护窗口中的 0 的个数
+            while cnt0 > 1 {
+                // 2. 出，nums[left] 离开窗口
+                cnt0 -= 1 - nums[left]; // 维护窗口中的 0 的个数
+                left += 1;
+            }
+            // 3. 更新答案，注意不是 right-left+1，因为我们要删掉一个数
+            ans = ans.max(right - left);
+        }
+        ans as _
+    }
+}
