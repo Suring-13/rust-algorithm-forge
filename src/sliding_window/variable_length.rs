@@ -75,3 +75,22 @@ pub mod n1493 {
         ans as _
     }
 }
+
+// 3634. 使数组平衡的最少移除数目
+pub mod n3634 {
+    pub fn min_removal(mut nums: Vec<i32>, k: i32) -> i32 {
+        nums.sort_unstable();
+        let mut max_save = 0;
+        let mut left = 0;
+        let k = k as f64;
+
+        for (i, &mx) in nums.iter().enumerate() {
+            while nums[left] as f64 * k < mx as f64 {
+                left += 1;
+            }
+            max_save = max_save.max(i - left + 1);
+        }
+
+        (nums.len() - max_save) as i32
+    }
+}
