@@ -94,3 +94,39 @@ pub mod n3634 {
         (nums.len() - max_save) as i32
     }
 }
+
+// 1208. 尽可能使字符串相等
+pub mod n1208 {
+    pub fn equal_substring(s: String, t: String, max_cost: i32) -> i32 {
+        let s_bytes = s.as_bytes();
+        let t_bytes = t.as_bytes();
+        let n = s_bytes.len();
+
+        // 计算每个位置的字节差值绝对值
+        let diff: Vec<i32> = s_bytes
+            .iter()
+            .zip(t_bytes.iter())
+            .map(|(sc, tc)| (*sc as i32 - *tc as i32).abs())
+            .collect();
+
+        let mut max_length = 0;
+        let mut start = 0;
+        let mut total = 0;
+
+        // 滑动窗口逻辑
+        for end in 0..n {
+            total += diff[end];
+
+            // 超出最大成本时移动左指针
+            while total > max_cost {
+                total -= diff[start];
+                start += 1;
+            }
+
+            // 更新最大长度
+            max_length = max_length.max((end - start + 1) as i32);
+        }
+
+        max_length
+    }
+}
