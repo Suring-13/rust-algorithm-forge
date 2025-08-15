@@ -130,3 +130,28 @@ pub mod n1208 {
         max_length
     }
 }
+
+// 904. 水果成篮
+pub mod n904 {
+    use std::collections::HashMap;
+
+    pub fn total_fruit(fruits: Vec<i32>) -> i32 {
+        let mut ans = 0;
+        let mut left = 0;
+        let mut cnt = HashMap::new();
+        for (right, &x) in fruits.iter().enumerate() {
+            *cnt.entry(x).or_insert(0) += 1; // fruits[right] 进入窗口
+            while cnt.len() > 2 {
+                // 不满足要求
+                let out = fruits[left];
+                *cnt.entry(out).or_insert(0) -= 1; // fruits[left] 离开窗口
+                if cnt[&out] == 0 {
+                    cnt.remove(&out);
+                }
+                left += 1;
+            }
+            ans = ans.max(right - left + 1);
+        }
+        ans as _
+    }
+}
