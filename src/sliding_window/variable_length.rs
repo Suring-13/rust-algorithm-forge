@@ -155,3 +155,25 @@ pub mod n904 {
         ans as _
     }
 }
+
+// 1695. 删除子数组的最大得分
+pub mod n1695 {
+    pub fn maximum_unique_subarray(nums: Vec<i32>) -> i32 {
+        let mx = *nums.iter().max().unwrap();
+        let mut has = vec![false; (mx + 1) as usize];
+        let mut ans = 0;
+        let mut sum = 0;
+        let mut left = 0;
+        for &x in &nums {
+            while has[x as usize] {
+                has[nums[left] as usize] = false;
+                sum -= nums[left];
+                left += 1;
+            }
+            has[x as usize] = true;
+            sum += x;
+            ans = ans.max(sum);
+        }
+        ans
+    }
+}
