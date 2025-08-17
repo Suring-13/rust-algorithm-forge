@@ -177,3 +177,31 @@ pub mod n1695 {
         ans
     }
 }
+
+// 2958. 最多 K 个重复元素的最长子数组
+pub mod n2958 {
+    use std::collections::HashMap;
+
+    pub fn max_subarray_length(nums: Vec<i32>, k: i32) -> i32 {
+        let mut ans = 0;
+        let mut left = 0;
+        let mut cnt = HashMap::new();
+
+        for (right, &x) in nums.iter().enumerate() {
+            // 增加当前元素的计数
+            *cnt.entry(x).or_insert(0) += 1;
+
+            // 当当前元素的计数超过k时，移动左指针
+            while *cnt.get(&x).unwrap() > k {
+                let left_num = nums[left];
+                *cnt.get_mut(&left_num).unwrap() -= 1;
+                left += 1;
+            }
+
+            // 更新最大长度
+            ans = ans.max((right - left + 1) as i32);
+        }
+
+        ans
+    }
+}
