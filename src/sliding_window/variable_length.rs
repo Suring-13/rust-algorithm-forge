@@ -205,3 +205,22 @@ pub mod n2958 {
         ans
     }
 }
+
+// 2024. 考试的最大困扰度
+pub mod n2024 {
+    pub fn max_consecutive_answers(answer_key: String, k: i32) -> i32 {
+        let s = answer_key.as_bytes();
+        let mut ans = 0;
+        let mut left = 0;
+        let mut cnt = [0, 0];
+        for (right, &ch) in s.iter().enumerate() {
+            cnt[(ch >> 1 & 1) as usize] += 1;
+            while cnt[0] > k && cnt[1] > k {
+                cnt[(s[left] >> 1 & 1) as usize] -= 1;
+                left += 1;
+            }
+            ans = ans.max(right - left + 1);
+        }
+        ans as _
+    }
+}
