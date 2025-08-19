@@ -224,3 +224,28 @@ pub mod n2024 {
         ans as _
     }
 }
+
+// 1004. 最大连续1的个数 III
+pub mod n1004 {
+    pub fn longest_ones(nums: Vec<i32>, k: i32) -> i32 {
+        let mut max_len = 0;
+        let mut left = 0;
+        let mut zero_count = 0;
+
+        for (right, &num) in nums.iter().enumerate() {
+            // 统计窗口中0的数量（1 - num：0转为1，1转为0）
+            zero_count += 1 - num;
+
+            // 当0的数量超过k时，移动左指针缩小窗口
+            while zero_count > k {
+                zero_count -= 1 - nums[left];
+                left += 1;
+            }
+
+            // 更新当前窗口的最大长度
+            max_len = max_len.max((right - left + 1) as i32);
+        }
+
+        max_len
+    }
+}
