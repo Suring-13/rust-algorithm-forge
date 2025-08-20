@@ -249,3 +249,36 @@ pub mod n1004 {
         max_len
     }
 }
+
+// 1658. 将 x 减到 0 的最小操作数
+pub mod n1658 {
+    pub fn min_operations(nums: Vec<i32>, x: i32) -> i32 {
+        let total: i32 = nums.iter().sum();
+        let target = total - x;
+
+        if target < 0 {
+            return -1;
+        }
+
+        let mut ans = -1;
+        let mut s = 0;
+        let mut left = 0;
+
+        for (right, &num) in nums.iter().enumerate() {
+            s += num;
+
+            // 当当前和超过目标时，移动左指针缩小窗口
+            while s > target {
+                s -= nums[left];
+                left += 1;
+            }
+
+            // 找到符合条件的子数组，更新最大长度
+            if s == target {
+                ans = ans.max((right - left + 1) as i32);
+            }
+        }
+
+        if ans < 0 { -1 } else { nums.len() as i32 - ans }
+    }
+}
