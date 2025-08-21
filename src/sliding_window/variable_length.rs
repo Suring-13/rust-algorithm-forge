@@ -282,3 +282,24 @@ pub mod n1658 {
         if ans < 0 { -1 } else { nums.len() as i32 - ans }
     }
 }
+
+// 209. 长度最小的子数组
+pub mod n209 {
+    pub fn min_sub_array_len(target: i32, nums: Vec<i32>) -> i32 {
+        let n = nums.len();
+        let mut ans = n + 1;
+        let mut sum = 0; // 子数组元素和
+        let mut left = 0; // 子数组左端点
+        for (right, &x) in nums.iter().enumerate() {
+            // 枚举子数组右端点
+            sum += x;
+            while sum >= target {
+                // 满足要求
+                ans = ans.min(right - left + 1);
+                sum -= nums[left];
+                left += 1; // 左端点右移
+            }
+        }
+        if ans <= n { ans as i32 } else { 0 }
+    }
+}
