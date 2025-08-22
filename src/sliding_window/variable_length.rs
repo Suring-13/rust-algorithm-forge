@@ -303,3 +303,41 @@ pub mod n209 {
         if ans <= n { ans as i32 } else { 0 }
     }
 }
+
+// 2904. 最短且字典序最小的美丽子字符串
+pub mod n2904 {
+    pub fn shortest_beautiful_substring(s: String, k: i32) -> String {
+        // 统计字符串中'1'的总数，若不足k则直接返回空字符串
+        let count_ones = s.chars().filter(|&c| c == '1').count() as i32;
+        if count_ones < k {
+            return String::new();
+        }
+
+        let s_chars: Vec<char> = s.chars().collect();
+        let mut ans = s.clone();
+        let mut cnt1 = 0;
+        let mut left = 0;
+
+        for right in 0..s_chars.len() {
+            // 累加当前位置的'1'（若为'1'则加1，'0'则加0）
+            cnt1 += s_chars[right].to_digit(10).unwrap() as i32;
+
+            // 收缩左指针：当1的数量超过k，或左指针指向'0'时（可优化窗口）
+            while cnt1 > k || s_chars[left] == '0' {
+                cnt1 -= s_chars[left].to_digit(10).unwrap() as i32;
+                left += 1;
+            }
+
+            // 当窗口内1的数量恰好为k时，更新答案
+            if cnt1 == k {
+                let current = &s[left..=right];
+                // 优先选长度更短的，长度相同则选字典序更小的
+                if current.len() < ans.len() || (current.len() == ans.len() && current < &ans) {
+                    ans = current.to_string();
+                }
+            }
+        }
+
+        ans
+    }
+}
