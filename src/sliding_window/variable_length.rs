@@ -341,3 +341,50 @@ pub mod n2904 {
         ans
     }
 }
+
+// 1234. 替换子串得到平衡字符串
+pub mod n1234 {
+    use std::collections::HashMap;
+
+    pub fn balanced_string(s: String) -> i32 {
+        let m = s.len() / 4;
+        let mut cnt: HashMap<char, usize> = HashMap::new();
+
+        // 统计各字符出现次数
+        for c in s.chars() {
+            *cnt.entry(c).or_insert(0) += 1;
+        }
+
+        // 检查是否已平衡
+        if cnt.len() == 4 {
+            let min_val = *cnt.values().min().unwrap();
+            if min_val == m {
+                return 0;
+            }
+        }
+
+        let s_chars: Vec<char> = s.chars().collect();
+        let mut ans = usize::MAX;
+        let mut left = 0;
+        let mut current_cnt = cnt.clone();
+
+        // 滑动窗口寻找最小替换子串
+        for right in 0..s_chars.len() {
+            let c = s_chars[right];
+            *current_cnt.get_mut(&c).unwrap() -= 1;
+
+            // 当窗口外字符均符合要求时，尝试缩小窗口
+            while current_cnt.values().max().unwrap_or(&0) <= &m {
+                ans = ans.min(right - left + 1);
+                let left_c = s_chars[left];
+                *current_cnt.get_mut(&left_c).unwrap() += 1;
+                left += 1;
+                if left > right {
+                    break;
+                }
+            }
+        }
+
+        ans as i32
+    }
+}
