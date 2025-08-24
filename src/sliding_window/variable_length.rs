@@ -388,3 +388,40 @@ pub mod n1234 {
         ans as i32
     }
 }
+
+// 2875. 无限数组的最短子数组
+pub mod n2875 {
+    pub fn min_size_subarray(nums: Vec<i32>, target: i32) -> i32 {
+        let target = target as i64;
+
+        let total = nums.iter().map(|&x| x as i64).sum::<i64>();
+
+        let n = nums.len();
+
+        let mut ans = usize::MAX;
+
+        let mut sum = 0;
+
+        let mut left = 0;
+
+        for right in 0..n * 2 {
+            sum += nums[right % n];
+
+            while sum > (target % total) as i32 {
+                sum -= nums[left % n];
+
+                left += 1;
+            }
+
+            if sum == (target % total) as i32 {
+                ans = ans.min(right - left + 1);
+            }
+        }
+
+        if ans < usize::MAX {
+            ans as i32 + (target / total) as i32 * n as i32
+        } else {
+            -1
+        }
+    }
+}
