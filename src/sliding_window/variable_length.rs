@@ -528,3 +528,44 @@ pub mod n76 {
         }
     }
 }
+
+// 632. 最小区间
+pub mod n632 {
+    pub fn smallest_range(nums: Vec<Vec<i32>>) -> Vec<i32> {
+        let mut pairs = vec![];
+        for (i, arr) in nums.iter().enumerate() {
+            for &x in arr {
+                pairs.push((x, i));
+            }
+        }
+        pairs.sort_unstable_by(|a, b| a.0.cmp(&b.0));
+
+        let mut ans_l = pairs[0].0;
+        let mut ans_r = pairs[pairs.len() - 1].0;
+        let mut empty = nums.len();
+        let mut cnt = vec![0; empty];
+        let mut left = 0;
+        for &(r, i) in &pairs {
+            if cnt[i] == 0 {
+                // 包含 nums[i] 的数字
+                empty -= 1;
+            }
+            cnt[i] += 1;
+            while empty == 0 {
+                // 每个列表都至少包含一个数
+                let (l, i) = pairs[left];
+                if r - l < ans_r - ans_l {
+                    ans_l = l;
+                    ans_r = r;
+                }
+                cnt[i] -= 1;
+                if cnt[i] == 0 {
+                    // 不包含 nums[i] 的数字
+                    empty += 1;
+                }
+                left += 1;
+            }
+        }
+        vec![ans_l, ans_r]
+    }
+}
