@@ -427,6 +427,7 @@ pub mod n2875 {
 }
 
 // 76. 最小覆盖子串
+#[allow(non_snake_case)]
 pub mod n76 {
     pub fn min_window(S: String, t: String) -> String {
         fn is_covered(cnt_s: &[i32; 128], cnt_t: &[i32; 128]) -> bool {
