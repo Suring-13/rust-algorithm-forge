@@ -570,3 +570,25 @@ pub mod n632 {
         vec![ans_l, ans_r]
     }
 }
+
+// 713. 乘积小于 K 的子数组
+pub mod n713 {
+    pub fn num_subarray_product_less_than_k(nums: Vec<i32>, k: i32) -> i32 {
+        if k <= 1 {
+            return 0;
+        }
+        let mut ans = 0;
+        let mut prod = 1;
+        let mut left = 0;
+        for (right, &x) in nums.iter().enumerate() {
+            prod *= x;
+            while prod >= k {
+                prod /= nums[left];
+                left += 1; // 缩小窗口
+            }
+            // 对于固定的 right，有 right-left+1 个合法的左端点
+            ans += right - left + 1;
+        }
+        ans as _
+    }
+}
