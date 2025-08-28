@@ -592,3 +592,31 @@ pub mod n713 {
         ans as _
     }
 }
+
+// 3258. 统计满足 K 约束的子字符串数量 I
+pub mod n3258 {
+    pub fn count_k_constraint_substrings(s: String, k: i32) -> i32 {
+        let mut ans = 0;
+        let mut left = 0;
+        let mut cnt = [0, 0]; // 分别统计0和1的出现次数
+        let s_bytes = s.as_bytes(); // 转换为字节数组便于索引
+
+        for (i, &c) in s_bytes.iter().enumerate() {
+            // 计算当前字符是0还是1（利用ASCII码特性：'0'是48，'1'是49，&1后分别为0和1）
+            let idx = (c & 1) as usize;
+            cnt[idx] += 1;
+
+            // 当0和1的数量都超过k时，移动左指针缩小窗口
+            while cnt[0] > k && cnt[1] > k {
+                let left_idx = (s_bytes[left] & 1) as usize;
+                cnt[left_idx] -= 1;
+                left += 1;
+            }
+
+            // 窗口[left, i]内的所有子串均满足条件，数量为i - left + 1
+            ans += (i - left + 1) as i32;
+        }
+
+        ans
+    }
+}
