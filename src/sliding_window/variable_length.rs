@@ -620,3 +620,21 @@ pub mod n3258 {
         ans
     }
 }
+
+// 2302. 统计得分小于 K 的子数组数目
+pub mod n2302 {
+    pub fn count_subarrays(nums: Vec<i32>, k: i64) -> i64 {
+        let mut ans = 0;
+        let mut sum = 0;
+        let mut left = 0;
+        for (right, &x) in nums.iter().enumerate() {
+            sum += x as i64;
+            while sum * ((right - left + 1) as i64) >= k {
+                sum -= nums[left] as i64;
+                left += 1;
+            }
+            ans += (right - left + 1) as i64;
+        }
+        ans
+    }
+}
