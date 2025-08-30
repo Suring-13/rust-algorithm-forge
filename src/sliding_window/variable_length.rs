@@ -638,3 +638,74 @@ pub mod n2302 {
         ans
     }
 }
+
+// 2762. 不间断子数组
+pub mod n2762 {
+    use std::collections::{BTreeMap, HashMap};
+
+    // 方法一：使用 BTreeMap 维护有序性，便于快速获取最大最小值
+    pub fn continuous_subarrays(nums: Vec<i32>) -> i64 {
+        let mut ans: i64 = 0;
+        let mut left = 0;
+        let mut cnt = BTreeMap::new(); // BTreeMap 会自动排序键，便于获取最大最小值
+
+        for (right, &x) in nums.iter().enumerate() {
+            *cnt.entry(x).or_insert(0) += 1;
+
+            // 当最大值与最小值之差超过 2 时，移动左指针
+            while {
+                let first = *cnt.keys().next().unwrap();
+                let last = *cnt.keys().next_back().unwrap();
+                last - first > 2
+            } {
+                let y = nums[left];
+                *cnt.get_mut(&y).unwrap() -= 1;
+                if cnt[&y] == 0 {
+                    cnt.remove(&y);
+                }
+                left += 1;
+            }
+
+            // 累加当前右指针位置下的有效子数组数量
+            ans += (right - left + 1) as i64;
+        }
+
+        ans
+    }
+
+    // 方法二：使用 HashMap 配合手动一个变量手动跟踪最大最小值
+    pub fn continuous_subarrays1(nums: Vec<i32>) -> i64 {
+        let mut ans: i64 = 0;
+        let mut left = 0;
+        let mut cnt = HashMap::new();
+        let mut current_max = i32::MIN;
+        let mut current_min = i32::MAX;
+
+        for (right, &x) in nums.iter().enumerate() {
+            *cnt.entry(x).or_insert(0) += 1;
+            current_max = current_max.max(x);
+            current_min = current_min.min(x);
+
+            // 当最大值与最小值之差超过 2 时，移动左指针并更新最大最小值
+            while current_max - current_min > 2 {
+                let y = nums[left];
+                *cnt.get_mut(&y).unwrap() -= 1;
+                if cnt[&y] == 0 {
+                    cnt.remove(&y);
+                    // 如果移除的是当前最大或最小值，需要重新计算
+                    if y == current_max {
+                        current_max = *cnt.keys().max().unwrap_or(&i32::MIN);
+                    }
+                    if y == current_min {
+                        current_min = *cnt.keys().min().unwrap_or(&i32::MAX);
+                    }
+                }
+                left += 1;
+            }
+
+            ans += (right - left + 1) as i64;
+        }
+
+        ans
+    }
+}
