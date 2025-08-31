@@ -709,3 +709,22 @@ pub mod n2762 {
         ans
     }
 }
+
+// 1358. 包含所有三种字符的子字符串数目
+pub mod n1358 {
+    pub fn number_of_substrings(s: String) -> i32 {
+        let s = s.as_bytes();
+        let mut ans = 0;
+        let mut left = 0;
+        let mut cnt = [0; 3];
+        for &c in s {
+            cnt[(c - b'a') as usize] += 1;
+            while cnt[0] > 0 && cnt[1] > 0 && cnt[2] > 0 {
+                cnt[(s[left] - b'a') as usize] -= 1;
+                left += 1;
+            }
+            ans += left;
+        }
+        ans as _
+    }
+}
