@@ -728,3 +728,26 @@ pub mod n1358 {
         ans as _
     }
 }
+
+// 2962. 统计最大元素出现至少 K 次的子数组
+pub mod n2962 {
+    pub fn count_subarrays(nums: Vec<i32>, k: i32) -> i64 {
+        let mx = *nums.iter().max().unwrap();
+        let mut ans = 0;
+        let mut cnt_mx = 0;
+        let mut left = 0;
+        for &x in &nums {
+            if x == mx {
+                cnt_mx += 1;
+            }
+            while cnt_mx == k {
+                if nums[left] == mx {
+                    cnt_mx -= 1;
+                }
+                left += 1;
+            }
+            ans += left;
+        }
+        ans as _
+    }
+}
