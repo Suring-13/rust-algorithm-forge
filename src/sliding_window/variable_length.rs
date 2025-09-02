@@ -751,3 +751,33 @@ pub mod n2962 {
         ans as _
     }
 }
+
+// 3325. 字符至少出现 K 次的子字符串 I
+pub mod n3325 {
+    use std::collections::HashMap;
+
+    pub fn number_of_substrings(s: String, k: i32) -> i32 {
+        let mut ans = 0;
+        let mut left = 0;
+        let mut cnt = HashMap::new();
+        // 将字符串转为字符切片，便于遍历和索引访问
+        let chars: Vec<char> = s.chars().collect();
+
+        for c in &chars {
+            // 计数当前字符出现次数
+            *cnt.entry(*c).or_insert(0) += 1;
+
+            // 当当前字符计数 >= k 时，移动左指针并更新计数
+            while cnt[c] >= k {
+                let left_char = chars[left];
+                *cnt.get_mut(&left_char).unwrap() -= 1;
+                left += 1;
+            }
+
+            // 累加当前左指针位置（代表符合条件的子串数量）
+            ans += left as i32;
+        }
+
+        ans
+    }
+}
