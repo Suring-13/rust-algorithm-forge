@@ -781,3 +781,29 @@ pub mod n3325 {
         ans
     }
 }
+
+// 2799. 统计完全子数组的数目
+pub mod n2799 {
+    use std::collections::{HashMap, HashSet};
+
+    pub fn count_complete_subarrays(nums: Vec<i32>) -> i32 {
+        let k = nums.iter().collect::<HashSet<_>>().len();
+        let mut cnt = HashMap::new();
+        let mut ans = 0;
+        let mut left = 0;
+        for &x in &nums {
+            *cnt.entry(x).or_insert(0) += 1;
+            while cnt.len() == k {
+                let out = nums[left];
+                let e = cnt.get_mut(&out).unwrap();
+                *e -= 1;
+                if *e == 0 {
+                    cnt.remove(&out);
+                }
+                left += 1;
+            }
+            ans += left;
+        }
+        ans as _
+    }
+}
