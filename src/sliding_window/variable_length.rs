@@ -807,3 +807,28 @@ pub mod n2799 {
         ans as _
     }
 }
+
+// 2537. 统计好子数组的数目
+pub mod n2537 {
+    use std::collections::HashMap;
+
+    pub fn count_good(nums: Vec<i32>, k: i32) -> i64 {
+        let mut ans = 0;
+        let mut cnt = HashMap::new();
+        let mut pairs = 0;
+        let mut left = 0;
+        for &x in &nums {
+            let e = cnt.entry(x).or_insert(0);
+            pairs += *e;
+            *e += 1;
+            while pairs >= k {
+                let e = cnt.get_mut(&nums[left]).unwrap();
+                *e -= 1;
+                pairs -= *e;
+                left += 1;
+            }
+            ans += left;
+        }
+        ans as _
+    }
+}
