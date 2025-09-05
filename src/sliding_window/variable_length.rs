@@ -832,3 +832,46 @@ pub mod n2537 {
         ans as _
     }
 }
+
+// 3298. 统计重新排列后包含另一个字符串的子字符串数目 II
+pub mod n3298 {
+    pub fn valid_substring_count(s: String, t: String) -> i64 {
+        if s.len() < t.len() {
+            return 0;
+        }
+
+        let mut diff = vec![0; 26]; // t 的字母出现次数与 s 的字母出现次数之差
+        for c in t.bytes() {
+            diff[(c - b'a') as usize] += 1;
+        }
+
+        // 统计窗口内有多少个字母的出现次数比 t 的少
+        let mut less = diff.iter().filter(|&&d| d > 0).count() as i32;
+
+        let mut ans = 0;
+        let mut left = 0;
+        let s = s.as_bytes();
+        for c in s {
+            let c = (c - b'a') as usize;
+            diff[c] -= 1;
+            if diff[c] == 0 {
+                // c 移入窗口后，窗口内 c 的出现次数和 t 的一样
+                less -= 1;
+            }
+            while less == 0 {
+                // 窗口符合要求
+                let out_char = (s[left] - b'a') as usize; // 准备移出窗口的字母
+                if diff[out_char] == 0 {
+                    // out_char 移出窗口之前，检查出现次数，
+                    // 如果窗口内 out_char 的出现次数和 t 的一样，
+                    // 那么 out_char 移出窗口后，窗口内 out_char 的出现次数比 t 的少
+                    less += 1;
+                }
+                diff[out_char] += 1;
+                left += 1;
+            }
+            ans += left;
+        }
+        ans as _
+    }
+}
