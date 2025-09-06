@@ -875,3 +875,36 @@ pub mod n3298 {
         ans as _
     }
 }
+
+// 930. 和相同的二元子数组
+pub mod n930 {
+    pub fn num_subarrays_with_sum(nums: Vec<i32>, goal: i32) -> i32 {
+        let mut l1 = 0;
+        let mut l2 = 0;
+        let mut res = 0;
+        let mut tmp_sum_1 = 0;
+        let mut tmp_sum_2 = 0;
+
+        for (r, &num) in nums.iter().enumerate() {
+            tmp_sum_1 += num;
+            tmp_sum_2 += num;
+
+            // 计算 sum >= goal 的左边界
+            while l1 <= r && tmp_sum_1 >= goal {
+                tmp_sum_1 -= nums[l1];
+                l1 += 1;
+            }
+
+            // 计算 sum >= goal+1 的左边界
+            while l2 <= r && tmp_sum_2 >= goal + 1 {
+                tmp_sum_2 -= nums[l2];
+                l2 += 1;
+            }
+
+            // 符合条件的子数组数量为两者差值
+            res += (l1 - l2) as i32;
+        }
+
+        res
+    }
+}
