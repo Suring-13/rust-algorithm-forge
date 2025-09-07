@@ -908,3 +908,37 @@ pub mod n930 {
         res
     }
 }
+
+// 1248. 统计「优美子数组」
+pub mod n1248 {
+    pub fn number_of_subarrays(nums: Vec<i32>, k: i32) -> i32 {
+        let mut cnt1 = 0; // 用于统计大于等于k个奇数的窗口
+        let mut cnt2 = 0; // 用于统计大于等于k+1个奇数的窗口
+        let mut ans = 0;
+        let mut left1 = 0;
+        let mut left2 = 0;
+
+        for (right, &num) in nums.iter().enumerate() {
+            // 更新奇数计数（判断是否为奇数）
+            cnt1 += (num & 1) as i32;
+            cnt2 += (num & 1) as i32;
+
+            // 计算 cnt >= k 的左边界
+            while left1 <= right && cnt1 >= k {
+                cnt1 -= (nums[left1] & 1) as i32;
+                left1 += 1;
+            }
+
+            // 计算 cnt >= k + 1 的左边界
+            while left2 <= right && cnt2 >= k + 1 {
+                cnt2 -= (nums[left2] & 1) as i32;
+                left2 += 1;
+            }
+
+            // 两者差值即为以right为结尾的、恰好包含k个奇数的子数组数量
+            ans += (left1 - left2) as i32;
+        }
+
+        ans
+    }
+}
