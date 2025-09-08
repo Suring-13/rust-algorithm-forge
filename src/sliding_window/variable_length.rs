@@ -942,3 +942,69 @@ pub mod n1248 {
         ans
     }
 }
+
+// 3306. 元音辅音字符串计数 II
+pub mod n3306 {
+    use std::collections::HashMap;
+
+    pub fn count_of_substrings(word: String, k: i32) -> i64 {
+        // 两个元音计数器
+        let mut cnt_vowel1: HashMap<char, i32> = HashMap::new();
+        let mut cnt_vowel2: HashMap<char, i32> = HashMap::new();
+        // 两个辅音计数器（
+        let mut cnt_consonant1 = 0;
+        let mut cnt_consonant2 = 0;
+        let mut ans = 0;
+        let mut left1 = 0;
+        let mut left2 = 0;
+        // 将字符串转为字符数组，方便按索引访问
+        let chars: Vec<char> = word.chars().collect();
+
+        for (right, &c) in chars.iter().enumerate() {
+            // 1. 统计当前字符（元音/辅音）
+            if ['a', 'e', 'i', 'o', 'u'].contains(&c) {
+                *cnt_vowel1.entry(c).or_insert(0) += 1;
+                *cnt_vowel2.entry(c).or_insert(0) += 1;
+            } else {
+                cnt_consonant1 += 1;
+                cnt_consonant2 += 1;
+            }
+
+            // 2. 调整 left1：确保窗口 [left1, right] 满足「元音全5种 + 辅音 ≥k」
+            while left1 <= right && cnt_vowel1.len() == 5 && cnt_consonant1 >= k {
+                let out = chars[left1];
+                // 移除窗口左边界字符的统计
+                if ['a', 'e', 'i', 'o', 'u'].contains(&out) {
+                    *cnt_vowel1.get_mut(&out).unwrap() -= 1;
+                    // 若该元音计数为0，从哈希表中删除（保证 len 准确）
+                    if cnt_vowel1[&out] == 0 {
+                        cnt_vowel1.remove(&out);
+                    }
+                } else {
+                    cnt_consonant1 -= 1;
+                }
+                left1 += 1;
+            }
+
+            // 3. 调整 left2：确保窗口 [left2, right] 满足「元音全5种 + 辅音 >k」
+            while left2 <= right && cnt_vowel2.len() == 5 && cnt_consonant2 > k {
+                let out = chars[left2];
+                // 移除窗口左边界字符的统计
+                if ['a', 'e', 'i', 'o', 'u'].contains(&out) {
+                    *cnt_vowel2.get_mut(&out).unwrap() -= 1;
+                    if cnt_vowel2[&out] == 0 {
+                        cnt_vowel2.remove(&out);
+                    }
+                } else {
+                    cnt_consonant2 -= 1;
+                }
+                left2 += 1;
+            }
+
+            // 4. 两者差值即为「元音全5种 + 辅音恰好k个」的子数组数量
+            ans += (left1 - left2) as i64;
+        }
+
+        ans
+    }
+}
