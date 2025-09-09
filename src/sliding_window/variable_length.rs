@@ -1008,3 +1008,47 @@ pub mod n3306 {
         ans
     }
 }
+
+// 992. K 个不同整数的子数组
+pub mod n992 {
+    use std::collections::HashMap;
+
+    pub fn subarrays_with_k_distinct(nums: Vec<i32>, k: i32) -> i32 {
+        let k = k as usize;
+        let mut cnt1 = HashMap::new(); // 用于统计大于等于k个不同整数的窗口
+        let mut cnt2 = HashMap::new(); // 用于统计大于等于k+1个不同整数的窗口
+        let mut ans = 0;
+        let mut left1 = 0;
+        let mut left2 = 0;
+
+        for (right, &num) in nums.iter().enumerate() {
+            *cnt1.entry(num).or_insert(0) += 1;
+            *cnt2.entry(num).or_insert(0) += 1;
+
+            // 计算 cnt >= k 的左边界
+            while left1 <= right && cnt1.len() >= k {
+                let out = nums[left1];
+                *cnt1.get_mut(&out).unwrap() -= 1;
+                if cnt1[&out] == 0 {
+                    cnt1.remove(&out);
+                }
+                left1 += 1;
+            }
+
+            // 计算 cnt >= k + 1 的左边界
+            while left2 <= right && cnt2.len() >= k + 1 {
+                let out = nums[left2];
+                *cnt2.get_mut(&out).unwrap() -= 1;
+                if cnt2[&out] == 0 {
+                    cnt2.remove(&out);
+                }
+                left2 += 1;
+            }
+
+            // 两者差值即为以right为结尾的、恰好包含k个不同整数的子数组数量
+            ans += (left1 - left2) as i32;
+        }
+
+        ans
+    }
+}
