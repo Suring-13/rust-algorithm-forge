@@ -1052,3 +1052,35 @@ pub mod n992 {
         ans
     }
 }
+
+// 825. 适龄的朋友
+pub mod n825 {
+    pub fn num_friend_requests(ages: Vec<i32>) -> i32 {
+        let mut cnt = vec![0; 121];
+        for age in ages {
+            cnt[age as usize] += 1;
+        }
+
+        let mut ans = 0;
+        let mut age_y = 0;
+        let mut cnt_window = 0;
+        for age_x in 0..cnt.len() {
+            cnt_window += cnt[age_x];
+            // 寻找区间[age_y, age_x]的左边界
+            while age_y * 2 <= age_x + 14 && age_y <= age_x {
+                cnt_window -= cnt[age_y];
+                age_y += 1;
+            }
+            // 上面的 while 也可以用 if 替换，因为：当 ageX 增加 1 时，ageY 至多增加 1（斜率只有 1/2​），所以滑动窗口的内层 while 循环至多循环一次
+            // if age_y * 2 <= age_x + 14 {
+            //     cnt_window -= cnt[age_y];
+            //     age_y += 1;
+            // }
+            if cnt_window > 0 {
+                // 存在可以发送好友请求的用户
+                ans += cnt[age_x] * cnt_window - cnt[age_x];
+            }
+        }
+        ans
+    }
+}
