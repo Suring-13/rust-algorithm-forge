@@ -1084,3 +1084,26 @@ pub mod n825 {
         ans
     }
 }
+
+// 2401. 最长优雅子数组
+pub mod n2401 {
+    pub fn longest_nice_subarray(nums: Vec<i32>) -> i32 {
+        let mut ans = 0;
+        let mut left = 0;
+        let mut or_set = 0; // 交集
+
+        for (right, &x) in nums.iter().enumerate() {
+            // 逐渐移除左元素代表的集合（元素的二进制表示一个集合），直到x代表的集合可以合并到 or_set
+            while (or_set & x) != 0 {
+                or_set ^= nums[left]; // 使用异或运算求“差(子集)”，见 https://leetcode.cn/discuss/post/3571304/cong-ji-he-lun-dao-wei-yun-suan-chang-ji-enve/
+                left += 1;
+            }
+            // 并入当前元素的二进制位
+            or_set |= x;
+            // 更新最大长度
+            ans = ans.max(right - left + 1);
+        }
+
+        ans as i32
+    }
+}
