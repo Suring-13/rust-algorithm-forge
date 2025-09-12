@@ -1107,3 +1107,85 @@ pub mod n2401 {
         ans as i32
     }
 }
+
+// 1156. 单字符重复子串的最大长度
+pub mod n1156 {
+    use std::collections::HashMap;
+
+    pub fn max_rep_opt1(text: String) -> i32 {
+        // 统计每个字符的总出现次数
+        let mut count = HashMap::new();
+        for c in text.chars() {
+            *count.entry(c).or_insert(0) += 1;
+        }
+        let text_chars: Vec<char> = text.chars().collect();
+        let n = text_chars.len();
+        let mut res = 0;
+        let mut i = 0;
+
+        while i < n {
+            // Step 1: 找到当前连续相同字符的区间 [i, j)（左闭右开）
+            let mut j = i;
+            while j < n && text_chars[j] == text_chars[i] {
+                j += 1;
+            }
+
+            // Step 2: 找到与当前段相隔1个不同字符的后续相同字符段 [j+1, k), 包含以下2种情况：
+            // 1. 第一段 + 1个间隔 + 第二段
+            // 2. 第一段 + 1个间隔 （也包含“1个间隔 + 第一段”，因为间隔在前与间隔在后是等效的）
+            let mut k = j + 1;
+            let current_char = text_chars[i];
+            while k < n && text_chars[k] == current_char {
+                k += 1;
+            }
+
+            // 关键：计算两段合并后的有效长度，更新结果。要排除以下2种特殊情况，故需要与count[current_char]比较取较小值：
+            // 1. 除了第一段和第二段，其他位置没有相同字符来替换那1个间隔
+            // 2. 只有第一段且第一段就是全部的字符串，此时即没有前面的间隔也没有后面的间隔
+            let total = (k - i) as i32;
+            res = res.max(total.min(*count.get(&current_char).unwrap()));
+
+            i = j; // 移动到下一个不同字符的起始位置
+        }
+
+        res
+    }
+
+    // 思路二： 使用双指针 l 和 r 维护一个滑动窗口，使得窗口的大小减去出现次数最多的字符的次数，结果不超过 1。
+    pub fn max_rep_opt1_1(text: String) -> i32 {
+        let s = text.as_bytes();
+        let n = s.len();
+
+        // 统计每个字符的总出现次数
+        let mut cnt_total = [0; 26];
+        for &c in s {
+            cnt_total[(c - b'a') as usize] += 1;
+        }
+
+        let mut cnt = [0; 26];
+        let mut l = 0;
+        let mut max_count = 0;
+
+        for r in 0..n {
+            // 计算当前字符在数组中的索引（a-z映射到0-25）
+            let idx = (s[r] - b'a') as usize;
+            cnt[idx] += 1;
+
+            // 只有当当前字符小于总字符数,也就是还有字符可以被交换的时候,更新当前窗口内的最大字符计数
+            if cnt_total[idx] > cnt[idx] {
+                max_count = max_count.max(cnt[idx]);
+            }
+
+            // 如果窗口中需要替换的字符数超过1，则左指针至多右移一格，保证区间长度不减小
+            if (r - l + 1) as i32 - max_count > 1 {
+                let left_idx = (s[l] - b'a') as usize;
+                cnt[left_idx] -= 1;
+                l += 1;
+            }
+        }
+
+        (n - l) as _
+
+        // 特殊情况解释： 如果最长子串的字符全部集中在一起，即只有一段，则最后一个字符相当于自己替换自己
+    }
+}
