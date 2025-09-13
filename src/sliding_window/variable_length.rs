@@ -1189,3 +1189,34 @@ pub mod n1156 {
         // 特殊情况解释： 如果最长子串的字符全部集中在一起，即只有一段，则最后一个字符相当于自己替换自己
     }
 }
+
+// 424. 替换后的最长重复字符
+pub mod n424 {
+    pub fn character_replacement(s: String, k: i32) -> i32 {
+        let s_bytes = s.as_bytes();
+        let n = s_bytes.len();
+        let mut count = [0; 26]; // 记录每个字母的出现次数
+        let mut max_count = 0;
+        let mut left = 0;
+        let mut right = 0;
+
+        while right < n {
+            // 计算当前字符在数组中的索引（A-Z映射到0-25）
+            let idx = (s_bytes[right] - b'A') as usize;
+            count[idx] += 1;
+            // 更新窗口中出现次数最多的字符数量
+            max_count = max_count.max(count[idx]);
+
+            // 如果窗口大小减去最多字符数大于k，则左指针至多右移一格，保证区间长度不减小
+            if (right - left + 1) as i32 - max_count > k {
+                let left_idx = (s_bytes[left] - b'A') as usize;
+                count[left_idx] -= 1;
+                left += 1;
+            }
+
+            right += 1;
+        }
+
+        (right - left) as i32
+    }
+}
