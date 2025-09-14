@@ -1220,3 +1220,39 @@ pub mod n424 {
         (right - left) as i32
     }
 }
+
+// 438. 找到字符串中所有字母异位词
+pub mod n438 {
+    pub fn find_anagrams(s: String, p: String) -> Vec<i32> {
+        let mut cnt = [0; 26]; // 统计 p 的每种字母的出现次数
+
+        for c in p.bytes() {
+            cnt[(c - b'a') as usize] += 1; // 统计 p 的字母
+        }
+
+        let mut ans = vec![];
+
+        let s = s.as_bytes();
+
+        let mut left = 0;
+
+        for (right, &c) in s.iter().enumerate() {
+            let c = (c - b'a') as usize;
+
+            cnt[c] -= 1; // 右端点字母进入窗口
+
+            // 字母 c 太多了
+            while cnt[c] < 0 {
+                cnt[(s[left] - b'a') as usize] += 1; // 左端点字母离开窗口
+                left += 1;
+            }
+
+            // s' 和 p 的每种字母的出现次数都相同
+            if right - left + 1 == p.len() {
+                ans.push(left as i32); // s' 左端点下标加入答案
+            }
+        }
+
+        ans
+    }
+}

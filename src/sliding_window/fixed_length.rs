@@ -260,3 +260,39 @@ pub mod n1052 {
         s[0] + max_s1
     }
 }
+
+// 438. 找到字符串中所有字母异位词
+pub mod n438 {
+    pub fn find_anagrams(s: String, p: String) -> Vec<i32> {
+        let mut cnt_p = [0; 26]; // 统计 p 的每种字母的出现次数
+        let mut cnt_s = [0; 26]; // 统计 s 的长为 p.len() 的子串 s' 的每种字母的出现次数
+
+        for c in p.bytes() {
+            cnt_p[(c - b'a') as usize] += 1; // 统计 p 的字母
+        }
+
+        let mut ans = vec![];
+
+        let s = s.as_bytes();
+
+        for (right, &c) in s.iter().enumerate() {
+            cnt_s[(c - b'a') as usize] += 1; // 右端点字母进入窗口
+
+            // 窗口长度不足 p.len()
+            if right < p.len() - 1 {
+                continue;
+            }
+
+            let left = right - p.len() + 1;
+
+            // s' 和 p 的每种字母的出现次数都相同
+            if cnt_s == cnt_p {
+                ans.push(left as i32); // s' 左端点下标加入答案
+            }
+
+            cnt_s[(s[left] - b'a') as usize] -= 1; // 左端点字母离开窗口
+        }
+
+        ans
+    }
+}
