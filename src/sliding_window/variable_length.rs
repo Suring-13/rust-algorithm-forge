@@ -1256,3 +1256,61 @@ pub mod n438 {
         ans
     }
 }
+
+// 1712. 将数组分成三个子数组的方案数
+pub mod n1712 {
+    use std::cmp::Ordering;
+
+    // 思路： 记两个分割位置为 l 和 r，利用前缀和可以得到不等式 Sl​≤Sr​−Sl​≤Sn​−Sr​， 变形为 Sl​≥2Sr​−Sn​ 和 2Sl​≤Sr​。
+    // 所以 r 的范围需要满足 2≤r<n 和 2⋅(2Sr​−Sn​)≤Sr​，即 3Sr​≤2Sn​；l 的范围需要满足 1≤l<r.
+    pub fn ways_to_split(nums: Vec<i32>) -> i32 {
+        const MOD: i32 = 1_000_000_007;
+        let n = nums.len();
+        // 计算前缀和
+        let mut prefix = vec![0; n + 1];
+        for i in 0..n {
+            prefix[i + 1] = prefix[i] + nums[i];
+        }
+
+        let mut left1 = 1;
+        let mut left2 = 1;
+        let mut res = 0;
+
+        // 枚举右端点r
+        for r in 2..n {
+            // 提前终止：若3*前缀[r] > 2*总前缀和，后续r更大无需判断
+            if 3 * prefix[r] > 2 * prefix[n] {
+                break;
+            }
+
+            // 移动left1：找到第一个满足“右段 >= 中段”的分割点
+            while left1 < r - 1 {
+                let right_part = prefix[n] - prefix[r];
+                let mid_part = prefix[r] - prefix[left1];
+                match right_part.cmp(&mid_part) {
+                    Ordering::Greater | Ordering::Equal => break,
+                    Ordering::Less => left1 += 1,
+                }
+            }
+
+            // 移动left2：找到第一个满足“中段 < 左段”的分割点
+            while left2 < r {
+                let mid_part = prefix[r] - prefix[left2];
+                let left_part = prefix[left2];
+                match mid_part.cmp(&left_part) {
+                    Ordering::Less => break,
+                    Ordering::Greater | Ordering::Equal => left2 += 1,
+                }
+            }
+
+            // 根据Sl的范围：Sl​≥2Sr​−Sn​ 和 Sl​≤Sr/2，也可以用二分法找left1、left2, 注意要加上切片相对于原数组的偏移
+            // left1 = prefix[left1..r].partition_point(|&x| x < 2 * prefix[r] - prefix[n]) + left1;
+            // left2 = prefix[left2..r].partition_point(|&x| x <= prefix[r] / 2) + left2;
+
+            // 累加合法区间长度（[left1, left2)）
+            res = (res + (left2 - left1) as i32) % MOD;
+        }
+
+        res
+    }
+}
