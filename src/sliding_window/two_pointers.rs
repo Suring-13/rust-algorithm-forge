@@ -36,3 +36,25 @@ pub mod n3643 {
         grid
     }
 }
+
+// 125. 验证回文串
+pub mod n125 {
+    pub fn is_palindrome(s: String) -> bool {
+        let s = s.as_bytes();
+        let mut i = 0;
+        let mut j = s.len() - 1;
+        while i < j {
+            if !s[i].is_ascii_alphanumeric() {
+                i += 1;
+            } else if !s[j].is_ascii_alphanumeric() {
+                j -= 1;
+            } else if s[i].to_ascii_lowercase() == s[j].to_ascii_lowercase() {
+                i += 1;
+                j -= 1;
+            } else {
+                return false;
+            }
+        }
+        true
+    }
+}
