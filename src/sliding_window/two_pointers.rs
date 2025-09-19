@@ -58,3 +58,31 @@ pub mod n125 {
         true
     }
 }
+
+// 1750. 删除字符串两端相同字符后的最短长度
+pub mod n1750 {
+    pub fn minimum_length(s: String) -> i32 {
+        let s_bytes = s.as_bytes(); // 转为字节数组，避免字符索引开销
+        let mut left = 0;
+        let mut right = s_bytes.len() - 1;
+
+        while left < right && s_bytes[left] == s_bytes[right] {
+            let c = s_bytes[left];
+            // 收缩左指针：跳过所有与 c 相同的字符
+            while left <= right && s_bytes[left] == c {
+                left += 1;
+            }
+            // 收缩右指针：跳过所有与 c 相同的字符
+            while right >= left && s_bytes[right] == c {
+                right -= 1;
+            }
+        }
+
+        // 计算剩余长度
+        if left > right {
+            0
+        } else {
+            (right - left + 1) as i32
+        }
+    }
+}
