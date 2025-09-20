@@ -86,3 +86,44 @@ pub mod n1750 {
         }
     }
 }
+
+// 2105. 给植物浇水 II
+pub mod n2105 {
+    pub fn minimum_refill(plants: Vec<i32>, capacity_a: i32, capacity_b: i32) -> i32 {
+        let mut ans = 0;
+
+        let mut a = capacity_a;
+        let mut b = capacity_b;
+
+        let mut i = 0;
+        let mut j = plants.len() - 1;
+
+        while i < j {
+            // Alice 给植物 i 浇水
+            if a < plants[i] {
+                // 没有足够的水，重新灌满水罐
+                ans += 1;
+                a = capacity_a;
+            }
+            a -= plants[i];
+            i += 1;
+
+            // Bob 给植物 j 浇水
+            if b < plants[j] {
+                // 没有足够的水，重新灌满水罐
+                ans += 1;
+                b = capacity_b;
+            }
+            b -= plants[j];
+            j -= 1;
+        }
+
+        // 如果 Alice 和 Bob 到达同一株植物，那么当前水罐中水更多的人会给这株植物浇水
+        if i == j && a.max(b) < plants[i] {
+            // 没有足够的水，重新灌满水罐
+            ans += 1;
+        }
+
+        ans
+    }
+}
