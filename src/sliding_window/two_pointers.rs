@@ -127,3 +127,25 @@ pub mod n2105 {
         ans
     }
 }
+
+// 977. 有序数组的平方
+pub mod n977 {
+    pub fn sorted_squares(nums: Vec<i32>) -> Vec<i32> {
+        let n = nums.len();
+        let mut ans = vec![0; n];
+        let mut i = 0;
+        let mut j = n - 1;
+        for p in (0..n).rev() {
+            let x = nums[i] * nums[i];
+            let y = nums[j] * nums[j];
+            if x > y {
+                ans[p] = x;
+                i += 1;
+            } else {
+                ans[p] = y;
+                j -= 1;
+            }
+        }
+        ans
+    }
+}
