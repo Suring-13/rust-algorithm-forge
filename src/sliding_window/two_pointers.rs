@@ -149,3 +149,56 @@ pub mod n977 {
         ans
     }
 }
+
+// 658. 找到 K 个最接近的元素
+pub mod n658 {
+    // 双指针法
+    pub fn find_closest_elements(arr: Vec<i32>, k: i32, x: i32) -> Vec<i32> {
+        let n = arr.len();
+        let mut left = 0usize;
+        let mut right = n - 1usize;
+        // 计算初始左右指针元素与 x 的绝对差
+        let mut a = (arr[left] - x).abs();
+        let mut b = (arr[right] - x).abs();
+
+        // 循环收缩指针范围，直到包含 k 个元素
+        while (right - left + 1) as i32 != k {
+            if a <= b {
+                // 移除右侧元素：right 左移，更新 b
+                right -= 1;
+                b = (arr[right] - x).abs();
+            } else {
+                // 移除左侧元素：left 右移，更新 a
+                left += 1;
+                a = (arr[left] - x).abs();
+            }
+        }
+
+        // 切片截取 [left..=right] 范围的元素
+        arr[left..=right].to_vec()
+    }
+
+    // 二分法
+    pub fn find_closest_elements2(arr: Vec<i32>, k: i32, x: i32) -> Vec<i32> {
+        let k_usize = k as usize;
+        let mut left = 0usize;
+        // 右边界初始化为“数组长度 - k”，确保窗口 [left, left+k) 始终合法（不越界）
+        let mut right = arr.len() - k_usize;
+        let mut mid: usize;
+
+        while left < right {
+            mid = left + (right - left) / 2;
+            // 核心判断：比较当前窗口左端点（mid）和下一个窗口左端点（mid+1）的优劣
+            // 逻辑：若 x 到当前窗口左端点的距离 > x 到下一个窗口右端点（mid+k）的距离，
+            // 说明下一个窗口（mid+1 为左端点）更优，需右移左边界；反之则左移右边界
+            if x - arr[mid] > arr[mid + k_usize] - x {
+                left = mid + 1;
+            } else {
+                right = mid;
+            }
+        }
+
+        // 截取最优窗口 [left, left+k)
+        arr[left..left + k_usize].to_vec()
+    }
+}
