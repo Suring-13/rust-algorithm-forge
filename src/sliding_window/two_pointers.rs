@@ -202,3 +202,36 @@ pub mod n658 {
         arr[left..left + k_usize].to_vec()
     }
 }
+
+// 1471. 数组中的 k 个最强值
+pub mod n1471 {
+    pub fn get_strongest(mut arr: Vec<i32>, k: i32) -> Vec<i32> {
+        // 排序数组
+        arr.sort_unstable();
+        let arr_len = arr.len();
+        // 中位数
+        let median = arr[(arr_len - 1) / 2];
+
+        // 双指针
+        let mut left = 0;
+        let mut right = arr_len - 1;
+        // 提前分配结果空间
+        let mut res = Vec::with_capacity(k as usize);
+
+        // 选k个最强元素
+        for _ in 0..k {
+            let left_diff = (arr[left] - median).abs();
+            let right_diff = (arr[right] - median).abs();
+
+            if left_diff > right_diff {
+                res.push(arr[left]);
+                left += 1;
+            } else {
+                res.push(arr[right]);
+                right -= 1;
+            }
+        }
+
+        res
+    }
+}
