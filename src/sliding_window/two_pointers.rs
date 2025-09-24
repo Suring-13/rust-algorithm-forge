@@ -235,3 +235,23 @@ pub mod n1471 {
         res
     }
 }
+
+// 167. 两数之和 II - 输入有序数组
+pub mod n167 {
+    pub fn two_sum(numbers: Vec<i32>, target: i32) -> Vec<i32> {
+        let mut left = 0;
+        let mut right = numbers.len() - 1;
+
+        loop {
+            let s = numbers[left] + numbers[right];
+
+            if s == target {
+                return vec![left as i32 + 1, right as i32 + 1]; // 题目要求下标从 1 开始
+            } else if s > target {
+                right -= 1;
+            } else {
+                left += 1;
+            }
+        }
+    }
+}
