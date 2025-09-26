@@ -274,3 +274,22 @@ pub mod n633 {
         false
     }
 }
+
+// 2824. 统计和小于目标的下标对数目
+pub mod n2824 {
+    pub fn count_pairs(mut nums: Vec<i32>, target: i32) -> i32 {
+        nums.sort_unstable();
+        let mut ans = 0;
+        let mut left = 0;
+        let mut right = nums.len() - 1;
+        while left < right {
+            if nums[left] + nums[right] < target {
+                ans += right - left;
+                left += 1;
+            } else {
+                right -= 1;
+            }
+        }
+        ans as _
+    }
+}
