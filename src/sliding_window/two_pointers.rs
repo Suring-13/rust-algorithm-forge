@@ -293,3 +293,32 @@ pub mod n2824 {
         ans as _
     }
 }
+
+// 2563. 统计公平数对的数目
+pub mod n2563 {
+    pub fn count_fair_pairs(mut nums: Vec<i32>, lower: i32, upper: i32) -> i64 {
+        nums.sort_unstable();
+
+        let mut ans = 0;
+
+        let mut l = nums.len();
+        let mut r = nums.len();
+
+        // 随着 nums[j] 的变大，upper−nums[j] 和 lower−nums[j] 都在变小，有单调性
+        for (j, &x) in nums.iter().enumerate() {
+            // 找 > upper−nums[j] 的第一个数
+            while r > 0 && nums[r - 1] > upper - x {
+                r -= 1;
+            }
+
+            // 找 ≥ lower−nums[j] 的第一个数
+            while l > 0 && nums[l - 1] >= lower - x {
+                l -= 1;
+            }
+
+            ans += r.min(j) - l.min(j);
+        }
+
+        ans as _
+    }
+}
