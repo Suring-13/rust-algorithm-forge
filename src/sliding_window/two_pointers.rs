@@ -322,3 +322,54 @@ pub mod n2563 {
         ans as _
     }
 }
+
+// 15. 三数之和
+pub mod n15 {
+    pub fn three_sum(mut nums: Vec<i32>) -> Vec<Vec<i32>> {
+        nums.sort_unstable();
+        let n = nums.len();
+        let mut ans = vec![];
+        for i in 0..n - 2 {
+            let x = nums[i];
+            if i > 0 && x == nums[i - 1] {
+                // 跳过重复数字
+                continue;
+            }
+
+            // 如果 nums[i] 与后面最小的两个数相加 nums[i]+nums[i+1]+nums[i+2]>0，那么后面不可能存在三数之和等于 0，break 外层循环
+            if x + nums[i + 1] + nums[i + 2] > 0 {
+                break;
+            }
+
+            // 如果 nums[i] 与后面最大的两个数相加 nums[i]+nums[n−2]+nums[n−1]<0，那么内层循环不可能存在三数之和等于 0，
+            // 但继续枚举，nums[i] 可以变大，所以后面还有机会找到三数之和等于 0，continue 外层循环。
+            if x + nums[n - 2] + nums[n - 1] < 0 {
+                continue;
+            }
+            let mut j = i + 1;
+            let mut k = n - 1;
+            while j < k {
+                let s = x + nums[j] + nums[k];
+                if s > 0 {
+                    k -= 1;
+                } else if s < 0 {
+                    j += 1;
+                } else {
+                    // 三数之和为 0
+                    ans.push(vec![x, nums[j], nums[k]]);
+                    j += 1;
+                    while j < k && nums[j] == nums[j - 1] {
+                        // 跳过重复数字
+                        j += 1;
+                    }
+                    k -= 1;
+                    while k > j && nums[k] == nums[k + 1] {
+                        // 跳过重复数字
+                        k -= 1;
+                    }
+                }
+            }
+        }
+        ans
+    }
+}
