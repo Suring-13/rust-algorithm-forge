@@ -373,3 +373,72 @@ pub mod n15 {
         ans
     }
 }
+
+// 16. 最接近的三数之和
+pub mod n16 {
+    pub fn three_sum_closest(mut nums: Vec<i32>, target: i32) -> i32 {
+        nums.sort_unstable();
+        let n = nums.len();
+        let mut min_diff = i32::MAX;
+        let mut ans = 0;
+
+        for i in 0..n - 2 {
+            let x = nums[i];
+            if i > 0 && x == nums[i - 1] {
+                continue;
+            }
+
+            // 当前最小和已大于target，后续和更大，直接break
+            let s = x + nums[i + 1] + nums[i + 2];
+            if s > target {
+                if s - target < min_diff {
+                    ans = s;
+                }
+                break;
+            }
+
+            // 当前最大和仍小于target，跳过双指针，直接continue
+            let s = x + nums[n - 2] + nums[n - 1];
+            if s < target {
+                if target - s < min_diff {
+                    min_diff = target - s;
+                    ans = s;
+                }
+                continue;
+            }
+
+            // 双指针：用符号判断替代cmp枚举
+            let mut j = i + 1;
+            let mut k = n - 1;
+            while j < k {
+                let s = x + nums[j] + nums[k];
+                // 直接通过差值符号判断和与目标的关系
+                if s == target {
+                    return s;
+                } else if s > target {
+                    if s - target < min_diff {
+                        min_diff = s - target;
+                        ans = s;
+                    }
+                    k -= 1;
+                    while k > j && nums[k] == nums[k + 1] {
+                        // 跳过重复数字
+                        k -= 1;
+                    }
+                } else {
+                    if target - s < min_diff {
+                        min_diff = target - s;
+                        ans = s;
+                    }
+                    j += 1;
+                    while j < k && nums[j] == nums[j - 1] {
+                        // 跳过重复数字
+                        j += 1;
+                    }
+                }
+            }
+        }
+
+        ans
+    }
+}
