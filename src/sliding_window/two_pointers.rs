@@ -442,3 +442,69 @@ pub mod n16 {
         ans
     }
 }
+
+// 18. 四数之和
+pub mod n18 {
+    pub fn four_sum(mut nums: Vec<i32>, target: i32) -> Vec<Vec<i32>> {
+        nums.sort_unstable();
+        let target = target as i64;
+        let n = nums.len();
+        let mut ans = vec![];
+        for a in 0..n.saturating_sub(3) {
+            // 枚举第一个数
+            let x = nums[a];
+            if a > 0 && x == nums[a - 1] {
+                // 跳过重复数字
+                continue;
+            }
+            // 当前最小和已大于target，后续和更大，直接break
+            if (x + nums[a + 1]) as i64 + (nums[a + 2] + nums[a + 3]) as i64 > target {
+                break;
+            }
+            // 当前最大和仍小于target，跳过双指针，直接continue
+            if ((x + nums[n - 3]) as i64 + (nums[n - 2] + nums[n - 1]) as i64) < target {
+                continue;
+            }
+
+            for b in a + 1..n - 2 {
+                // 枚举第二个数
+                let y = nums[b];
+                if b > a + 1 && y == nums[b - 1] {
+                    // 跳过重复数字
+                    continue;
+                }
+                // 当前最小和已大于target，后续和更大，直接break
+                if (x + y) as i64 + (nums[b + 1] + nums[b + 2]) as i64 > target {
+                    break;
+                }
+                // 当前最大和仍小于target，跳过双指针，直接continue
+                if ((x + y) as i64 + (nums[n - 2] + nums[n - 1]) as i64) < target {
+                    continue;
+                }
+                let mut c = b + 1;
+                let mut d = n - 1;
+                while c < d {
+                    // 双指针枚举第三个数和第四个数
+                    let s = (x + y) as i64 + (nums[c] + nums[d]) as i64; // 四数之和
+                    if s > target {
+                        d -= 1;
+                    } else if s < target {
+                        c += 1;
+                    } else {
+                        // s == target
+                        ans.push(vec![x, y, nums[c], nums[d]]);
+                        c += 1;
+                        while c < d && nums[c] == nums[c - 1] {
+                            c += 1; // 跳过重复数字
+                        }
+                        d -= 1;
+                        while d > c && nums[d] == nums[d + 1] {
+                            d -= 1; // 跳过重复数字
+                        }
+                    }
+                }
+            }
+        }
+        ans
+    }
+}
