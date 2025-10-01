@@ -508,3 +508,30 @@ pub mod n18 {
         ans
     }
 }
+
+// 611. 有效三角形的个数
+pub mod n611 {
+    pub fn triangle_number(mut nums: Vec<i32>) -> i32 {
+        nums.sort_unstable();
+        let mut ans = 0;
+
+        // 假设 1 ≤ a ≤ b ≤ c
+        for k in 2..nums.len() {
+            let c = nums[k];
+
+            let mut i = 0; // a=nums[i]
+            let mut j = k - 1; // b=nums[j]
+
+            while i < j {
+                if nums[i] + nums[j] > c {
+                    ans += j - i;
+                    j -= 1;
+                } else {
+                    i += 1;
+                }
+            }
+        }
+
+        ans as _
+    }
+}
