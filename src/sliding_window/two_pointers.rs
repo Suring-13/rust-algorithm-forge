@@ -535,3 +535,78 @@ pub mod n611 {
         ans as _
     }
 }
+
+// 1577. 数的平方等于两数乘积的方法数
+pub mod n1577 {
+    pub fn num_triplets(mut nums1: Vec<i32>, mut nums2: Vec<i32>) -> i32 {
+        nums1.sort_unstable();
+        nums2.sort_unstable();
+
+        let mut ans = 0;
+
+        // 第一部分：在nums2中查找与nums1[i]²相等的数对
+        for &num in &nums1 {
+            let target = (num as i64) * (num as i64);
+            ans += count_pairs(&nums2, target);
+        }
+
+        // 第二部分：在nums1中查找与nums2[i]²相等的数对
+        for &num in &nums2 {
+            let target = (num as i64) * (num as i64);
+            ans += count_pairs(&nums1, target);
+        }
+
+        ans
+    }
+
+    // 辅助函数：计算数组中乘积等于目标值的数对数量
+    fn count_pairs(nums: &[i32], target: i64) -> i32 {
+        let mut left = 0;
+        let mut right = nums.len() - 1;
+        let mut count = 0;
+
+        while left < right {
+            let product = (nums[left] as i64) * (nums[right] as i64);
+
+            if product == target {
+                if nums[left] == nums[right] {
+                    // 所有元素都相等的情况，计算组合数
+                    let n = right - left + 1;
+                    count += (n * (n - 1) / 2) as i32;
+                    break;
+                } else {
+                    // 统计左侧相同元素的数量
+                    let left_val = nums[left];
+                    let mut left_count = 0;
+                    let mut l = left;
+                    while l <= right && nums[l] == left_val {
+                        left_count += 1;
+                        l += 1;
+                    }
+
+                    // 统计右侧相同元素的数量
+                    let right_val = nums[right];
+                    let mut right_count = 0;
+                    let mut r = right;
+                    while r >= left && nums[r] == right_val {
+                        right_count += 1;
+                        r = r.wrapping_sub(1); // 避免underflow
+                    }
+
+                    count += (left_count * right_count) as i32;
+                    left = l;
+                    right = r;
+                }
+            } else if product < target {
+                left += 1;
+            } else {
+                if right == 0 {
+                    break;
+                }
+                right -= 1;
+            }
+        }
+
+        count
+    }
+}
