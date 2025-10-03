@@ -610,3 +610,73 @@ pub mod n1577 {
         count
     }
 }
+
+// 923. 三数之和的多种可能
+pub mod n923 {
+    pub fn three_sum_multi(mut nums: Vec<i32>, target: i32) -> i32 {
+        // 1.排序：为双指针遍历提供有序基础，确保左右指针移动逻辑生效
+        nums.sort_unstable();
+        let n = nums.len();
+        let mod_val = 1_000_000_007;
+        let mut res = 0i64;
+
+        // 2.遍历第一个数：作为三元组的固定左端点，后续用双指针找剩余两个数
+        for i in 0..n - 2 {
+            // 优化1：当前数与后续最小两个数之和已超target，后续组合均更大，直接终止循环
+            if nums[i] + nums[i + 1] + nums[i + 2] > target {
+                break;
+            }
+            // 优化2：当前数与数组最大两个数之和仍小于target，当前数过小，跳过进入下一轮
+            if nums[i] + nums[n - 2] + nums[n - 1] < target {
+                continue;
+            }
+
+            // 双指针初始化：left从i+1开始（避免重复使用元素），right从数组末尾开始
+            let mut left = i + 1;
+            let mut right = n - 1;
+
+            while left < right {
+                let sum = nums[i] + nums[left] + nums[right];
+                // 总和小于target：左指针右移，增大数值以逼近target
+                if sum < target {
+                    left += 1;
+                }
+                // 总和大于target：右指针左移，减小数值以逼近target
+                else if sum > target {
+                    right -= 1;
+                }
+                // 总和等于target：计算当前组合下的三元组数量
+                else {
+                    // 分两种情况处理重复元素，避免重复计数
+                    // 情况1：nums[left] == nums[right]，则[left, right]区间内所有数均相同
+                    if nums[left] == nums[right] {
+                        // 组合数C(k,2)，k为区间内元素个数，即right - left + 1
+                        let count = (right - left + 1) as i64;
+                        res = (res + count * (count - 1) / 2) % mod_val;
+                        break; // 区间内所有组合已计算，直接退出当前双指针循环
+                    }
+                    // 情况2：nums[left] != nums[right]，分别统计两侧相同元素的个数
+                    let mut left_count = 1;
+                    // 统计left指针右侧连续相同的元素数量
+                    while left < right && nums[left] == nums[left + 1] {
+                        left += 1;
+                        left_count += 1;
+                    }
+                    let mut right_count = 1;
+                    // 统计right指针左侧连续相同的元素数量
+                    while left < right && nums[right] == nums[right - 1] {
+                        right -= 1;
+                        right_count += 1;
+                    }
+                    // 两侧相同元素个数相乘，即为当前i、left、right组合下的三元组总数
+                    res = (res + left_count as i64 * right_count as i64) % mod_val;
+                    // 指针移动到下一组不同元素，避免重复计算
+                    left += 1;
+                    right -= 1;
+                }
+            }
+        }
+
+        res as i32
+    }
+}
