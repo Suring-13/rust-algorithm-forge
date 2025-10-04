@@ -680,3 +680,33 @@ pub mod n923 {
         res as i32
     }
 }
+
+// 948. 令牌放置
+pub mod n948 {
+    pub fn bag_of_tokens_score(mut tokens: Vec<i32>, mut power: i32) -> i32 {
+        // 对tokens数组排序，为双指针策略奠定基础
+        tokens.sort_unstable();
+        let (mut left, mut right) = (0, tokens.len());
+        let (mut current_score, mut max_score) = (0, 0);
+
+        while left < right {
+            if power >= tokens[left] {
+                // 能量足够，消耗能量获取当前最小token，提升分数
+                power -= tokens[left];
+                current_score += 1;
+                left += 1;
+            } else if current_score > 0 {
+                // 能量不足但有分数，消耗分数换取最大token，补充能量
+                max_score = max_score.max(current_score);
+                power += tokens[right - 1];
+                current_score -= 1;
+                right -= 1;
+            } else {
+                // 能量和分数均不足，无法继续操作，终止循环
+                break;
+            }
+        }
+        // 最终需比较最后一轮未更新的current_score与历史max_score
+        max_score.max(current_score)
+    }
+}
