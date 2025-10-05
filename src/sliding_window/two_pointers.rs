@@ -710,3 +710,27 @@ pub mod n948 {
         max_score.max(current_score)
     }
 }
+
+// 11. 盛最多水的容器
+pub mod n11 {
+    pub fn max_area(height: Vec<i32>) -> i32 {
+        let mut ans = 0;
+
+        let mut left = 0;
+        let mut right = height.len() - 1;
+
+        while left < right {
+            let area = (right - left) as i32 * height[left].min(height[right]);
+            ans = ans.max(area);
+            if height[left] < height[right] {
+                // height[left] 与右边的任意垂线都无法组成一个比 ans 更大的面积
+                left += 1;
+            } else {
+                // height[right] 与左边的任意垂线都无法组成一个比 ans 更大的面积
+                right -= 1;
+            }
+        }
+
+        ans
+    }
+}
