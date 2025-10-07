@@ -762,3 +762,32 @@ pub mod n42 {
         ans
     }
 }
+
+// 1616. 分割两个字符串得到回文串
+pub mod n1616 {
+    pub fn check_palindrome_formation(a: String, b: String) -> bool {
+        // 辅助函数：检查 a_prefix + b_suffix 是否能形成回文串
+        fn check(a: &[u8], b: &[u8]) -> bool {
+            let mut i = 0;
+            let mut j = a.len() - 1;
+            // 相向双指针，尽可能匹配前后字符
+            while i < j && a[i] == b[j] {
+                i += 1;
+                j -= 1;
+            }
+            // 检查中间剩余部分是否为回文
+            is_palindrome(&a[i..=j]) || is_palindrome(&b[i..=j])
+        }
+
+        // 检查一个字符串片段是否为回文
+        fn is_palindrome(s: &[u8]) -> bool {
+            s.iter().eq(s.iter().rev())
+        }
+
+        let a_bytes = a.as_bytes();
+        let b_bytes = b.as_bytes();
+
+        // 两种组合方式都检查
+        check(a_bytes, b_bytes) || check(b_bytes, a_bytes)
+    }
+}
