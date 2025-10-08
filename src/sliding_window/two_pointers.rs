@@ -791,3 +791,41 @@ pub mod n1616 {
         check(a_bytes, b_bytes) || check(b_bytes, a_bytes)
     }
 }
+
+// 1498. 满足条件的子序列数目
+pub mod n1498 {
+    const MOD: i64 = 1_000_000_007;
+
+    pub fn num_subseq(mut nums: Vec<i32>, target: i32) -> i32 {
+        nums.sort_unstable();
+        let n = nums.len();
+
+        // 预计算所需的幂值，只计算到所需的最大索引
+        let max_pow = n;
+        let mut pow2 = vec![1i64; max_pow];
+        for i in 1..max_pow {
+            pow2[i] = (pow2[i - 1] * 2) % MOD;
+        }
+
+        let mut ans: i64 = 0;
+        let mut left = 0;
+        let mut right = n - 1;
+
+        while left <= right {
+            if nums[left] + nums[right] <= target {
+                // 计算右区间长度对应的幂值
+                let count = right - left;
+                ans = (ans + pow2[count]) % MOD;
+                left += 1;
+            } else {
+                // 处理边界情况，避免下溢
+                if right == 0 {
+                    break;
+                }
+                right -= 1;
+            }
+        }
+
+        ans as i32
+    }
+}
