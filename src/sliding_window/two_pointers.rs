@@ -829,3 +829,57 @@ pub mod n1498 {
         ans as i32
     }
 }
+
+// 1782. 统计点对的数目
+pub mod n1782 {
+    use std::collections::HashMap;
+
+    pub fn count_pairs(n: i32, edges: Vec<Vec<i32>>, queries: Vec<i32>) -> Vec<i32> {
+        let n = n as usize;
+        let mut deg = vec![0; n + 1]; // 节点1~n，索引0闲置
+        let mut edge_cnt = HashMap::new();
+
+        // 统计节点度数与边出现次数
+        for e in edges {
+            let x = e[0] as usize;
+            let y = e[1] as usize;
+            deg[x] += 1;
+            deg[y] += 1;
+            // 存储排序后的边，确保(x,y)与(y,x)视为同一条
+            let key = if x < y { (x, y) } else { (y, x) };
+            *edge_cnt.entry(key).or_insert(0) += 1;
+        }
+
+        let mut sorted_deg = deg.clone();
+        sorted_deg.sort_unstable(); // 排序用于双指针
+        let mut ans = vec![0; queries.len()];
+
+        for (idx, &q) in queries.iter().enumerate() {
+            let mut left = 1;
+            let mut right = n;
+            let mut cnt = 0;
+
+            // 双指针统计初始符合条件的数对
+            while left < right {
+                if sorted_deg[left] + sorted_deg[right] <= q {
+                    left += 1;
+                } else {
+                    cnt += right - left;
+                    right -= 1;
+                }
+            }
+
+            // 修正重复计算的边
+            for (&(x, y), &c) in &edge_cnt {
+                let sum = deg[x] + deg[y];
+                if sum > q && sum <= q + c {
+                    cnt -= 1;
+                }
+            }
+
+            ans[idx] = cnt as i32;
+        }
+
+        ans
+    }
+}
