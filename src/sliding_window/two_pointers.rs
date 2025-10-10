@@ -883,3 +883,25 @@ pub mod n1782 {
         ans
     }
 }
+
+// 3649. 完美对的数目
+pub mod n3649 {
+    pub fn perfect_pairs(mut nums: Vec<i32>) -> i64 {
+        nums.sort_by(|a, b| a.abs().cmp(&b.abs()));
+
+        let mut ans = 0;
+        let mut left = 0;
+
+        // 双指针遍历：j为右指针（当前元素b），left为左指针（找符合条件的最小a的索引）
+        for (j, &b) in nums.iter().enumerate() {
+            // 移动left，直到不满足 abs(a)*2 < abs(b)
+            while nums[left].abs() * 2 < b.abs() {
+                left += 1;
+            }
+            // 累加符合条件的(a,b)对数量：i范围[left, j-1]，共j-left个
+            ans += (j - left) as i64;
+        }
+
+        ans
+    }
+}
