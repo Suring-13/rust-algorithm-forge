@@ -905,3 +905,33 @@ pub mod n3649 {
         ans
     }
 }
+
+// 1574. 删除最短的子数组使剩余数组有序
+pub mod n1574 {
+    pub fn find_length_of_shortest_subarray(arr: Vec<i32>) -> i32 {
+        let n = arr.len();
+        let mut right = n - 1;
+        // 从右向左找到最长非递减后缀的起始位置
+        while right > 0 && arr[right - 1] <= arr[right] {
+            right -= 1;
+        }
+        // 若整个数组已非递减，直接返回0
+        if right == 0 {
+            return 0;
+        }
+        // 初始答案：删除前缀（从0到right-1），长度为right
+        let mut ans = right;
+        let mut left = 0;
+        // 从左向右枚举最长非递减前缀的每个元素
+        while left == 0 || arr[left - 1] <= arr[left] {
+            // 找到后缀中第一个 >= 当前前缀元素的位置
+            while right < n && arr[right] < arr[left] {
+                right += 1;
+            }
+            // 计算删除区间[left+1, right-1]的长度，更新最小答案
+            ans = ans.min(right - left - 1);
+            left += 1;
+        }
+        ans as _
+    }
+}
