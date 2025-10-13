@@ -964,3 +964,64 @@ pub mod n2972 {
         ans
     }
 }
+
+// 2122. 还原原数组
+pub mod n2122 {
+    pub fn recover_array(mut nums: Vec<i32>) -> Vec<i32> {
+        nums.sort_unstable();
+        let n = nums.len();
+        let half_n = n / 2;
+
+        // 枚举所有可能的第二个元素
+        for i in 1..n {
+            // 优化：跳过与前一个元素相同的情况（避免重复计算相同k）
+            if nums[i] == nums[i - 1] {
+                continue;
+            }
+
+            let d = nums[i] - nums[0];
+            // 检查d是否为偶数（k必须是整数，d=2k）
+            if d % 2 != 0 {
+                continue;
+            }
+            let k = d / 2;
+
+            let mut visited = vec![false; n]; // 标记higher组的元素下标
+            visited[i] = true;
+            let mut ans = vec![(nums[0] + nums[i]) / 2]; // 第一个原数组元素
+
+            let mut lo = 0;
+            let mut hi = i + 1;
+            let mut valid = true;
+
+            // 双指针验证：lo找lower组，hi找higher组
+            while hi < n {
+                // 移动lo到下一个未被标记的lower元素（跳过higher组元素）
+                lo += 1;
+                while lo < n && visited[lo] {
+                    lo += 1;
+                }
+                // 移动hi到第一个满足 nums[hi] - nums[lo] >= 2k 的位置
+                while hi < n && nums[hi] - nums[lo] < 2 * k {
+                    hi += 1;
+                }
+                // 验证是否找到合法的higher元素
+                if hi >= n || nums[hi] - nums[lo] != 2 * k {
+                    valid = false;
+                    break;
+                }
+                // 标记higher元素，记录原数组元素
+                visited[hi] = true;
+                ans.push((nums[lo] + nums[hi]) / 2);
+                hi += 1; // 准备找下一个higher
+            }
+
+            // 若收集到足够的原数组元素（长度为n/2），直接返回
+            if valid && ans.len() == half_n {
+                return ans;
+            }
+        }
+
+        unreachable!("题目保证存在合法原数组，不会执行到此处");
+    }
+}
