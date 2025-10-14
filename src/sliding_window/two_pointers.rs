@@ -1025,3 +1025,65 @@ pub mod n2122 {
         unreachable!("题目保证存在合法原数组，不会执行到此处");
     }
 }
+
+// 2234. 花园的最大总美丽值
+pub mod n2234 {
+    pub fn maximum_beauty(
+        mut flowers: Vec<i32>,
+        new_flowers: i64,
+        target: i32,
+        full: i32,
+        partial: i32,
+    ) -> i64 {
+        let n = flowers.len() as i64;
+        let full = full as i64;
+        let partial = partial as i64;
+
+        // 如果全部种满，还剩下多少朵花？先允许可以为负数
+        let mut left_flowers = new_flowers - target as i64 * n;
+        for flower in &mut flowers {
+            *flower = (*flower).min(target); // 把超过 target 的 flowers[i] 改成 target。这一来可以简化双指针的计算，二来可以加快排序的效率，尤其是当很多 flowers[i] 都超过 target 的情况。
+            left_flowers += *flower as i64; // 把已有的加回来
+        }
+
+        // 没有种花，所有花园都已种满
+        if left_flowers == new_flowers {
+            return n * full;
+        }
+
+        // 可以全部种满
+        if left_flowers >= 0 {
+            // 两种策略取最大值：留一个花园种 target-1 朵花，其余种满；或者，全部种满
+            return ((target - 1) as i64 * partial + (n - 1) * full).max(n * full);
+        }
+
+        flowers.sort_unstable(); // 时间复杂度的瓶颈在这，尽量写在后面
+
+        let mut ans = 0;
+        let mut pre_sum = 0;
+        let mut j = 0;
+        // 枚举 i，表示后缀 [i, n-1] 种满（i=0 的情况上面已讨论）
+        for i in 1..=n as usize {
+            // 撤销，flowers[i-1] 不种满
+            left_flowers += (target - flowers[i - 1]) as i64;
+            if left_flowers < 0 {
+                // 花不能为负数，需要继续撤销
+                continue;
+            }
+
+            // 满足以下条件说明 [0, j-1] 都可以种 flowers[j] 朵花
+            while j < i && flowers[j] as i64 * j as i64 <= pre_sum + left_flowers {
+                pre_sum += flowers[j] as i64;
+                j += 1;
+            }
+
+            // 计算总美丽值
+            // 在前缀 [0, j-1] 中均匀种花，这样最小值最大
+            let avg = (left_flowers + pre_sum) / j as i64; // 由于上面特判了，这里 avg 一定小于 target
+            let total_beauty = avg * partial + (n - i as i64) * full;
+            ans = ans.max(total_beauty);
+        }
+
+        ans
+    }
+}
