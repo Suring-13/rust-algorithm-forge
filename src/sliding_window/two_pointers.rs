@@ -1087,3 +1087,40 @@ pub mod n2234 {
         ans
     }
 }
+
+// 581. 最短无序连续子数组
+pub mod n581 {
+    pub fn find_unsorted_subarray(nums: &[i32]) -> i32 {
+        let n = nums.len();
+        if n <= 1 {
+            return 0;
+        }
+
+        let (mut maxn, mut right) = (i32::MIN, n);
+        let (mut minn, mut left) = (i32::MAX, n);
+
+        for i in 0..n {
+            // 从左向右找右边界：记录当前最大值，若遇到比最大值小的元素，更新右边界
+            if maxn > nums[i] {
+                right = i;
+            } else {
+                maxn = nums[i];
+            }
+
+            // 从右向左找左边界：记录当前最小值，若遇到比最小值大的元素，更新左边界
+            let j = n - 1 - i;
+            if minn < nums[j] {
+                left = j;
+            } else {
+                minn = nums[j];
+            }
+        }
+
+        // 若right未更新（数组已排序），返回0；否则返回子数组长度
+        if right == n {
+            0
+        } else {
+            (right - left + 1) as _
+        }
+    }
+}
