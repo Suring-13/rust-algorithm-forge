@@ -1124,3 +1124,26 @@ pub mod n581 {
         }
     }
 }
+
+// 1793. 好子数组的最大分数
+pub mod n1793 {
+    pub fn maximum_score(nums: Vec<i32>, k: i32) -> i32 {
+        let n = nums.len();
+        let k = k as usize;
+        let mut ans = nums[k];
+        let mut min_h = nums[k];
+        let mut i = k;
+        let mut j = k;
+        for _ in 0..n - 1 {
+            if j == n - 1 || i > 0 && nums[i - 1] > nums[j + 1] {
+                i -= 1;
+                min_h = min_h.min(nums[i]);
+            } else {
+                j += 1;
+                min_h = min_h.min(nums[j]);
+            }
+            ans = ans.max(min_h * (j - i + 1) as i32);
+        }
+        ans
+    }
+}
