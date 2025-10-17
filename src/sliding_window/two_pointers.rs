@@ -1147,3 +1147,28 @@ pub mod n1793 {
         ans
     }
 }
+
+// 27. 移除元素
+pub mod n27 {
+    pub fn remove_element(nums: &mut Vec<i32>, val: i32) -> i32 {
+        let mut left = 0;
+        let mut right = nums.len(); // 初始指向数组末尾的下一个位置，左闭右开区间 [left, right)
+
+        while left < right {
+            if nums[left] != val {
+                // 左指针元素合法，直接右移
+                left += 1;
+            } else if nums[right - 1] == val {
+                // 右指针前一个元素也是目标值，直接左移右边界
+                right -= 1;
+            } else {
+                // 用右侧合法元素覆盖左侧目标值，双指针同时移动
+                nums[left] = nums[right - 1];
+                right -= 1;
+                left += 1;
+            }
+        }
+
+        left as _
+    }
+}
