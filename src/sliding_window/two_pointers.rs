@@ -1188,3 +1188,28 @@ pub mod n26 {
         k as _
     }
 }
+
+// 80. 删除有序数组中的重复项 II
+pub mod n80 {
+    pub fn remove_duplicates(nums: &mut Vec<i32>) -> i32 {
+        let n = nums.len();
+        // 长度小于等于2时无需处理，直接返回原长度
+        if n <= 2 {
+            return n as i32;
+        }
+        // 快慢指针均从索引2开始
+        let mut slow = 2;
+        let mut fast = 2;
+
+        while fast < n {
+            // 对比慢指针前两位与快指针元素，不相等则赋值并移动慢指针
+            if nums[slow - 2] != nums[fast] {
+                nums[slow] = nums[fast];
+                slow += 1;
+            }
+            fast += 1;
+        }
+        // 返回慢指针位置（即去重后数组的有效长度）
+        slow as i32
+    }
+}
