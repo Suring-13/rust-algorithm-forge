@@ -1213,3 +1213,22 @@ pub mod n80 {
         slow as i32
     }
 }
+
+// 2273. 移除字母异位词后的结果数组
+pub mod n2273 {
+    pub fn remove_anagrams(mut words: Vec<String>) -> Vec<String> {
+        let mut base = vec![];
+        let mut k = 0;
+        for i in 0..words.len() {
+            let mut s = words[i].as_bytes().to_vec();
+            s.sort_unstable();
+            if s != base {
+                base = s;
+                words[k] = words[i].clone();
+                k += 1;
+            }
+        }
+        words.truncate(k);
+        words
+    }
+}
