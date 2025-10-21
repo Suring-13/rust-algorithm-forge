@@ -1232,3 +1232,19 @@ pub mod n2273 {
         words
     }
 }
+
+// 283. 移动零
+pub mod n283 {
+    pub fn move_zeroes(nums: &mut Vec<i32>) {
+        let n = nums.len();
+        let mut left = 0; // 指向非零元素应放置的位置
+
+        for right in 0..n {
+            if nums[right] != 0 {
+                // 交换非零元素到left位置，left指针后移
+                nums.swap(left, right);
+                left += 1;
+            }
+        }
+    }
+}
