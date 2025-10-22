@@ -1248,3 +1248,25 @@ pub mod n283 {
         }
     }
 }
+
+// 905. 按奇偶排序数组
+pub mod n905 {
+    pub fn sort_array_by_parity(mut nums: Vec<i32>) -> Vec<i32> {
+        let mut i = 0;
+        let mut j = nums.len();
+        while i < j {
+            if nums[i] % 2 == 0 {
+                // 寻找最左边的奇数
+                i += 1;
+            } else if nums[j - 1] % 2 == 1 {
+                // 寻找最右边的偶数
+                j -= 1;
+            } else {
+                nums.swap(i, j - 1);
+                i += 1;
+                j -= 1;
+            }
+        }
+        nums
+    }
+}
