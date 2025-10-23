@@ -1270,3 +1270,25 @@ pub mod n905 {
         nums
     }
 }
+
+// 922. 按奇偶排序数组 II
+pub mod n922 {
+    pub fn sort_array_by_parity_ii(mut nums: Vec<i32>) -> Vec<i32> {
+        let mut i = 0;
+        let mut j = 1;
+        while i < nums.len() {
+            if nums[i] & 1 == 0 {
+                // 寻找偶数下标中最左边的奇数
+                i += 2;
+            } else if nums[j] & 1 == 1 {
+                // 寻找奇数下标中最左边的偶数
+                j += 2;
+            } else {
+                nums.swap(i, j);
+                i += 2;
+                j += 2;
+            }
+        }
+        nums
+    }
+}
