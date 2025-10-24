@@ -1292,3 +1292,26 @@ pub mod n922 {
         nums
     }
 }
+
+// 2460. 对数组执行操作
+pub mod n2460 {
+    pub fn apply_operations(nums: &mut Vec<i32>) -> &mut Vec<i32> {
+        let n = nums.len();
+        let mut j = 0;
+
+        for i in 0..n {
+            // 处理相邻元素：相等则当前翻倍、下一个置零
+            if i + 1 < n && nums[i] == nums[i + 1] {
+                nums[i] *= 2;
+                nums[i + 1] = 0;
+            }
+            // 双指针交换非零元素到前部
+            if nums[i] != 0 {
+                nums.swap(i, j);
+                j += 1;
+            }
+        }
+
+        nums
+    }
+}
