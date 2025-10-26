@@ -1361,3 +1361,37 @@ pub mod n1089 {
         }
     }
 }
+
+// 75. 颜色分类
+pub mod n75 {
+    pub fn sort_colors(nums: &mut Vec<i32>) {
+        let n = nums.len();
+        if n < 2 {
+            return;
+        }
+
+        // 区间定义：
+        // [0..zero) 全部为 0
+        // [zero..i) 全部为 1
+        // [two..n) 全部为 2
+        let mut zero = 0;
+        let mut two = n;
+        let mut i = 0;
+
+        while i < two {
+            if nums[i] == 0 {
+                // 交换当前元素与zero位置元素
+                nums.swap(i, zero);
+                zero += 1;
+                i += 1;
+            } else if nums[i] == 1 {
+                // 直接归为1的区间
+                i += 1;
+            } else {
+                // 交换前先将two指针左移（因为two指向的是下一个2应该放置的位置）
+                two -= 1;
+                nums.swap(i, two);
+            }
+        }
+    }
+}
