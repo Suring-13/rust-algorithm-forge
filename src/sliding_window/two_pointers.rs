@@ -1395,3 +1395,23 @@ pub mod n75 {
         }
     }
 }
+
+// 2109. 向字符串添加空格
+pub mod n2109 {
+    pub fn add_spaces(s: String, spaces: Vec<i32>) -> String {
+        let mut result = Vec::new();
+        let mut j = 0; // 用于追踪spaces的当前索引
+        let s_chars: Vec<char> = s.chars().collect(); // 将字符串转为char数组，便于索引访问
+
+        for (i, &c) in s_chars.iter().enumerate() {
+            // 检查当前索引是否需要插入空格
+            if j < spaces.len() && spaces[j] == i as i32 {
+                result.push(' ');
+                j += 1;
+            }
+            result.push(c);
+        }
+
+        result.into_iter().collect() // 将char向量转为String返回
+    }
+}
