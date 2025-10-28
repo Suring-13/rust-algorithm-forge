@@ -1415,3 +1415,30 @@ pub mod n2109 {
         result.into_iter().collect() // 将char向量转为String返回
     }
 }
+
+// 2540. 最小公共值
+pub mod n2540 {
+    pub fn get_common(nums1: Vec<i32>, nums2: Vec<i32>) -> i32 {
+        // 初始化两个指针，分别指向两个数组的起始位置
+        let (mut i, mut j) = (0, 0);
+
+        // 双指针遍历两个数组，直到任一指针超出数组长度（避免越界）
+        while i < nums1.len() && j < nums2.len() {
+            // 找到公共元素：因数组有序，首次找到的即为最小公共整数，直接返回
+            if nums1[i] == nums2[j] {
+                return nums1[i];
+            }
+            // 若nums1当前元素更小，移动nums1的指针（尝试找更大的元素匹配）
+            else if nums1[i] < nums2[j] {
+                i += 1;
+            }
+            // 若nums2当前元素更小，移动nums2的指针（尝试找更大的元素匹配）
+            else {
+                j += 1;
+            }
+        }
+
+        // 遍历结束仍未找到公共元素，返回 -1
+        -1
+    }
+}
