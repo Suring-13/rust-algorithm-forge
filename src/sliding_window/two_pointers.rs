@@ -1442,3 +1442,24 @@ pub mod n2540 {
         -1
     }
 }
+
+// 88. 合并两个有序数组
+pub mod n88 {
+    pub fn merge(nums1: &mut Vec<i32>, m: i32, nums2: &mut Vec<i32>, n: i32) {
+        let mut p1 = m as usize;
+        let mut p2 = n as usize;
+        let mut p = p1 + p2;
+        // nums2 还有要合并的元素
+        while p2 > 0 {
+            // 如果 p1 < 0，那么走 else 分支，把 nums2 合并到 nums1 中
+            if p1 > 0 && nums1[p1 - 1] > nums2[p2 - 1] {
+                nums1[p - 1] = nums1[p1 - 1]; // 填入 nums1[p1-1]
+                p1 -= 1;
+            } else {
+                nums1[p - 1] = nums2[p2 - 1]; // 填入 nums2[p2-1]
+                p2 -= 1;
+            }
+            p -= 1;
+        }
+    }
+}
