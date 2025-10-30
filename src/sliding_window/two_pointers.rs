@@ -1463,3 +1463,40 @@ pub mod n88 {
         }
     }
 }
+
+// 2570. 合并两个二维数组 - 求和法
+pub mod n2570 {
+    pub fn merge_arrays(a: Vec<Vec<i32>>, b: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
+        let mut result = Vec::new();
+        let (mut i, mut j) = (0, 0);
+        let (n, m) = (a.len(), b.len());
+
+        loop {
+            // 若a遍历完，追加b剩余元素并返回
+            if i == n {
+                result.extend_from_slice(&b[j..]);
+                return result;
+            }
+            // 若b遍历完，追加a剩余元素并返回
+            if j == m {
+                result.extend_from_slice(&a[i..]);
+                return result;
+            }
+
+            if a[i][0] < b[j][0] {
+                // a的ID更小，添加a的元素并移动指针
+                result.push(a[i].clone());
+                i += 1;
+            } else if a[i][0] > b[j][0] {
+                // b的ID更小，添加b的元素并移动指针
+                result.push(b[j].clone());
+                j += 1;
+            } else {
+                // ID相同，值相加后添加，双指针同时移动
+                result.push(vec![a[i][0], a[i][1] + b[j][1]]);
+                i += 1;
+                j += 1;
+            }
+        }
+    }
+}
