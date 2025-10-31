@@ -1500,3 +1500,26 @@ pub mod n2570 {
         }
     }
 }
+
+// 1855. 下标对中的最大距离
+pub mod n1855 {
+    pub fn max_distance(nums1: Vec<i32>, nums2: Vec<i32>) -> i32 {
+        let n1 = nums1.len(); // nums1 的长度
+        let n2 = nums2.len(); // nums2 的长度
+        let mut i = 0; // 遍历 nums1 的指针（初始化为 0）
+        let mut res = 0; // 存储最大距离的结果（初始化为 0）
+
+        // 遍历 nums2 的每个元素（j 为当前索引）
+        for j in 0..n2 {
+            // 移动 i 指针：确保 i < n1 且 nums1[i] > nums2[j] 时，i 后移（满足 nums1[i] ≤ nums2[j] 的前提）
+            while i < n1 && nums1[i] > nums2[j] {
+                i += 1;
+            }
+            if i < n1 && i <= j {
+                res = res.max(j - i);
+            }
+        }
+
+        res as _
+    }
+}
