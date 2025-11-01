@@ -1523,3 +1523,22 @@ pub mod n1855 {
         res as _
     }
 }
+
+// 1385. 两个数组间的距离值
+pub mod n1385 {
+    pub fn find_the_distance_value(mut arr1: Vec<i32>, mut arr2: Vec<i32>, d: i32) -> i32 {
+        arr1.sort_unstable();
+        arr2.sort_unstable();
+        let mut ans = 0;
+        let mut j = 0;
+        for x in arr1 {
+            while j < arr2.len() && arr2[j] < x - d {
+                j += 1;
+            }
+            if j == arr2.len() || arr2[j] > x + d {
+                ans += 1;
+            }
+        }
+        ans
+    }
+}
