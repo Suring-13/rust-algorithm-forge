@@ -1542,3 +1542,30 @@ pub mod n1385 {
         ans
     }
 }
+
+// 925. 长按键入
+pub mod n925 {
+    pub fn is_long_pressed_name(name: String, typed: String) -> bool {
+        let name_chars: Vec<char> = name.chars().collect();
+        let typed_chars: Vec<char> = typed.chars().collect();
+        let mut i = 0; // 指向name的指针
+        let mut j = 0; // 指向typed的指针
+
+        while j < typed_chars.len() {
+            if i < name_chars.len() && name_chars[i] == typed_chars[j] {
+                // 字符匹配，双指针同时后移
+                i += 1;
+                j += 1;
+            } else if j > 0 && typed_chars[j] == typed_chars[j - 1] {
+                // 当前字符是长按重复，仅typed指针后移
+                j += 1;
+            } else {
+                // 字符不匹配且非长按，直接返回false
+                return false;
+            }
+        }
+
+        // 遍历结束后，需确保name已完全匹配（i到达末尾）
+        i == name_chars.len()
+    }
+}
