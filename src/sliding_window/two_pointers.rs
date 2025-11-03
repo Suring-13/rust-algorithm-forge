@@ -1569,3 +1569,49 @@ pub mod n925 {
         i == name_chars.len()
     }
 }
+
+// 809. 情感丰富的文字
+pub mod n809 {
+    pub fn expressive_words(s: String, words: Vec<String>) -> i32 {
+        // 判断 t 是否能通过扩展得到 s
+        let is_expressive = |s: &str, t: &str| -> bool {
+            let (mut i, mut j) = (0, 0);
+            let (s_chars, t_chars) = (s.as_bytes(), t.as_bytes());
+            let (s_len, t_len) = (s_chars.len(), t_chars.len());
+
+            while i < s_len && j < t_len {
+                // 字符不同直接返回 false
+                if s_chars[i] != t_chars[j] {
+                    return false;
+                }
+                let ch = s_chars[i];
+
+                // 统计 s 中当前字符的连续个数
+                let mut cnt_s = 0;
+                while i < s_len && s_chars[i] == ch {
+                    cnt_s += 1;
+                    i += 1;
+                }
+
+                // 统计 t 中当前字符的连续个数
+                let mut cnt_t = 0;
+                while j < t_len && t_chars[j] == ch {
+                    cnt_t += 1;
+                    j += 1;
+                }
+
+                // 校验个数规则：s的个数不能少于t，且不相等时s的个数需≥3
+                if cnt_s < cnt_t || (cnt_s != cnt_t && cnt_s < 3) {
+                    return false;
+                }
+            }
+
+            // 需确保两个字符串都遍历完（避免一方有剩余字符）
+            i == s_len && j == t_len
+        };
+        words
+            .into_iter()
+            .filter(|word| is_expressive(&s, word))
+            .count() as i32
+    }
+}
