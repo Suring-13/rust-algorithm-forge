@@ -1693,3 +1693,58 @@ pub mod n777 {
         true
     }
 }
+
+// 844. 比较含退格的字符串
+pub mod n844 {
+    pub fn backspace_compare(s: String, t: String) -> bool {
+        let (mut i, mut j) = (s.len(), t.len());
+        let (mut skip_s, mut skip_t) = (0, 0);
+        let s_bytes = s.as_bytes();
+        let t_bytes = t.as_bytes();
+
+        while i > 0 || j > 0 {
+            // 处理 s 的退格，找到当前有效字符位置
+            while i > 0 {
+                if s_bytes[i - 1] == b'#' {
+                    skip_s += 1;
+                    i -= 1;
+                } else if skip_s > 0 {
+                    skip_s -= 1;
+                    i -= 1;
+                } else {
+                    break;
+                }
+            }
+
+            // 处理 t 的退格，找到当前有效字符位置
+            while j > 0 {
+                if t_bytes[j - 1] == b'#' {
+                    skip_t += 1;
+                    j -= 1;
+                } else if skip_t > 0 {
+                    skip_t -= 1;
+                    j -= 1;
+                } else {
+                    break;
+                }
+            }
+
+            // 两个都未遍历结束
+            if i > 0 && j > 0 {
+                if s_bytes[i - 1] != t_bytes[j - 1] {
+                    return false;
+                }
+            }
+            // 只有一个未遍历结束
+            else if i > 0 || j > 0 {
+                return false;
+            }
+
+            // 移动指针，继续向前遍历
+            i = i.saturating_sub(1);
+            j = j.saturating_sub(1);
+        }
+
+        true
+    }
+}
