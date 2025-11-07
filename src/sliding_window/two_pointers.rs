@@ -1748,3 +1748,34 @@ pub mod n844 {
         true
     }
 }
+
+// 986. 区间列表的交集
+pub mod n986 {
+    pub fn interval_intersection(a: Vec<Vec<i32>>, b: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
+        let mut result = Vec::new();
+        let mut i = 0;
+        let mut j = 0;
+        let len_a = a.len();
+        let len_b = b.len();
+
+        while i < len_a && j < len_b {
+            // 计算交集的起始和结束位置
+            let lo = a[i][0].max(b[j][0]);
+            let hi = a[i][1].min(b[j][1]);
+
+            // 若存在有效交集，加入结果集
+            if lo <= hi {
+                result.push(vec![lo, hi]);
+            }
+
+            // 移除终点更小的区间（移动对应指针）
+            if a[i][1] < b[j][1] {
+                i += 1;
+            } else {
+                j += 1;
+            }
+        }
+
+        result
+    }
+}
