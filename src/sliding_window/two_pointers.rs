@@ -1779,3 +1779,39 @@ pub mod n986 {
         result
     }
 }
+
+// 1537. 最大得分
+pub mod n1537 {
+    pub fn max_sum(nums1: Vec<i32>, nums2: Vec<i32>) -> i32 {
+        const MOD: i64 = 1_000_000_007;
+        let (mut sum1, mut sum2) = (0i64, 0i64);
+        let (mut i, mut j) = (0usize, 0usize);
+        let (len1, len2) = (nums1.len(), nums2.len());
+
+        while i < len1 && j < len2 {
+            if nums1[i] < nums2[j] {
+                // 小的一方累加并前进（nums1[i] 更小）
+                sum1 += nums1[i] as i64;
+                i += 1;
+            } else if nums1[i] > nums2[j] {
+                // 小的一方累加并前进（nums2[j] 更小）
+                sum2 += nums2[j] as i64;
+                j += 1;
+            } else {
+                // 遇到公共节点：取两条路径的最大值 + 公共节点值，取余后同步更新
+                let current = sum1.max(sum2) + nums1[i] as i64 % MOD;
+                sum1 = current;
+                sum2 = current;
+                i += 1;
+                j += 1;
+            }
+        }
+
+        // 累加剩余元素
+        sum1 += nums1[i..].iter().map(|&x| x as i64).sum::<i64>();
+        sum2 += nums2[j..].iter().map(|&x| x as i64).sum::<i64>();
+
+        // 取最大值后取余，转为 i32 返回
+        (sum1.max(sum2) % MOD) as i32
+    }
+}
