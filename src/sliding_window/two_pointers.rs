@@ -1815,3 +1815,21 @@ pub mod n1537 {
         (sum1.max(sum2) % MOD) as i32
     }
 }
+
+// 392. 判断子序列
+pub mod n392 {
+    pub fn is_subsequence(s: String, t: String) -> bool {
+        let (mut i, mut j) = (0, 0);
+        let (s_chars, t_chars) = (s.as_bytes(), t.as_bytes());
+        let (n, m) = (s_chars.len(), t_chars.len());
+
+        while i < n && j < m {
+            if s_chars[i] == t_chars[j] {
+                i += 1;
+            }
+            j += 1;
+        }
+
+        i == n
+    }
+}
