@@ -1833,3 +1833,35 @@ pub mod n392 {
         i == n
     }
 }
+
+// 524. 通过删除字母匹配到字典里最长单词
+pub mod n524 {
+    pub fn find_longest_word(s: String, dictionary: Vec<String>) -> String {
+        let mut result = String::new();
+        let s_bytes = s.as_bytes();
+
+        for t in dictionary {
+            let t_bytes = t.as_bytes();
+            let (mut i, mut j) = (0, 0);
+
+            // 双指针匹配子序列
+            while i < t_bytes.len() && j < s_bytes.len() {
+                if t_bytes[i] == s_bytes[j] {
+                    i += 1;
+                }
+                j += 1;
+            }
+
+            // 比较长度和字典序
+            if i == t_bytes.len() {
+                if t_bytes.len() > result.as_bytes().len()
+                    || (t_bytes.len() == result.as_bytes().len() && t < result)
+                {
+                    result = t;
+                }
+            }
+        }
+
+        result
+    }
+}
