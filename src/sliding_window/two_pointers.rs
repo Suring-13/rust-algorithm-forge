@@ -1865,3 +1865,23 @@ pub mod n524 {
         result
     }
 }
+
+// 2486. 追加字符以获得子序列
+pub mod n2486 {
+    pub fn append_characters(s: String, t: String) -> i32 {
+        let (mut j, m) = (0, t.len());
+        let s_bytes = s.as_bytes();
+        let t_bytes = t.as_bytes();
+
+        for &c in s_bytes {
+            if j < m && c == t_bytes[j] {
+                j += 1;
+                if j == m {
+                    return 0;
+                }
+            }
+        }
+
+        (m - j) as i32
+    }
+}
