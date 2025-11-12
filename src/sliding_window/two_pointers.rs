@@ -1885,3 +1885,30 @@ pub mod n2486 {
         (m - j) as i32
     }
 }
+
+// 2825. 循环增长使字符串子序列等于另一个字符串
+pub mod n2825 {
+    pub fn can_make_subsequence(s: String, t: String) -> bool {
+        if s.len() < t.len() {
+            return false;
+        }
+
+        let s_bytes = s.as_bytes();
+        let t_bytes = t.as_bytes();
+
+        let mut j = 0;
+        for &b in s_bytes {
+            // 计算下一个字节：'z'（122）的下一个是'a'（97），否则+1
+            let next_byte = if b == b'z' { b'a' } else { b + 1 };
+            // 匹配当前字节或下一个字节
+            if b == t_bytes[j] || next_byte == t_bytes[j] {
+                j += 1;
+                if j == t_bytes.len() {
+                    return true;
+                }
+            }
+        }
+
+        false
+    }
+}
