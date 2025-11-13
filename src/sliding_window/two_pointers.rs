@@ -1912,3 +1912,35 @@ pub mod n2825 {
         false
     }
 }
+
+// 1023. 驼峰式匹配
+pub mod n1023 {
+    pub fn camel_match(queries: Vec<String>, pattern: String) -> Vec<bool> {
+        let pattern = pattern.as_bytes();
+        let pat_len = pattern.len();
+        let mut result = vec![true; queries.len()];
+
+        // 外层 for 循环：遍历每个查询字符串（带索引，用于修改 result）
+        for (idx, query) in queries.iter().enumerate() {
+            let query = query.as_bytes();
+            let mut p = 0;
+
+            // 内层 for 循环：遍历当前查询的每个字节
+            for &byte in query {
+                if p < pat_len && pattern[p] == byte {
+                    p += 1;
+                } else if byte.is_ascii_uppercase() {
+                    result[idx] = false; // 标记为不匹配
+                    break; // 提前退出内层循环
+                }
+            }
+
+            // 若 pattern 未完全匹配，标记为不匹配
+            if p < pat_len {
+                result[idx] = false;
+            }
+        }
+
+        result
+    }
+}
