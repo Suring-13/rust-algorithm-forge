@@ -1944,3 +1944,39 @@ pub mod n1023 {
         result
     }
 }
+
+// 3132. 找出与数组相加的整数 II
+pub mod n3132 {
+    pub fn minimum_added_integer(nums1: Vec<i32>, nums2: Vec<i32>) -> i32 {
+        let (mut nums1, mut nums2) = (nums1, nums2);
+        nums1.sort_unstable();
+        nums2.sort_unstable();
+
+        let (m, n) = (nums1.len(), nums2.len());
+
+        // 枚举保留 nums1[2] 或者 nums1[1] 或者 nums1[0]（不枚举nums1[0]是因为题目保证答案一定存在）
+        // 倒着枚举是因为 nums1[i] 越大答案越小，第一个满足的就是答案
+        for &i in &[2, 1] {
+            let mut left = i + 1;
+            let mut right = 1;
+            // 计算基准差值（nums1[i]对应nums2[0]）
+            let base_diff = nums1[i] - nums2[0];
+
+            while left < m && right < n {
+                // 检查当前元素差值是否与基准一致
+                if nums1[left] - nums2[right] == base_diff {
+                    right += 1;
+                }
+                left += 1;
+            }
+
+            // 若nums2完全匹配，返回当前差值（nums2[0] - nums1[i]）
+            if right == n {
+                return nums2[0] - nums1[i];
+            }
+        }
+
+        // 题目保证有解，最后返回保留nums1[0]的情况
+        nums2[0] - nums1[0]
+    }
+}
