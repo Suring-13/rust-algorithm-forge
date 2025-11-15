@@ -1980,3 +1980,47 @@ pub mod n3132 {
         nums2[0] - nums1[0]
     }
 }
+
+// 2565. 最少得分子序列
+pub mod n2565 {
+    pub fn minimum_score(s: String, t: String) -> i32 {
+        let s_bytes = s.as_bytes();
+        let t_bytes = t.as_bytes();
+        let (n, m) = (s_bytes.len(), t_bytes.len());
+        if m == 0 {
+            return 0;
+        }
+
+        // suf[i]：s[i..n) 能匹配的 t 的最长后缀起始索引（初始为 m，代表未匹配）
+        let mut suf = vec![m; n + 1];
+        let mut j = m - 1;
+
+        // 从后往前遍历 s，计算后缀匹配
+        for i in (0..n).rev() {
+            if s_bytes[i] == t_bytes[j] {
+                // 若 j == 0，说明 t 是 s 的子序列，直接返回 0
+                if j == 0 {
+                    return 0;
+                }
+                j -= 1;
+            }
+
+            suf[i] = j + 1;
+        }
+
+        // 初始答案：删除 t[0..suf[0])，长度为 suf[0]
+        let mut ans = suf[0];
+        let mut j = 0;
+
+        // 从前往后遍历 s，计算前缀匹配 + 后缀匹配的最小删除长度
+        for i in 0..n {
+            if j < m && s_bytes[i] == t_bytes[j] {
+                j += 1;
+                // 当前匹配前缀 t[0..j)，后缀匹配 t[suf[i+1]..m)，删除中间部分
+                ans = ans.min(suf[i + 1] - j);
+            }
+        }
+
+        ans as _
+    }
+}
