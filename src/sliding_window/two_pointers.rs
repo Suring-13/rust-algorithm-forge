@@ -2024,3 +2024,56 @@ pub mod n2565 {
         ans as _
     }
 }
+
+// 3302. 字典序最小的合法序列
+pub mod n3302 {
+    pub fn valid_sequence(s: String, t: String) -> Vec<i32> {
+        let s_bytes = s.as_bytes();
+        let t_bytes = t.as_bytes();
+        let n = s_bytes.len();
+        let m = t_bytes.len();
+
+        // 处理边界情况：t 为空或长度大于 s
+        if m == 0 || m > n {
+            return Vec::new();
+        }
+
+        // suf[i]：s[i..n) 能匹配的 t 的最长后缀起始索引（初始为 m，代表未匹配）
+        let mut suf = vec![m; n + 1];
+        let mut j = m - 1;
+
+        for i in (0..n).rev() {
+            if s_bytes[i] == t_bytes[j] {
+                if j == 0 {
+                    suf[..i + 1].fill(0);
+                    break;
+                }
+                j -= 1;
+            }
+            suf[i] = j + 1;
+        }
+
+        let mut ans = Vec::with_capacity(m);
+        let mut changed = false; // 是否使用过修改机会
+        let mut j = 0; // 当前需要匹配 t 的索引
+
+        for (i, &c) in s_bytes.iter().enumerate() {
+            // 条件：当前字符匹配，或未修改过且剩余部分能匹配剩余 t（允许修改当前字符）
+            if c == t_bytes[j] || (!changed && suf[i + 1] <= j + 1) {
+                if c != t_bytes[j] {
+                    changed = true;
+                }
+                ans.push(i as i32); // 转换为 i32 满足返回类型要求
+                j += 1;
+
+                // 匹配完成，直接返回
+                if j == m {
+                    return ans;
+                }
+            }
+        }
+
+        // 未匹配完成
+        Vec::new()
+    }
+}
