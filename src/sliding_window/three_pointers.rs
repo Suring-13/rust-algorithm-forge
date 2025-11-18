@@ -26,3 +26,33 @@ pub mod n2367 {
         ans
     }
 }
+
+// 795. 区间子数组个数
+pub mod n795 {
+    pub fn num_subarray_bounded_max(nums: Vec<i32>, left: i32, right: i32) -> i32 {
+        let mut res = 0;
+        let mut last2 = -1; // 最近一个 > right 的元素索引
+        let mut last1 = -1; // 最近一个在 [left, right] 内的元素索引
+
+        for (i, &x) in nums.iter().enumerate() {
+            let i = i as i32;
+            // 情况1：当前元素在 [left, right] 区间内（x >= left 且 x <= right）
+            if x >= left && x <= right {
+                last1 = i;
+            }
+            // 情况2：当前元素 > right，重置边界
+            else if x > right {
+                last2 = i;
+                last1 = -1;
+            }
+            // 情况3：当前元素 < left，不更新边界（直接跳过）
+
+            // 存在有效 last1 时，累加合法子数组数量
+            if last1 != -1 {
+                res += last1 - last2;
+            }
+        }
+
+        res
+    }
+}
