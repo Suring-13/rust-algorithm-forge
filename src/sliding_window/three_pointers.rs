@@ -81,3 +81,56 @@ pub mod n2444 {
         res
     }
 }
+
+// 3347. 执行操作后元素的最高频率 II
+pub mod n3347 {
+    pub fn max_frequency(mut nums: Vec<i32>, k: i32, num_operations: i32) -> i32 {
+        nums.sort_unstable();
+        let n = nums.len();
+        let mut ans = 0;
+        let mut cnt = 0;
+        let mut left = 0;
+        let mut right = 0;
+
+        // 第一阶段：计算有多少个数能变成 x，其中 x=nums[i]。用同向三指针实现。
+        for i in 0..n {
+            let x = nums[i];
+            cnt += 1;
+            // 循环直到连续相同段的末尾，这样可以统计出 x 的出现次数
+            if i < n - 1 && x == nums[i + 1] {
+                continue;
+            }
+            // 收缩左边界：确保左边界元素 >= x - k
+            while nums[left] < x - k {
+                left += 1;
+            }
+            // 扩展右边界：确保右边界元素 > x + k（最终right-left为区间长度）
+            while right < n && nums[right] <= x + k {
+                right += 1;
+            }
+
+            ans = ans.max((right - left).min(cnt + num_operations as usize));
+            cnt = 0; // 重置当前数字段的计数
+        }
+
+        // 若第一阶段结果已满足，直接返回
+        if ans as i32 >= num_operations {
+            return ans as i32;
+        }
+
+        // 第二阶段：计算有多少个数能变成 x，其中 x 不一定在 nums 中。用同向双指针实现
+        let mut left = 0;
+        for right in 0..n {
+            let x = nums[right];
+            // 收缩左边界：确保左边界元素 >= x - 2*k
+            while nums[left] < x - 2 * k {
+                left += 1;
+            }
+            // 更新最大区间长度
+            ans = ans.max(right - left + 1);
+        }
+
+        // 最终结果不超过操作数上限
+        ans.min(num_operations as usize) as i32
+    }
+}
