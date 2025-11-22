@@ -17,3 +17,27 @@ pub mod n485 {
         ans
     }
 }
+
+// 1446. 连续字符
+pub mod n1446 {
+    pub fn max_power(s: String) -> i32 {
+        if s.is_empty() {
+            return 0;
+        }
+
+        let mut ans = 1;
+        let mut cnt = 1;
+        let bytes = s.as_bytes();
+
+        for i in 1..bytes.len() {
+            if bytes[i] == bytes[i - 1] {
+                cnt += 1;
+                ans = ans.max(cnt);
+            } else {
+                cnt = 1;
+            }
+        }
+
+        ans
+    }
+}
