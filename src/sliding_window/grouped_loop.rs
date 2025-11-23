@@ -41,3 +41,34 @@ pub mod n1446 {
         ans
     }
 }
+
+// 1869. 哪种连续子字符串更长
+pub mod n1869 {
+    pub fn check_zero_ones(s: &str) -> bool {
+        let mut max1 = 0;
+        let mut max0 = 0;
+        let bytes = s.as_bytes();
+        let mut i = 0;
+        let n = bytes.len();
+
+        while i < n {
+            let start = i;
+            let current = bytes[start];
+
+            // 移动指针至不同字符处
+            while i < n && bytes[i] == current {
+                i += 1;
+            }
+
+            // 更新最长连续长度
+            let length = i - start;
+            if current == b'1' {
+                max1 = max1.max(length);
+            } else {
+                max0 = max0.max(length);
+            }
+        }
+
+        max1 > max0
+    }
+}
