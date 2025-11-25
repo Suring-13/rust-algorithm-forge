@@ -90,3 +90,25 @@ pub mod n2414 {
         ans
     }
 }
+
+// 3456. 找出长度为 K 的特殊子字符串
+pub mod n3456 {
+    pub fn has_special_substring(s: String, k: i32) -> bool {
+        if k == 0 {
+            return false;
+        }
+        let mut cnt = 0;
+        let bytes = s.as_bytes();
+        for i in 0..bytes.len() {
+            cnt += 1;
+            // 检查是否为最后一个字符，或当前字符与下一个字符不同
+            if i == bytes.len() - 1 || bytes[i] != bytes[i + 1] {
+                if cnt == k {
+                    return true;
+                }
+                cnt = 0;
+            }
+        }
+        false
+    }
+}
