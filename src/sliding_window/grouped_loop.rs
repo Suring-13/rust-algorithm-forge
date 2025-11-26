@@ -112,3 +112,20 @@ pub mod n3456 {
         false
     }
 }
+
+// 2348. 全 0 子数组的数目
+pub mod n2348 {
+    pub fn zero_filled_subarray(nums: Vec<i32>) -> i64 {
+        let mut ans = 0;
+        let mut last = -1;
+        for (i, x) in nums.into_iter().enumerate() {
+            let i = i as i64;
+            if x != 0 {
+                last = i; // 记录上一个非 0 元素的位置
+            } else {
+                ans += (i - last) as i64;
+            }
+        }
+        ans
+    }
+}
