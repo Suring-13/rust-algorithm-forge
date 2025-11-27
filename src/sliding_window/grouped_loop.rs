@@ -129,3 +129,20 @@ pub mod n2348 {
         ans
     }
 }
+
+// 1513. 仅含 1 的子串数
+pub mod n1513 {
+    pub fn num_sub(s: String) -> i32 {
+        const MOD: i64 = 1_000_000_007;
+        let mut ans = 0;
+        let mut last0 = -1;
+        for (i, ch) in s.bytes().enumerate() {
+            if ch == b'0' {
+                last0 = i as i32; // 记录上个 0 的位置
+            } else {
+                ans += (i as i32 - last0) as i64; // 右端点为 i 的全 1 子串个数
+            }
+        }
+        (ans % MOD) as _
+    }
+}
