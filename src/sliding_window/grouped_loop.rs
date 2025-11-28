@@ -146,3 +146,22 @@ pub mod n1513 {
         (ans % MOD) as _
     }
 }
+
+// 1957. 删除字符使字符串变好
+pub mod n1957 {
+    pub fn make_fancy_string(s: String) -> String {
+        let s = s.into_bytes();
+        let mut ans = vec![];
+        let mut cnt = 0;
+        for (i, &ch) in s.iter().enumerate() {
+            cnt += 1;
+            if cnt < 3 {
+                ans.push(ch);
+            }
+            if i + 1 < s.len() && ch != s[i + 1] {
+                cnt = 0; // 当前字母和下个字母不同，重置计数器
+            }
+        }
+        String::from_utf8(ans).unwrap()
+    }
+}
