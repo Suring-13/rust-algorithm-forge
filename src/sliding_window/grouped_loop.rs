@@ -165,3 +165,21 @@ pub mod n1957 {
         String::from_utf8(ans).unwrap()
     }
 }
+
+// 674. 最长连续递增序列
+pub mod n674 {
+    pub fn find_length_of_lcis(nums: Vec<i32>) -> i32 {
+        let n = nums.len();
+        let mut ans = 1;
+        let mut cnt = 1;
+        for i in 1..n {
+            if nums[i] > nums[i - 1] {
+                cnt += 1;
+                ans = ans.max(cnt);
+            } else {
+                cnt = 1;
+            }
+        }
+        ans
+    }
+}
