@@ -183,3 +183,25 @@ pub mod n674 {
         ans
     }
 }
+
+// 3708. 最长斐波那契子数组
+pub mod n3708 {
+    pub fn longest_subarray(nums: Vec<i32>) -> i32 {
+        let n = nums.len();
+        // 题目隐含nums长度≥3，直接初始化结果为最小可能长度2
+        let mut ans = 2;
+        let mut start = 0;
+
+        // 从第三个元素（索引2）开始遍历
+        for i in 2..n {
+            // 不满足斐波那契条件时，更新最大长度并重置起始位置
+            if nums[i] != nums[i - 1] + nums[i - 2] {
+                ans = ans.max(i - start);
+                start = i - 1;
+            }
+        }
+
+        // 处理循环结束后剩余的子数组
+        ans.max(n - start) as i32
+    }
+}
