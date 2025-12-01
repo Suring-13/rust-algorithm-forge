@@ -205,3 +205,28 @@ pub mod n3708 {
         ans.max(n - start) as i32
     }
 }
+
+// 696. 计数二进制子串
+pub mod n696 {
+    pub fn count_binary_substrings(s: String) -> i32 {
+        let mut ptr = 0;
+        let n = s.len();
+        let mut last = 0;
+        let mut ans = 0;
+        let s_bytes = s.as_bytes();
+
+        while ptr < n {
+            let c = s_bytes[ptr];
+            let mut count = 0;
+            // 统计当前连续字符的长度
+            while ptr < n && s_bytes[ptr] == c {
+                ptr += 1;
+                count += 1;
+            }
+            ans += count.min(last);
+            last = count;
+        }
+
+        ans
+    }
+}
