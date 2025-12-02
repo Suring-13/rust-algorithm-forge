@@ -230,3 +230,41 @@ pub mod n696 {
         ans
     }
 }
+
+// 978. 最长湍流子数组
+pub mod n978 {
+    pub fn max_turbulence_size(nums: Vec<i32>) -> i32 {
+        if nums.is_empty() {
+            return 0;
+        }
+        let mut ans = 1;
+        let mut i = 0;
+        let n = nums.len();
+
+        while i < n {
+            let i0 = i;
+            i += 1;
+
+            // 跳过连续相等的元素
+            if i < n && nums[i - 1] == nums[i] {
+                continue;
+            }
+
+            // 扩展湍流子数组
+            if i < n {
+                i += 1;
+                while i < n
+                    && nums[i] != nums[i - 1]
+                    && (nums[i] < nums[i - 1]) != (nums[i - 1] < nums[i - 2])
+                {
+                    i += 1;
+                }
+                // 更新最大长度
+                ans = ans.max(i - i0);
+                i -= 1;
+            }
+        }
+
+        ans as _
+    }
+}
