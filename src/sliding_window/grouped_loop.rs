@@ -268,3 +268,26 @@ pub mod n978 {
         ans as _
     }
 }
+
+// 2110. 股票平滑下跌阶段的数目
+pub mod n2110 {
+    pub fn get_descent_periods(prices: Vec<i32>) -> i64 {
+        let mut ans = 0i64;
+        let n = prices.len();
+        let mut i = 0;
+
+        while i < n {
+            let i0 = i;
+            // 移动指针，直到不满足“当前价格 = 前一个价格 - 1”的递减条件
+            i += 1;
+            while i < n && prices[i] == prices[i - 1] - 1 {
+                i += 1;
+            }
+            // 计算当前递减序列的长度，套用“n(n+1)/2”公式累加结果
+            let len = (i - i0) as i64;
+            ans += len * (len + 1) / 2;
+        }
+
+        ans
+    }
+}
