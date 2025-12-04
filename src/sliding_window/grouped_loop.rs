@@ -291,3 +291,28 @@ pub mod n2110 {
         ans
     }
 }
+
+// 228. 汇总区间
+pub mod n228 {
+    pub fn summary_ranges(nums: Vec<i32>) -> Vec<String> {
+        let mut result = Vec::new();
+        let mut i = 0;
+        let n = nums.len();
+
+        while i < n {
+            let start = i;
+            // 移动i指针，直到不满足连续递增条件
+            while i < n && (i == start || nums[i] == nums[i - 1] + 1) {
+                i += 1;
+            }
+            // 根据区间长度判断是单个数字还是范围
+            if i - start == 1 {
+                result.push(nums[start].to_string());
+            } else {
+                result.push(format!("{}->{}", nums[start], nums[i - 1]));
+            }
+        }
+
+        result
+    }
+}
