@@ -316,3 +316,26 @@ pub mod n228 {
         result
     }
 }
+
+// 2760. 最长奇偶子数组
+pub mod n2760 {
+    pub fn longest_alternating_subarray(nums: Vec<i32>, threshold: i32) -> i32 {
+        let n = nums.len();
+        let mut ans = 0;
+        let mut i = 0;
+        while i < n {
+            if nums[i] > threshold || nums[i] % 2 != 0 {
+                i += 1;
+                continue;
+            }
+            let start = i; // 记录这一组的开始位置
+            i += 1; // 开始位置已经满足要求，从下一个位置开始判断
+            while i < n && nums[i] <= threshold && nums[i] % 2 != nums[i - 1] % 2 {
+                i += 1;
+            }
+            // 从 start 到 i-1 是满足题目要求的（并且无法再延长的）子数组
+            ans = ans.max(i - start);
+        }
+        ans as i32
+    }
+}
