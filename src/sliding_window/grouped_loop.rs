@@ -339,3 +339,24 @@ pub mod n2760 {
         ans as i32
     }
 }
+
+// 1887. 使数组元素相等的减少操作次数
+pub mod n1887 {
+    pub fn reduction_operations(mut nums: Vec<i32>) -> i32 {
+        nums.sort_unstable();
+        let n = nums.len();
+        let mut res = 0; // 总操作次数
+        let mut cnt = 0; // 当前元素需要的操作次数
+
+        for i in 1..n {
+            // 如果当前元素和前一个不同，说明需要多一次操作
+            if nums[i] != nums[i - 1] {
+                cnt += 1;
+            }
+            // 累加当前元素的操作次数到总次数
+            res += cnt;
+        }
+
+        res
+    }
+}
