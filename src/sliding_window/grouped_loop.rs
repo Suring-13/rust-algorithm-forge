@@ -360,3 +360,41 @@ pub mod n1887 {
         res
     }
 }
+
+// 845. 数组中的最长山脉
+pub mod n845 {
+    pub fn longest_mountain(arr: &Vec<i32>) -> i32 {
+        let mut ret = 0;
+        let n = arr.len();
+        let mut i = 0;
+
+        while i < n {
+            // 确定山脉起始点，若前一个元素小于当前，起始点为前一个索引
+            let start = if i > 0 && arr[i - 1] < arr[i] {
+                i - 1
+            } else {
+                i
+            };
+
+            // 遍历严格上升段，找到峰顶
+            while i + 1 < n && arr[i] < arr[i + 1] {
+                i += 1;
+            }
+            let top = i; // 记录峰顶索引
+
+            // 遍历严格下降段
+            while i + 1 < n && arr[i] > arr[i + 1] {
+                i += 1;
+            }
+
+            // 仅当存在完整上升段和下降段时，更新最大长度
+            if top > start && i > top {
+                ret = ret.max(i - start + 1);
+            }
+
+            i += 1;
+        }
+
+        ret as _
+    }
+}
