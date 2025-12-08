@@ -398,3 +398,30 @@ pub mod n845 {
         ret as _
     }
 }
+
+// 2038. 如果相邻两个颜色均相同则删除当前颜色
+pub mod n2038 {
+    pub fn winner_of_game(colors: String) -> bool {
+        let mut cnt = [0; 2];
+        let bytes = colors.as_bytes();
+        let n = bytes.len();
+        let mut i = 0;
+
+        while i < n {
+            let i0 = i;
+            let c = bytes[i0];
+            // 移动指针直到字节不同
+            while i < n && bytes[i] == c {
+                i += 1;
+            }
+            // 计算连续长度，超过2则累加可操作次数
+            let len = i - i0;
+            if len > 2 {
+                // 'A' - b'A' = 0，'B' - b'A' = 1，直接映射到cnt的索引
+                cnt[(c - b'A') as usize] += len - 2;
+            }
+        }
+
+        cnt[0] > cnt[1]
+    }
+}
