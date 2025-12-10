@@ -440,3 +440,30 @@ pub mod n2900 {
         ans
     }
 }
+
+// 1759. 统计同质子字符串的数目
+pub mod n1759 {
+    pub fn count_homogenous(s: String) -> i32 {
+        const MOD: i64 = 1_000_000_007;
+
+        let s_bytes = s.as_bytes();
+        let n = s_bytes.len();
+        let mut ans: i64 = 0;
+        let mut l = 0;
+
+        while l < n {
+            let mut r = l + 1;
+            // 移动右指针，找到连续相同字符的边界
+            while r < n && s_bytes[r] == s_bytes[r - 1] {
+                r += 1;
+            }
+            // 计算当前连续段的同质子字符串数量（等差数列求和）
+            let len = (r - l) as i64;
+            ans = (ans + len * (len + 1) / 2) % MOD;
+            // 左指针跳到当前连续段的下一个位置
+            l = r;
+        }
+
+        ans as i32
+    }
+}
