@@ -467,3 +467,34 @@ pub mod n1759 {
         ans as i32
     }
 }
+
+// 3011. 判断一个数组是否可以变为有序
+pub mod n3011 {
+    pub fn can_sort_array(nums: Vec<i32>) -> bool {
+        let n = nums.len();
+        let mut i = 0;
+        let mut pre_max = 0;
+
+        while i < n {
+            let mut current_max = 0;
+            // 计算当前元素的二进制1的个数，作为分组依据
+            let ones = nums[i].count_ones();
+
+            // 遍历当前同1数量的分组
+            while i < n && nums[i].count_ones() == ones {
+                // 若当前元素小于前组最大值，直接返回false
+                if nums[i] < pre_max {
+                    return false;
+                }
+                // 更新当前组的最大值
+                current_max = current_max.max(nums[i]);
+                i += 1;
+            }
+
+            // 更新前组最大值
+            pre_max = current_max;
+        }
+
+        true
+    }
+}
