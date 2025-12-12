@@ -498,3 +498,31 @@ pub mod n3011 {
         true
     }
 }
+
+// 1578. 使绳子变成彩色的最短时间
+pub mod n1578 {
+    pub fn min_cost(colors: String, needed_time: Vec<i32>) -> i32 {
+        let mut i = 0;
+        let len = colors.len();
+        let mut result = 0;
+        let color_bytes = colors.as_bytes();
+
+        while i < len {
+            let current_byte = color_bytes[i];
+            let mut max_time = 0;
+            let mut sum_time = 0;
+
+            // 遍历当前连续相同颜色的气球组
+            while i < len && color_bytes[i] == current_byte {
+                max_time = max_time.max(needed_time[i]);
+                sum_time += needed_time[i];
+                i += 1;
+            }
+
+            // 累加当前组的最小成本（总时间 - 最大时间）
+            result += sum_time - max_time;
+        }
+
+        result
+    }
+}
