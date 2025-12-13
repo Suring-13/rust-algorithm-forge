@@ -526,3 +526,35 @@ pub mod n1578 {
         result
     }
 }
+
+// 1839. 所有元音按顺序排布的最长子字符串
+pub mod n1839 {
+    pub fn longest_beautiful_substring(word: String) -> i32 {
+        let mut ans = 0;
+        let bytes = word.as_bytes();
+        let n = bytes.len();
+        let mut i = 0;
+
+        while i < n {
+            let mut cur_len = 1;
+            let mut vowel_type = 1;
+            i += 1;
+
+            // 对比相邻字节，确保非递减，同时统计元音种类
+            while i < n && bytes[i - 1] <= bytes[i] {
+                if bytes[i - 1] != bytes[i] {
+                    vowel_type += 1;
+                }
+                cur_len += 1;
+                i += 1;
+            }
+
+            // 仅当包含全部 5 种元音（a,e,i,o,u，ASCII 顺序递增）时更新最大值
+            if vowel_type == 5 {
+                ans = ans.max(cur_len);
+            }
+        }
+
+        ans as i32
+    }
+}
