@@ -558,3 +558,26 @@ pub mod n1839 {
         ans as i32
     }
 }
+
+// 2765. 最长交替子数组
+pub mod n2765 {
+    pub fn alternating_subarray(nums: Vec<i32>) -> i32 {
+        let n = nums.len();
+        let mut ans = -1;
+        let mut i = 0;
+        while i < n - 1 {
+            if nums[i + 1] - nums[i] != 1 {
+                i += 1;
+                continue;
+            }
+            let i0 = i; // 记录这一组的开始位置
+            i += 2; // i 和 i+1 已经满足要求，从 i+2 开始判断
+            while i < n && nums[i] == nums[i - 2] {
+                i += 1;
+            }
+            ans = ans.max((i - i0) as i32);
+            i -= 1;
+        }
+        ans
+    }
+}
