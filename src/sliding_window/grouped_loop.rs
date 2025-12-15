@@ -581,3 +581,23 @@ pub mod n2765 {
         ans
     }
 }
+
+// 3255. 长度为 K 的子数组的能量值 II
+pub mod n3255 {
+    pub fn results_array(nums: Vec<i32>, k: i32) -> Vec<i32> {
+        let k = k as usize;
+        let mut ans = vec![-1; nums.len() - k + 1];
+        let mut cnt = 0;
+        for i in 0..nums.len() {
+            if i == 0 || nums[i] == nums[i - 1] + 1 {
+                cnt += 1;
+            } else {
+                cnt = 1;
+            }
+            if cnt >= k {
+                ans[i - k + 1] = nums[i];
+            }
+        }
+        ans
+    }
+}
