@@ -601,3 +601,30 @@ pub mod n3255 {
         ans
     }
 }
+
+// 3350. 检测相邻递增子数组 II
+pub mod n3350 {
+    pub fn max_increasing_subarrays(nums: Vec<i32>) -> i32 {
+        let n = nums.len();
+        if n < 2 {
+            return 0; // 数组长度小于2时，无符合条件的子数组
+        }
+
+        let mut cnt = 1; // 当前递增子数组长度
+        let mut precnt = 0; // 上一个递增子数组长度
+        let mut ans = 0; // 最终结果
+
+        // 遍历数组，从第二个元素开始对比
+        for i in 1..n {
+            if nums[i] > nums[i - 1] {
+                cnt += 1;
+            } else {
+                precnt = cnt;
+                cnt = 1;
+            }
+            ans = ans.max(precnt.min(cnt)).max(cnt / 2);
+        }
+
+        ans
+    }
+}
