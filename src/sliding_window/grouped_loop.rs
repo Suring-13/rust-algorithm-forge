@@ -628,3 +628,30 @@ pub mod n3350 {
         ans
     }
 }
+
+// 3105. 最长的严格递增或递减子数组
+pub mod n3105 {
+    pub fn longest_monotonic_subarray(nums: Vec<i32>) -> i32 {
+        let mut ans = 1;
+        let (mut i, n) = (0, nums.len());
+        while i < n - 1 {
+            if nums[i + 1] == nums[i] {
+                i += 1; // 直接跳过
+                continue;
+            }
+            let i0 = i; // 记录这一组的开始位置
+            let inc = nums[i + 1] > nums[i]; // 定下基调：是严格递增还是严格递减
+            i += 2; // i 和 i+1 已经满足要求，从 i+2 开始判断
+            while i < n && nums[i] != nums[i - 1] && (nums[i] > nums[i - 1]) == inc {
+                i += 1;
+            }
+
+            // 从 i0 到 i-1 是满足题目要求的（并且无法再延长的）子数组
+            ans = ans.max(i - i0);
+
+            i -= 1; // 第一个单调序列末尾和第二个单调序列开头，有一个元素是重叠的，循环末尾要把 i 减一
+        }
+
+        ans as i32
+    }
+}
