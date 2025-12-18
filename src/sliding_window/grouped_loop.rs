@@ -655,3 +655,44 @@ pub mod n3105 {
         ans as i32
     }
 }
+
+// 838. 推多米诺
+pub mod n838 {
+    pub fn push_dominoes(dominoes: String) -> String {
+        let mut s = dominoes.into_bytes();
+        let n = s.len();
+        let mut i = 0;
+        let mut left = b'L';
+        while i < n {
+            let mut j = i;
+            while j < n && s[j] == b'.' {
+                // 找到一段连续的没有被推动的骨牌
+                j += 1;
+            }
+            let right = if j < n { s[j] } else { b'R' };
+            match (left, right) {
+                // 方向相同，那么这些竖立骨牌也会倒向同一方向
+                (b'L', b'L') | (b'R', b'R') => {
+                    while i < j {
+                        s[i] = right;
+                        i += 1;
+                    }
+                }
+                // 方向相对，那么就从两侧向中间倒
+                (b'R', b'L') => {
+                    let mut k = j - 1;
+                    while i < k {
+                        s[i] = b'R';
+                        s[k] = b'L';
+                        i += 1;
+                        k -= 1;
+                    }
+                }
+                _ => {}
+            }
+            left = right;
+            i = j + 1;
+        }
+        String::from_utf8(s).unwrap()
+    }
+}
