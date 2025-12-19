@@ -696,3 +696,41 @@ pub mod n838 {
         String::from_utf8(s).unwrap()
     }
 }
+
+// 467. 环绕字符串中唯一的子字符串
+pub mod n467 {
+    pub fn find_substring_in_wrapround_string(s: String) -> i32 {
+        let s_bytes = s.as_bytes();
+        let n = s_bytes.len();
+        if n == 0 {
+            return 0;
+        }
+
+        let mut map = std::collections::HashMap::new();
+        let mut i = 0;
+
+        while i < n {
+            let start = i;
+            i += 1;
+            // 判断是否是连续的环绕子串
+            while i < n
+                && (s_bytes[i] - s_bytes[i - 1] == 1
+                    || s_bytes[i - 1] == b'z' && s_bytes[i] == b'a')
+            {
+                i += 1;
+            }
+
+            // 每个字符最多统计26个（字母只有26个）
+            let end = i.min(start + 26);
+            for j in start..end {
+                let c = s_bytes[j];
+                // 记录以当前字符开头的最长有效子串长度
+                let entry = map.entry(c).or_insert(0);
+                *entry = (*entry).max(i - j);
+            }
+        }
+
+        // 累加所有字符对应的最长长度
+        map.values().sum::<usize>() as i32
+    }
+}
