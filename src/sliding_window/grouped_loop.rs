@@ -734,3 +734,36 @@ pub mod n467 {
         map.values().sum::<usize>() as i32
     }
 }
+
+// 3499. 操作后最大活跃区段数 I
+pub mod n3499 {
+    pub fn max_active_sections_after_trade(s: String) -> i32 {
+        let s_bytes = s.as_bytes();
+        let n = s_bytes.len();
+        if n == 0 {
+            return 0;
+        }
+
+        let mut total1 = 0;
+        let mut max_0 = 0;
+        let mut current_cnt = 0;
+        let mut prev_0 = i32::MIN;
+
+        for i in 0..n {
+            current_cnt += 1;
+            // 判断是否到达当前段的末尾
+            if i == n - 1 || s_bytes[i] != s_bytes[i + 1] {
+                if s_bytes[i] == b'1' {
+                    total1 += current_cnt;
+                } else {
+                    // 更新 010 子串中 0 的最大个数，这里 010 子串是指一段连续的 0，紧跟着一段连续的 1，再紧跟着一段连续的 0
+                    max_0 = max_0.max(prev_0 + current_cnt);
+                    prev_0 = current_cnt;
+                }
+                current_cnt = 0;
+            }
+        }
+
+        total1 + max_0
+    }
+}
