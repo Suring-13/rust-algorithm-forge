@@ -767,3 +767,34 @@ pub mod n3499 {
         total1 + max_0
     }
 }
+
+// 413. 等差数列划分
+pub mod n413 {
+    pub fn number_of_arithmetic_slices(nums: Vec<i32>) -> i32 {
+        let n = nums.len();
+        if n < 3 {
+            return 0;
+        }
+
+        // 初始化公差（nums[0]-nums[1]）、临时计数t、结果ans
+        let mut d = nums[0] - nums[1];
+        let mut t = 0;
+        let mut ans = 0;
+
+        // 从索引2开始遍历（因为至少需要3个元素形成等差数列）
+        for i in 2..n {
+            if nums[i - 1] - nums[i] == d {
+                // 连续满足公差，新增t+1个等差数列
+                t += 1;
+            } else {
+                // 公差变化，重置公差和计数
+                d = nums[i - 1] - nums[i];
+                t = 0;
+            }
+            // 累加当前新增的等差数列数量
+            ans += t;
+        }
+
+        ans
+    }
+}
