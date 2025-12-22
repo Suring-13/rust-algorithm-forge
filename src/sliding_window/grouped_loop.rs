@@ -798,3 +798,41 @@ pub mod n413 {
         ans
     }
 }
+
+// 68. 文本左右对齐
+pub mod n68 {
+    pub fn full_justify(words: Vec<String>, max_width: i32) -> Vec<String> {
+        let n = words.len();
+        let max_width = max_width as usize;
+        let mut ans = vec![];
+        let mut i = 0;
+        while i < n {
+            let start = i; // 这一行第一个单词的下标
+            let mut sum_len = words[i].len(); // 第一个单词的长度
+            i += 1;
+            while i < n && sum_len + 1 + words[i].len() <= max_width {
+                sum_len += words[i].len() + 1; // 单词之间至少要有一个空格
+                i += 1;
+            }
+
+            let extra_spaces = max_width - sum_len; // 这一行剩余未分配的空格个数
+            let gaps = i - start - 1; // 这一行单词之间的空隙个数（单词个数减一）
+
+            // 特殊情况：如果只有一个单词，或者是最后一行，那么左对齐，末尾补空格
+            if gaps == 0 || i == n {
+                let row = words[start..i].join(" ") + &" ".repeat(extra_spaces); // 末尾补空格
+                ans.push(row);
+                continue;
+            }
+
+            // 一般情况：把 extra_spaces 个空格均匀分配到 gaps 个空隙中（靠左的空格更多）
+            let avg = extra_spaces / gaps;
+            let rem = extra_spaces % gaps;
+            let spaces = &" ".repeat(avg + 1); // +1 表示加上单词之间已有的一个空格
+            let row = words[start..start + rem + 1].join(&(spaces.clone() + " ")) + // 前 rem 个空隙多一个空格
+                spaces + &words[start + rem + 1..i].join(spaces);
+            ans.push(row);
+        }
+        ans
+    }
+}
