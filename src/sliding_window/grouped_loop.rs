@@ -890,3 +890,39 @@ pub mod n135 {
         ans
     }
 }
+
+// 2948. 交换得到字典序最小的数组
+pub mod n2948 {
+    // 本题用到一个经典结论。把序列中的每个元素看成图中的一个点，如果两个元素可以相互交换，则在两个元素之间连一条边。结论：处于同一连通块内的所有元素可以通过若干次操作排成任意顺序。
+    // 一个连通块的元素无法移到另一个连通块的位置上
+    pub fn lexicographically_smallest_array(nums: Vec<i32>, limit: i32) -> Vec<i32> {
+        let n = nums.len();
+        // 构建 (数值, 原始索引) 的元组向量，并按数值升序排序
+        let mut sorted_pairs: Vec<(i32, usize)> =
+            nums.into_iter().enumerate().map(|(i, x)| (x, i)).collect();
+        sorted_pairs.sort_unstable_by_key(|&(val, _)| val);
+
+        let mut ans = vec![0; n];
+        let mut i = 0;
+
+        while i < n {
+            let start = i;
+            i += 1;
+            // 扩展当前分组：满足相邻元素差值 ≤ limit
+            while i < n && sorted_pairs[i].0 - sorted_pairs[i - 1].0 <= limit {
+                i += 1;
+            }
+            // 提取当前分组的原始索引并排序
+            let mut indices: Vec<usize> =
+                sorted_pairs[start..i].iter().map(|&(_, idx)| idx).collect();
+            indices.sort_unstable();
+
+            // 将分组内的有序数值，按排序后的原始索引填入结果数组
+            for (pos, &idx) in indices.iter().enumerate() {
+                ans[idx] = sorted_pairs[start + pos].0;
+            }
+        }
+
+        ans
+    }
+}
