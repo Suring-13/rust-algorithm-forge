@@ -926,3 +926,28 @@ pub mod n2948 {
         ans
     }
 }
+
+// 2593. 标记所有元素后数组的分数
+pub mod n2593 {
+    pub fn find_score(nums: Vec<i32>) -> i64 {
+        let mut ans = 0i64;
+        let n = nums.len();
+        let mut i = 0;
+
+        while i < n {
+            let i0 = i;
+            // 找到下坡的坡底（连续递减的最后一个位置）
+            while i + 1 < n && nums[i] > nums[i + 1] {
+                i += 1;
+            }
+            // 从坡底 i 到坡顶 i0，每隔一个累加
+            for j in (i0..=i).rev().step_by(2) {
+                ans += nums[j] as i64;
+            }
+            // i 选了, i+1 不能选
+            i += 2;
+        }
+
+        ans
+    }
+}
