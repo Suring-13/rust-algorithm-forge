@@ -951,3 +951,63 @@ pub mod n2593 {
         ans
     }
 }
+
+// 3640. 三段式数组 II
+pub mod n3640 {
+    pub fn max_sum_trionic(nums: Vec<i32>) -> i64 {
+        let n = nums.len();
+        let mut ans = i64::MIN;
+        let mut i = 0;
+        while i < n {
+            // 第一段
+            let start = i;
+            i += 1;
+            while i < n && nums[i - 1] < nums[i] {
+                i += 1;
+            }
+            if i == start + 1 {
+                // 第一段至少要有两个数
+                continue;
+            }
+
+            // 第二段
+            let peak = i - 1;
+            let mut res = nums[peak - 1] as i64 + nums[peak] as i64; // 第一段的最后两个数必选
+            while i < n && nums[i - 1] > nums[i] {
+                res += nums[i] as i64; // 第二段的所有元素必选
+                i += 1;
+            }
+            // 第二段至少要有两个数，第三段至少要有两个数
+            if i == peak + 1 || i == n || nums[i - 1] == nums[i] {
+                continue;
+            }
+
+            // 第三段
+            let bottom = i - 1;
+            res += nums[i] as i64; // 第三段的前两个数必选（第一个数在上面的循环中加了）
+            // 从第三段的第三个数往右，计算最大元素和
+            let mut max_s = 0;
+            let mut s = 0;
+            i += 1;
+            while i < n && nums[i - 1] < nums[i] {
+                s += nums[i] as i64;
+                max_s = max_s.max(s);
+                i += 1;
+            }
+            res += max_s;
+
+            // 从第一段的倒数第三个数往左，计算最大元素和
+            let mut max_s = 0;
+            let mut s = 0;
+            for j in (start..peak - 1).rev() {
+                s += nums[j] as i64;
+                max_s = max_s.max(s);
+            }
+            res += max_s;
+            ans = ans.max(res);
+
+            i = bottom; // 第三段的起点也是下一个极大三段式子数组的第一段的起点
+        }
+        ans
+    }
+}
