@@ -98,3 +98,22 @@ pub mod n704 {
         }
     }
 }
+
+// 744. 寻找比目标字母大的最小字母
+pub mod n744 {
+    pub fn next_greatest_letter(letters: Vec<char>, target: char) -> char {
+        if letters.len() > 0 && letters.last().unwrap() <= &target {
+            return letters[0];
+        }
+        let (mut left, mut right) = (0, letters.len()); // 左闭右开区间 [left, right)
+        while left < right {
+            let mid = left + (right - left) / 2; // 为了防止溢出，不使用 （left + right） / 2
+            if letters[mid] > target {
+                right = mid;
+            } else {
+                left = mid + 1;
+            }
+        }
+        letters[right]
+    }
+}
