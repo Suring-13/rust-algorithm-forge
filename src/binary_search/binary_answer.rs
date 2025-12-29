@@ -201,3 +201,29 @@ pub mod n2389 {
             .collect()
     }
 }
+
+// 1170. 比较字符串最小字母出现频次
+pub mod n1170 {
+    pub fn num_smaller_by_frequency(queries: Vec<String>, words: Vec<String>) -> Vec<i32> {
+        // 计算字符串中最小字符的出现频率
+        fn f(s: &str) -> usize {
+            let chars: Vec<char> = s.chars().collect();
+            let min_char = *chars.iter().min().unwrap();
+            chars.iter().filter(|&&c| c == min_char).count()
+        }
+        // 1. 计算所有 words 的 f值并排序
+        let mut words_freqs: Vec<usize> = words.iter().map(|w| f(w)).collect();
+        words_freqs.sort_unstable();
+
+        // 2. 遍历每个 query，二分查找统计结果
+        queries
+            .iter()
+            .map(|q| {
+                let q_freq = f(q);
+                // 找到第一个 > q_freq 的位置，后面的元素数量即为答案
+                let cnt = words_freqs.partition_point(|&x| x <= q_freq);
+                (words_freqs.len() - cnt) as i32
+            })
+            .collect()
+    }
+}
