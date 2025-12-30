@@ -227,3 +227,25 @@ pub mod n1170 {
             .collect()
     }
 }
+
+// 2300. 咒语和药水的成功对数
+pub mod n2300 {
+    pub fn successful_pairs(mut spells: Vec<i32>, mut potions: Vec<i32>, success: i64) -> Vec<i32> {
+        potions.sort_unstable();
+        let potion_len = potions.len();
+        let last = potions[potion_len - 1] as i64;
+
+        for spell in spells.iter_mut() {
+            let target = (success + *spell as i64 - 1) / *spell as i64; // success / spell 向上取整
+            // 防止 i64 转成 i32 截断（这样不需要把 potions 中的数转成 i64 比较）
+            if last >= target {
+                let idx = potions.partition_point(|&x| x < target as i32);
+                *spell = (potion_len - idx) as i32;
+            } else {
+                *spell = 0;
+            }
+        }
+
+        spells
+    }
+}
