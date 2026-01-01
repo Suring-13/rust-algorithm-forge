@@ -279,3 +279,51 @@ pub mod n2080 {
         }
     }
 }
+
+// 3488. 距离最小相等元素查询
+pub mod n3488 {
+    use std::collections::HashMap;
+
+    pub fn solve_queries(nums: Vec<i32>, queries: Vec<i32>) -> Vec<i32> {
+        // 1. 构建数字到索引列表的哈希映射
+        let mut indices: HashMap<i32, Vec<i32>> = HashMap::new();
+        for (idx, &num) in nums.iter().enumerate() {
+            indices.entry(num).or_insert_with(Vec::new).push(idx as i32);
+        }
+
+        let n = nums.len() as i32;
+        // 2. 为每个索引列表添加哨兵值
+        for p in indices.values_mut() {
+            if p.is_empty() {
+                continue;
+            }
+            let front_sentinel = p[p.len() - 1] - n; // 前向哨兵：为了方便计算“索引列表第一个元素往左绕到最后一个元素的距离”
+            let back_sentinel = p[0] + n; // 后向哨兵：为了方便计算“索引列表最后一个元素往右绕到第一个元素的距离”
+            p.insert(0, front_sentinel);
+            p.push(back_sentinel);
+        }
+
+        // 3. 处理查询
+        let mut result = Vec::with_capacity(queries.len());
+        for &i in &queries {
+            let num = nums[i as usize];
+            let p = indices.get(&num).unwrap(); // 必然存在有效索引列表
+
+            let res = if p.len() == 3 {
+                // 仅1个真实元素（2个哨兵+1个索引），返回-1
+                -1
+            } else {
+                let j = p.partition_point(|&x| x < i);
+
+                // 计算前后最小距离
+                let dist_prev = i - p[j - 1];
+                let dist_next = p[j + 1] - i;
+                dist_prev.min(dist_next)
+            };
+
+            result.push(res);
+        }
+
+        result
+    }
+}
