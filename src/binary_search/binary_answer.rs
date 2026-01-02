@@ -327,3 +327,17 @@ pub mod n3488 {
         result
     }
 }
+
+// 2563. 统计公平数对的数目
+pub mod n2563 {
+    pub fn count_fair_pairs(mut nums: Vec<i32>, lower: i32, upper: i32) -> i64 {
+        nums.sort_unstable();
+        let mut ans = 0;
+        for j in 0..nums.len() {
+            let l = nums[..j].partition_point(|&x| x < lower - nums[j]);
+            let r = nums[..j].partition_point(|&x| x <= upper - nums[j]);
+            ans += r - l;
+        }
+        ans as _
+    }
+}
