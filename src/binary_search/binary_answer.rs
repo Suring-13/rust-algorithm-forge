@@ -341,3 +341,18 @@ pub mod n2563 {
         ans as _
     }
 }
+
+// 2070. 每一个查询的最大美丽值
+pub mod n2070 {
+    pub fn maximum_beauty(mut items: Vec<Vec<i32>>, queries: Vec<i32>) -> Vec<i32> {
+        items.sort_unstable_by_key(|item| item[0]);
+        items.dedup_by(|current, prev| current[1] <= prev[1]); // 去掉无用数据
+        queries
+            .into_iter()
+            .map(|q| {
+                let j = items.partition_point(|item| item[0] <= q);
+                if j > 0 { items[j - 1][1] } else { 0 }
+            })
+            .collect()
+    }
+}
