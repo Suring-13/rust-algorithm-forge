@@ -398,3 +398,39 @@ pub mod n1146 {
         }
     }
 }
+
+// 1818. 绝对差值和
+pub mod n1818 {
+    const MOD: i64 = 1_000_000_007;
+
+    pub fn min_absolute_sum_diff(nums1: Vec<i32>, nums2: Vec<i32>) -> i32 {
+        let mut rec = nums1.clone();
+        rec.sort_unstable();
+
+        let mut sum = 0i64;
+        let mut maxn = 0i64;
+        let n = nums1.len();
+
+        for i in 0..n {
+            let diff = (nums1[i] - nums2[i]).abs() as i64;
+            sum = (sum + diff) % MOD;
+
+            // 找第一个 >= nums2[i] 的位置
+            let j = rec.partition_point(|&x| x < nums2[i]);
+
+            // 检查右侧元素
+            if j < n {
+                let new_diff = (rec[j] - nums2[i]).abs() as i64;
+                maxn = maxn.max(diff - new_diff);
+            }
+
+            // 检查左侧元素
+            if j > 0 {
+                let new_diff = (nums2[i] - rec[j - 1]).abs() as i64;
+                maxn = maxn.max(diff - new_diff);
+            }
+        }
+
+        ((sum - maxn + MOD) % MOD) as i32
+    }
+}
