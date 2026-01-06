@@ -434,3 +434,20 @@ pub mod n1818 {
         ((sum - maxn + MOD) % MOD) as i32
     }
 }
+
+// 1287. 有序数组中出现次数超过25%的元素
+pub mod n1287 {
+    pub fn find_special_integer(arr: Vec<i32>) -> i32 {
+        let m = arr.len() / 4;
+        for i in [m, m * 2 + 1] {
+            let x = arr[i];
+            let j = arr.partition_point(|&y| y < x);
+            // 因为题目保证有解，j+m 不会下标越界
+            if arr[j + m] == x {
+                return x;
+            }
+        }
+        // 如果答案不是 arr[m] 也不是 arr[2m+1]，那么答案一定是 arr[3m+2]
+        arr[m * 3 + 2]
+    }
+}
