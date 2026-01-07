@@ -451,3 +451,30 @@ pub mod n1287 {
         arr[m * 3 + 2]
     }
 }
+
+// 1283. 使结果不超过阈值的最小除数
+pub mod n1283 {
+    pub fn smallest_divisor(nums: Vec<i32>, threshold: i32) -> i32 {
+        let check = |&m: &i32| -> bool {
+            let mut sum = 0;
+            for &x in &nums {
+                sum += (x + m - 1) / m; // x / m 向上取整
+                if sum > threshold {
+                    // 不满足除数条件，返回 true
+                    return true;
+                }
+            }
+            // 满足除数条件，返回 false
+            false
+        };
+
+        let max_num = *nums.iter().max().unwrap();
+        // partition_point 找第一个不满足 check 的位置，即第一个满足除数条件的 m 的位置
+        let index = (1..max_num + 1)
+            .collect::<Vec<i32>>()
+            .partition_point(check);
+
+        // (1..max_num + 1) 在索引 index 处的值
+        index as i32 + 1
+    }
+}
