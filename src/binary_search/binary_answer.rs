@@ -478,3 +478,27 @@ pub mod n1283 {
         index as i32 + 1
     }
 }
+
+// 2187. 完成旅途的最少时间
+pub mod n2187 {
+    pub fn minimum_time(time: Vec<i32>, total_trips: i32) -> i64 {
+        let total_trips = total_trips as i64;
+        let min_t = *time.iter().min().unwrap() as i64;
+        let mut left: i64 = min_t;
+        let mut right: i64 = min_t * total_trips;
+
+        while left < right {
+            let mid = left + (right - left) / 2;
+            let mut sum = 0;
+            for &t in &time {
+                sum += mid / t as i64;
+            }
+            if sum < total_trips {
+                left = mid + 1;
+            } else {
+                right = mid;
+            }
+        }
+        right
+    }
+}
