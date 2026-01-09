@@ -502,3 +502,36 @@ pub mod n2187 {
         right
     }
 }
+
+// 1011. 在 D 天内送达包裹的能力
+pub mod n1011 {
+    pub fn ship_within_days(weights: Vec<i32>, days: i32) -> i32 {
+        // 确定二分查找的左右边界：左边界为最大包裹重量，右边界为总重量
+        let mut left = *weights.iter().max().unwrap();
+        let mut right = weights.iter().sum::<i32>();
+
+        while left < right {
+            let mid = left + (right - left) / 2; // 等价于 (left+right)/2，避免溢出
+            let mut need_days = 1;
+            let mut current_load = 0;
+
+            // 计算当前运载能力 mid 下，需要的天数
+            for &w in &weights {
+                if current_load + w > mid {
+                    need_days += 1;
+                    current_load = 0;
+                }
+                current_load += w;
+            }
+
+            // 调整二分区间
+            if need_days > days {
+                left = mid + 1;
+            } else {
+                right = mid;
+            }
+        }
+
+        right
+    }
+}
