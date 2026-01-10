@@ -535,3 +535,35 @@ pub mod n1011 {
         right
     }
 }
+
+// 875. 爱吃香蕉的珂珂
+pub mod n875 {
+    pub fn min_eating_speed(piles: Vec<i32>, h: i32) -> i32 {
+        let check = |k: i32| -> bool {
+            let mut sum = 0;
+
+            for &p in &piles {
+                sum += (p - 1) / k + 1; // p / k 向上取整
+
+                if sum > h {
+                    return true;
+                }
+            }
+
+            false
+        };
+
+        let mut left = 1;
+        let mut right = *piles.iter().max().unwrap();
+        while left < right {
+            let mid = left + (right - left) / 2;
+            if check(mid) {
+                left = mid + 1;
+            } else {
+                right = mid;
+            }
+        }
+
+        right
+    }
+}
