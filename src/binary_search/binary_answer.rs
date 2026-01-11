@@ -567,3 +567,42 @@ pub mod n875 {
         right
     }
 }
+
+// 3296. 移山所需的最少秒数
+pub mod n3296 {
+    pub fn min_number_of_seconds(mountain_height: i32, worker_times: Vec<i32>) -> i64 {
+        // 校验函数：判断 t 秒内能否挖完指定高度的山
+        let check = |t: i64| -> bool {
+            let mut total = 0i64;
+            for &time in worker_times.iter() {
+                let time = time as i64;
+                // 解方程: time * (1+2+...+k) ≤ t → k*(k+1) ≤ 2t/time
+                let max_k = ((1.0 + 8.0 * t as f64 / time as f64).sqrt() - 1.0) / 2.0;
+                let max_k = max_k.floor() as i64;
+                total += max_k;
+                if total >= mountain_height as i64 {
+                    return false;
+                }
+            }
+            total < mountain_height as i64
+        };
+
+        let n = worker_times.len() as i64;
+        let max_t = *worker_times.iter().max().unwrap() as i64;
+        let h = ((mountain_height - 1) as i64 / n) + 1;
+        // 二分查找的上下界
+        let mut left = 1i64;
+        let mut right = max_t * h * (h + 1) / 2;
+
+        // 二分查找最小满足条件的时间
+        while left < right {
+            let mid = left + (right - left) / 2;
+            if check(mid) {
+                left = mid + 1;
+            } else {
+                right = mid;
+            }
+        }
+        right
+    }
+}
