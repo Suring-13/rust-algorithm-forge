@@ -606,3 +606,53 @@ pub mod n3296 {
         right
     }
 }
+
+// 3639. 变为活跃状态的最小时间
+pub mod n3639 {
+    pub fn min_time(s: String, order: Vec<i32>, k: i32) -> i32 {
+        let n = s.len();
+        // 提前判断：全改成星号子串数不足 k，直接返回 -1
+        let total = (n as i64) * (n as i64 + 1) / 2;
+        if total < k as i64 {
+            return -1;
+        }
+
+        let mut star = vec![0; n];
+
+        // 闭包：检查使用 order 前 m+1 个位置能否凑够 k 个子串
+        let mut check = |m: usize| -> bool {
+            let mark = m + 1;
+            // 标记选中的位置
+            for &idx in order.iter().take(mark) {
+                star[idx as usize] = mark;
+            }
+
+            let mut cnt = 0;
+            let mut last = -1; // 上一个 '*' 的位置（索引）
+            for (i, &val) in star.iter().enumerate() {
+                if val == mark {
+                    last = i as i32;
+                }
+                cnt += last + 1; // 累加以当前位置结尾的合法子串数
+                if cnt >= k {
+                    return false;
+                }
+            }
+            true
+        };
+
+        // 二分查找
+        let mut left = 0;
+        let mut right = (n - 1) as i32;
+        while left < right {
+            let mid = left + (right - left) / 2;
+            if check(mid as usize) {
+                left = mid + 1;
+            } else {
+                right = mid;
+            }
+        }
+
+        right
+    }
+}
