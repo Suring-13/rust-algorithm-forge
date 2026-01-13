@@ -656,3 +656,39 @@ pub mod n3639 {
         right
     }
 }
+
+// 475. 供暖器
+pub mod n475 {
+    pub fn find_radius(mut houses: Vec<i32>, mut heaters: Vec<i32>) -> i32 {
+        houses.sort_unstable();
+        heaters.sort_unstable();
+
+        let check = |x: i32| -> bool {
+            let n = houses.len();
+            let m = heaters.len();
+            let mut j = 0;
+            for i in 0..n {
+                while j < m && houses[i] > heaters[j] + x {
+                    j += 1;
+                }
+                if j >= m || houses[i] < heaters[j] - x {
+                    return true;
+                }
+            }
+            false
+        };
+
+        let mut left = 0;
+        let mut right = 1e9 as i32;
+        while left < right {
+            let mid = left + (right - left) / 2;
+            if check(mid) {
+                left = mid + 1;
+            } else {
+                right = mid;
+            }
+        }
+
+        right
+    }
+}
