@@ -692,3 +692,41 @@ pub mod n475 {
         right
     }
 }
+
+// 2594. 修车的最少时间
+pub mod n2594 {
+    pub fn repair_cars(ranks: Vec<i32>, cars: i32) -> i64 {
+        let mut cnt = std::collections::HashMap::new();
+        ranks
+            .into_iter()
+            .for_each(|r| *cnt.entry(r).or_insert(0) += 1);
+
+        let min_r = *cnt.keys().min().unwrap() as i64;
+        let cars_target = cars as i64;
+        let (mut left, mut right) = (1, min_r * cars_target * cars_target);
+
+        let check = |mid: i64| -> bool {
+            let mut total = 0i64;
+            for (&r, &count) in &cnt {
+                let r_i64 = r as i64;
+                let num = ((mid / r_i64) as f64).sqrt() as i64;
+                total += num * count as i64;
+                if total >= cars_target {
+                    return false;
+                }
+            }
+            total < cars_target
+        };
+
+        while left < right {
+            let mid = left + (right - left) / 2;
+            if check(mid) {
+                left = mid + 1;
+            } else {
+                right = mid;
+            }
+        }
+
+        right
+    }
+}
