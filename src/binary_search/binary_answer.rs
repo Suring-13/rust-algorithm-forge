@@ -730,3 +730,50 @@ pub mod n2594 {
         right
     }
 }
+
+// 1482. 制作 m 束花所需的最少天数
+pub mod n1482 {
+    pub fn min_days(bloom_day: Vec<i32>, m: i32, k: i32) -> i32 {
+        let n = bloom_day.len() as i32;
+        // 提前判断无法满足的情况
+        if m > n / k {
+            return -1;
+        }
+
+        // 定义判断函数：给定天数 days，是否能制作出 m 束花
+        let check = |days: i32| -> bool {
+            let mut bouquets = 0;
+            let mut flowers = 0;
+            for &bloom in &bloom_day {
+                if bloom <= days {
+                    flowers += 1;
+                    if flowers == k {
+                        bouquets += 1;
+                        if bouquets == m {
+                            break;
+                        }
+                        flowers = 0;
+                    }
+                } else {
+                    flowers = 0;
+                }
+            }
+            bouquets < m
+        };
+
+        // 二分查找的边界
+        let mut left = *bloom_day.iter().min().unwrap();
+        let mut right = *bloom_day.iter().max().unwrap();
+
+        while left < right {
+            let mid = left + (right - left) / 2;
+            if check(mid) {
+                left = mid + 1;
+            } else {
+                right = mid;
+            }
+        }
+
+        right
+    }
+}
