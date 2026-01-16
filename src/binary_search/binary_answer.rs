@@ -777,3 +777,56 @@ pub mod n1482 {
         right
     }
 }
+
+// 3048. 标记所有下标的最早秒数 I
+pub mod n3048 {
+    pub fn earliest_second_to_mark_indices(nums: Vec<i32>, change_indices: Vec<i32>) -> i32 {
+        let n = nums.len();
+        let m = change_indices.len();
+        // 标记次数多于时间，直接返回-1
+        if n > m {
+            return -1;
+        }
+
+        // 计算完成所有标记和减一操作的最小时间
+        let total_required = n as i32 + nums.iter().sum::<i32>();
+        if total_required > m as i32 {
+            return -1;
+        }
+
+        let mut done = vec![0; n];
+
+        let mut check = |mx: usize| -> bool {
+            // need_marks: 需要完成的标记数量
+            let mut need_marks = n as i32;
+            // need_sub: 需要执行减一的操作次数
+            let mut need_sub = 0;
+            // 倒序遍历前mx个时刻
+            for i in (0..mx).rev() {
+                let idx = (change_indices[i] - 1) as usize;
+                if done[idx] != mx as i32 {
+                    done[idx] = mx as i32;
+                    need_marks -= 1;
+                    need_sub += nums[idx];
+                } else if need_sub > 0 {
+                    // 执行减一操作
+                    need_sub -= 1;
+                }
+            }
+            need_marks > 0 || need_sub > 0
+        };
+
+        let mut left = total_required as usize;
+        let mut right = m + 1;
+        while left < right {
+            let mid = left + (right - left) / 2;
+            if check(mid) {
+                left = mid + 1;
+            } else {
+                right = mid;
+            }
+        }
+
+        if right > m { -1 } else { right as _ }
+    }
+}
