@@ -830,3 +830,49 @@ pub mod n3048 {
         if right > m { -1 } else { right as _ }
     }
 }
+
+// 1870. 准时到达的列车最小时速
+pub mod n1870 {
+    // https://leetcode.cn/problems/minimum-speed-to-arrive-on-time/solutions/791209/bi-mian-fu-dian-yun-suan-de-xie-fa-by-en-9fc6/
+    pub fn min_speed_on_time(dist: Vec<i32>, hour: f64) -> i32 {
+        let n = dist.len();
+        // 由于双精度浮点数无法准确表示 2.01 这样的小数，我们在计算 2.01×100 时，算出的结果不是 201，而是 200.99999999999997 这样的数。
+        // 所以代码不能直接转成整数，而是要 round 一下。
+        let h100 = (hour * 100.0).round() as i64; // 下面不会用到任何浮点数
+        let delta = h100 - (n as i64 - 1) * 100;
+        if delta <= 0 {
+            // 无法到达终点
+            return -1;
+        }
+
+        let max_dist = *dist.iter().max().unwrap();
+        if h100 <= n as i64 * 100 {
+            // 特判
+            // 见题解中的公式
+            return max_dist.max(((dist[n - 1] * 100 - 1) as i64 / delta) as i32 + 1);
+        }
+
+        let check = |v: i32| -> bool {
+            let mut t = 0i64;
+            for &d in &dist[..n - 1] {
+                t += ((d - 1) / v + 1) as i64; // d/v向上取整
+            }
+            (t * v as i64 + dist[n - 1] as i64) * 100 > h100 * v as i64
+        };
+
+        let sum_dist = dist.iter().map(|&x| x as i64).sum::<i64>();
+        let mut left = ((sum_dist * 100 - 1) / h100) as i32 + 1; // sum_dist * 100 / h100 向上取整
+        let h = (h100 / (n * 100) as i64) as i32;
+        let mut right = (max_dist - 1) / h + 1;
+        while left < right {
+            let mid = (left + right) / 2;
+            if check(mid) {
+                left = mid + 1;
+            } else {
+                right = mid;
+            }
+        }
+
+        right
+    }
+}
