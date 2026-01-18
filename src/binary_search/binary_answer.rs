@@ -876,3 +876,47 @@ pub mod n1870 {
         right
     }
 }
+
+// 3453. 分割正方形 I
+pub mod n3453 {
+    pub fn separate_squares(squares: Vec<Vec<i32>>) -> f64 {
+        let mut max_y: f64 = 0.0;
+        let mut total_area: f64 = 0.0;
+
+        for sq in &squares {
+            let l = sq[2] as f64;
+            total_area += l * l;
+            max_y = max_y.max((sq[1] + sq[2]) as f64);
+        }
+        let half_area = total_area / 2.0;
+
+        // 定义检查函数：判断y高度以下的面积是否达到总面积的一半
+        let check = |y: f64| -> bool {
+            let mut area = 0.0;
+            for square in squares.iter() {
+                let yi = square[1] as f64;
+                let l = square[2] as f64;
+                if yi < y {
+                    area += l * (l.min(y - yi));
+                }
+            }
+            area < half_area
+        };
+
+        let mut left = 0.0;
+        let mut right = max_y;
+        let eps = 1e-5;
+
+        // 二分查找
+        while (right - left).abs() > eps {
+            let mid = (left + right) / 2.0;
+            if check(mid) {
+                left = mid;
+            } else {
+                right = mid;
+            }
+        }
+
+        (left + right) / 2.0
+    }
+}
