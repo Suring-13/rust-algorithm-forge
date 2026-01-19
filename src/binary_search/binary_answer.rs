@@ -920,3 +920,27 @@ pub mod n3453 {
         (left + right) / 2.0
     }
 }
+
+// 275. H 指数 II
+pub mod n275 {
+    pub fn h_index(citations: Vec<i32>) -> i32 {
+        let n = citations.len();
+        let mut left = 1;
+        let mut right = n + 1;
+        while left < right {
+            // 区间不为空
+            // 循环不变量：
+            // left-1 的回答一定为「是」
+            // right 的回答一定为「否」
+            let mid = (left + right) / 2;
+            // 引用次数最多的 mid 篇论文，引用次数均 >= mid
+            if citations[n - mid] >= mid as i32 {
+                left = mid + 1; // 询问范围缩小到 [mid+1, right)
+            } else {
+                right = mid; // 询问范围缩小到 [left, mid)
+            }
+        }
+        // 根据循环不变量，left-1 现在是最大的回答为「是」的数
+        left as i32 - 1
+    }
+}
