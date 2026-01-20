@@ -944,3 +944,45 @@ pub mod n275 {
         left as i32 - 1
     }
 }
+
+// 2226. 每个小孩最多能分到多少糖果
+pub mod n2226 {
+    pub fn maximum_candies(candies: Vec<i32>, k: i64) -> i32 {
+        // 定义检查函数：判断每个孩子分 mid 颗糖时，是否能满足 k 个孩子
+        let check = |mid: i64| -> bool {
+            if mid == 0 {
+                return true;
+            }
+            let mut total = 0i64;
+            for &c in &candies {
+                total += c as i64 / mid;
+                if total >= k {
+                    return true;
+                }
+            }
+            total >= k
+        };
+
+        let sum_candies: i64 = candies.iter().map(|&x| x as i64).sum();
+        if sum_candies < k {
+            return 0;
+        }
+
+        let max_c = *candies.iter().max().unwrap_or(&0) as i64;
+        let upper = max_c.min(sum_candies / k) + 1;
+        let mut left = 0;
+        let mut right = upper;
+
+        // 二分查找：寻找最大满足条件的 mid
+        while left < right {
+            let mid = (left + right) / 2;
+            if check(mid) {
+                left = mid + 1;
+            } else {
+                right = mid;
+            }
+        }
+
+        left as i32 - 1
+    }
+}
