@@ -986,3 +986,48 @@ pub mod n2226 {
         left as i32 - 1
     }
 }
+
+// 2982. 找出出现至少三次的最长特殊子字符串 II
+pub mod n2982 {
+    pub fn maximum_length(s: String) -> i32 {
+        let bytes = s.as_bytes();
+        let n = bytes.len();
+        let mut cnt: std::collections::HashMap<u8, Vec<i32>> = std::collections::HashMap::new();
+
+        let mut i = 0;
+        while i < n {
+            let mut j = i;
+            while j < n && bytes[j] == bytes[i] {
+                j += 1;
+            }
+            // 连续长度 = j - i
+            cnt.entry(bytes[i]).or_default().push((j - i) as i32);
+            i = j;
+        }
+
+        let mut res = -1;
+        for vec in cnt.values() {
+            let mut left = 1;
+            let mut right = (n as i32) - 1;
+            while left < right {
+                let mid = left + (right - left) / 2;
+                let mut count = 0;
+                for &x in vec {
+                    if x >= mid {
+                        count += x - mid + 1;
+                    }
+                }
+                if count >= 3 {
+                    // 满足条件，尝试更大值，左边界右移
+                    res = res.max(mid);
+                    left = mid + 1;
+                } else {
+                    // 不满足，右边界左移
+                    right = mid;
+                }
+            }
+        }
+
+        res
+    }
+}
