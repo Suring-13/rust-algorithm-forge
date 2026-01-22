@@ -1031,3 +1031,31 @@ pub mod n2982 {
         res
     }
 }
+
+// 2576. 求出最多标记下标
+pub mod n2576 {
+    pub fn max_num_of_marked_indices(mut nums: Vec<i32>) -> i32 {
+        nums.sort_unstable();
+
+        // 检查k个数对是否合法：前k个和后k个一一匹配
+        let check = |k: usize| -> bool {
+            nums[0..k]
+                .iter()
+                .zip(nums[nums.len() - k..].iter())
+                .all(|(&a, &b)| a * 2 <= b)
+        };
+
+        let mut left = 0;
+        let mut right = nums.len() / 2 + 1;
+        while left < right {
+            let mid = (left + right) / 2;
+            if check(mid) {
+                left = mid + 1; // 合法，尝试更大的k
+            } else {
+                right = mid; // 不合法，尝试更小的k
+            }
+        }
+
+        if left == 0 { 0 } else { (left as i32 - 1) * 2 }
+    }
+}
