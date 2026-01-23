@@ -1059,3 +1059,46 @@ pub mod n2576 {
         if left == 0 { 0 } else { (left as i32 - 1) * 2 }
     }
 }
+
+// 1898. 可移除字符的最大数目
+pub mod n1898 {
+    pub fn maximum_removals(s: String, p: String, removable: Vec<i32>) -> i32 {
+        let s_bytes = s.as_bytes();
+        let p_bytes = p.as_bytes();
+        let ns = s_bytes.len();
+        let np = p_bytes.len();
+        let n = removable.len();
+        // 辅助函数：检查移除k个元素后，p是否是s的子序列
+        let check = |k: usize| -> bool {
+            let mut state = vec![true; ns];
+            // 标记k个要移除的位置为false
+            for i in 0..k {
+                let idx = removable[i] as usize;
+                state[idx] = false;
+            }
+            let mut j = 0;
+            for i in 0..ns {
+                if state[i] && j < np && s_bytes[i] == p_bytes[j] {
+                    j += 1;
+                    if j == np {
+                        return true;
+                    }
+                }
+            }
+            j == np
+        };
+
+        let mut l = 0;
+        let mut r = n + 1;
+        while l < r {
+            let mid = l + (r - l) / 2;
+            if check(mid) {
+                l = mid + 1;
+            } else {
+                r = mid;
+            }
+        }
+
+        (l - 1) as i32
+    }
+}
