@@ -1102,3 +1102,37 @@ pub mod n1898 {
         (l - 1) as i32
     }
 }
+
+// 1802. 有界数组中指定下标处的最大值
+pub mod n1802 {
+    pub fn max_value(n: i32, index: i32, max_sum: i32) -> i32 {
+        // 定义求和函数，计算长度为cnt的连续递减序列的和（从x开始）
+        fn sum(x: i32, cnt: i32) -> i64 {
+            if x >= cnt {
+                // 等差数列求和：(首项 + 末项) * 项数 / 2
+                (x as i64 + (x - cnt + 1) as i64) * cnt as i64 / 2
+            } else {
+                // 先算1到x的和，再加上剩余的1的个数
+                (x as i64 * (x + 1) as i64) / 2 + (cnt - x) as i64
+            }
+        }
+
+        let mut left = 1;
+        let mut right = max_sum + 1;
+
+        // 二分查找，寻找满足条件的最大值
+        while left < right {
+            let mid = (left + right) / 2;
+            // 计算左侧部分和 + 右侧部分和
+            let total = sum(mid - 1, index) + sum(mid, n - index);
+
+            if total <= max_sum as i64 {
+                left = mid + 1;
+            } else {
+                right = mid;
+            }
+        }
+
+        left - 1
+    }
+}
