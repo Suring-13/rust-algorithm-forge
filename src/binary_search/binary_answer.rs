@@ -1136,3 +1136,39 @@ pub mod n1802 {
         left - 1
     }
 }
+
+// 1642. 可以到达的最远建筑
+pub mod n1642 {
+    pub fn furthest_building(heights: Vec<i32>, bricks: i32, ladders: i32) -> i32 {
+        // 预处理高度差数组：heights[i] - heights[i-1]
+        let diff: Vec<i32> = heights.windows(2).map(|w| w[1] - w[0]).collect();
+
+        // 检查第 mid 个建筑是否可达（mid 对应原数组索引，0-based）
+        let check = |mid: usize| -> bool {
+            // 筛选前 mid 个高度差中的正数，转成 Vec 方便排序
+            let mut cur_d: Vec<i32> = diff[0..mid].iter().filter(|&&d| d > 0).cloned().collect();
+            // 降序排序：大的差值用梯子，小的用砖块
+            cur_d.sort_by(|a, b| b.cmp(a));
+
+            let ladders = ladders as usize;
+            // 计算梯子用过后，剩余需要砖块的总和
+            if ladders < cur_d.len() {
+                let need_bricks: i32 = cur_d[ladders..].iter().sum();
+                need_bricks <= bricks
+            } else {
+                true
+            }
+        };
+
+        let (mut left, mut right) = (0, heights.len());
+        while left < right {
+            let mid = left + (right - left) / 2;
+            if check(mid) {
+                left = mid + 1;
+            } else {
+                right = mid;
+            }
+        }
+        left as i32 - 1
+    }
+}
