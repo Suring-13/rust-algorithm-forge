@@ -1172,3 +1172,46 @@ pub mod n1642 {
         left as i32 - 1
     }
 }
+
+// 2861. 最大合金数
+pub mod n2861 {
+    pub fn max_number_of_alloys(
+        budget: i32,
+        composition: Vec<Vec<i32>>,
+        stock: Vec<i32>,
+        cost: Vec<i32>,
+    ) -> i32 {
+        let mut ans = 0;
+        for comp in composition {
+            // 检查生产num个合金是否在预算内
+            let check = |num: i32| -> bool {
+                let mut money = 0;
+                for ((&s, &base), &c) in stock.iter().zip(&comp).zip(&cost) {
+                    let need = base as i64 * num as i64;
+                    if (s as i64) < need {
+                        money += (need - s as i64) * c as i64;
+                        // 超预算立即返回
+                        if money > budget as i64 {
+                            return false;
+                        }
+                    }
+                }
+                money <= budget as i64
+            };
+
+            let mut left = 0;
+            let mut right = stock.iter().min().copied().unwrap_or(0) + budget + 1;
+            while left < right {
+                let mid = left + (right - left) / 2;
+                if check(mid) {
+                    left = mid + 1;
+                } else {
+                    right = mid;
+                }
+            }
+            ans = ans.max(left - 1);
+        }
+
+        ans
+    }
+}
