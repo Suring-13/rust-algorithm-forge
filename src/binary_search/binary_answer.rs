@@ -1215,3 +1215,47 @@ pub mod n2861 {
         ans
     }
 }
+
+// 3007. 价值和小于等于 K 的最大数字
+pub mod n3007 {
+    pub fn find_maximum_number(k: i64, x: i32) -> i64 {
+        let k = k as u64;
+        let x = x as u32; // 位间隔转无符号，避免移位负数
+
+        // 核心：检查[1, num]中 第x、2x、3x...位（二进制从0开始）的1总数是否小于等于k
+        let check = |num: u64| -> bool {
+            if num == 0 {
+                return true;
+            }
+            let mut res = 0;
+            let mut i = x - 1; // 比特位从0开始，x要减1
+            while (num >> i) != 0 {
+                // 当该位存在时循环（num >> i 非0）
+                let n = num >> i;
+                // 公式1：n>>1 << i （等价于 (n/2)*2^i）
+                res += (n >> 1) << i;
+                // 公式2：如果n最低位是1，加 (num & mask) +1 （mask=2^i -1）
+                if n & 1 == 1 {
+                    let mask = (1 << i) - 1;
+                    res += (num & mask) + 1;
+                }
+                i += x; // 下一个目标位：x,2x,3x...位
+            }
+            res <= k
+        };
+
+        let mut right = (k + 1) << x; // (2*(k+1))*2^(x-1)
+        let mut left = 0u64;
+
+        while left < right {
+            let mid = left + (right - left) / 2;
+            if check(mid) {
+                left = mid + 1;
+            } else {
+                right = mid;
+            }
+        }
+
+        left as i64 - 1
+    }
+}
