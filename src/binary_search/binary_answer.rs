@@ -1259,3 +1259,27 @@ pub mod n3007 {
         left as i64 - 1
     }
 }
+
+// 2141. 同时运行 N 台电脑的最长时间
+pub mod n2141 {
+    pub fn max_run_time(n: i32, batteries: Vec<i32>) -> i64 {
+        let n = n as i64;
+        let batteries: Vec<i64> = batteries.iter().map(|&b| b as i64).collect();
+
+        let total: i64 = batteries.iter().sum();
+        let mut left: i64 = 0i64;
+        let mut right = total / n + 1;
+
+        while left < right {
+            let mid = left + (right - left) / 2;
+            // 计算所有电池最多贡献x的总和
+            let sum: i64 = batteries.iter().map(|&b| b.min(mid)).sum();
+            if sum >= n * mid {
+                left = mid + 1;
+            } else {
+                right = mid;
+            }
+        }
+        left - 1
+    }
+}
