@@ -1283,3 +1283,96 @@ pub mod n2141 {
         left - 1
     }
 }
+
+// 2258. 逃离火灾
+pub mod n2258 {
+    pub fn maximum_minutes(grid: Vec<Vec<i32>>) -> i32 {
+        let m = grid.len();
+        let n = grid[0].len();
+        // 返回能否在初始位置停留 t 分钟，并安全到达安全屋
+        let check = |mut t: i32| -> bool {
+            let mut on_fire = vec![vec![false; n]; m];
+            let mut f = Vec::new();
+            for (i, row) in grid.iter().enumerate() {
+                for (j, &x) in row.iter().enumerate() {
+                    if x == 1 {
+                        on_fire[i][j] = true; // 标记着火的位置
+                        f.push((i, j));
+                    }
+                }
+            }
+            while t > 0 && !f.is_empty() {
+                // 如果火无法扩散就提前退出
+                // 火扩散
+                let mut tmp = Vec::new();
+                for &(i, j) in &f {
+                    for &(x, y) in &[(i - 1, j), (i + 1, j), (i, j - 1), (i, j + 1)] {
+                        // 上下左右
+                        if x < m && y < n && !on_fire[x][y] && grid[x][y] == 0 {
+                            on_fire[x][y] = true; // 标记着火的位置
+                            tmp.push((x, y));
+                        }
+                    }
+                }
+                f = tmp;
+                t -= 1;
+            }
+            if on_fire[0][0] {
+                return false; // 起点着火
+            }
+
+            let mut vis = vec![vec![false; n]; m];
+            vis[0][0] = true;
+            let mut q = vec![(0, 0)];
+            while !q.is_empty() {
+                let mut tmp = Vec::new();
+                for &(i, j) in &q {
+                    if on_fire[i][j] {
+                        // 人走到这个位置后，火也扩散到了这个位置
+                        continue;
+                    }
+                    for &(x, y) in &[(i - 1, j), (i + 1, j), (i, j - 1), (i, j + 1)] {
+                        // 上下左右
+                        if x < m && y < n && !on_fire[x][y] && !vis[x][y] && grid[x][y] == 0 {
+                            if x == m - 1 && y == n - 1 {
+                                return true; // 安全了。
+                            }
+                            vis[x][y] = true; // 避免反复访问同一个位置
+                            tmp.push((x, y));
+                        }
+                    }
+                }
+                q = tmp;
+                // 火扩散
+                tmp = Vec::new();
+                for &(i, j) in &f {
+                    for &(x, y) in &[(i - 1, j), (i + 1, j), (i, j - 1), (i, j + 1)] {
+                        // 上下左右
+                        if x < m && y < n && !on_fire[x][y] && grid[x][y] == 0 {
+                            on_fire[x][y] = true;
+                            tmp.push((x, y));
+                        }
+                    }
+                }
+                f = tmp;
+            }
+            false // 人被火烧到，或者没有可以到达安全屋的路
+        };
+
+        let mut left = 0;
+        let mut right = (m * n) as i32 + 1;
+        while left < right {
+            let mid = left + (right - left) / 2;
+            if check(mid) {
+                left = mid + 1;
+            } else {
+                right = mid;
+            }
+        }
+        if left - 1 < (m * n) as i32 {
+            left - 1
+        } else {
+            1_000_000_000
+        }
+    }
+}
