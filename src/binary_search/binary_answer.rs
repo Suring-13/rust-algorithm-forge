@@ -1429,3 +1429,44 @@ pub mod n2071 {
         left as i32 - 1
     }
 }
+
+// 3143. 正方形中的最多点数
+pub mod n3143 {
+    pub fn max_points_inside_square(points: Vec<Vec<i32>>, s: String) -> i32 {
+        let mut ans = 0;
+        let s_bytes = s.as_bytes();
+        let mut left = -1;
+        let mut right = 1_000_000_001;
+
+        // 检查当前size是否合法（无重复字符），更新ans
+        let mut check = |size: i32| -> bool {
+            let mut vis: u32 = 0; // 位掩码，26位对应26个字母，比HashSet省内存
+            for i in 0..points.len() {
+                let x = points[i][0].abs();
+                let y = points[i][1].abs();
+                // 点在正方形内
+                if x <= size && y <= size {
+                    let c = (s_bytes[i] - b'a') as u32; // byte转0-25的索引
+                    // 检查该位是否已置1（重复）
+                    if (vis >> c) & 1 != 0 {
+                        return false;
+                    }
+                    vis |= 1 << c; // 置1，记录该字符
+                }
+            }
+            ans = vis.count_ones() as i32; // 统计置1位数=合法点数
+            true
+        };
+
+        while left < right {
+            let mid = left + (right - left) / 2;
+            if check(mid) {
+                left = mid + 1;
+            } else {
+                right = mid;
+            }
+        }
+
+        ans
+    }
+}
