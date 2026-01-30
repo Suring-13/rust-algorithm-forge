@@ -1376,3 +1376,56 @@ pub mod n2258 {
         }
     }
 }
+
+// 2071. 你可以安排的最多任务数目
+pub mod n2071 {
+    pub fn max_task_assign(
+        mut tasks: Vec<i32>,
+        mut workers: Vec<i32>,
+        pills: i32,
+        strength: i32,
+    ) -> i32 {
+        tasks.sort_unstable();
+        workers.sort_unstable();
+        let m = workers.len();
+
+        let check = |k: usize| -> bool {
+            // 贪心：用最强的 k 名工人，完成最简单的 k 个任务
+            let mut valid_tasks = std::collections::VecDeque::new();
+            let mut pills = pills;
+            let mut i = 0;
+            for &w in &workers[m - k..m] {
+                // 在吃药的情况下，把能完成的任务记录到 valid_tasks 中
+                while i < k && tasks[i] <= w + strength {
+                    valid_tasks.push_back(tasks[i]);
+                    i += 1;
+                }
+                if valid_tasks.is_empty() {
+                    return false; // 即使吃药也无法完成任务
+                }
+                if w >= *valid_tasks.front().unwrap() {
+                    valid_tasks.pop_front(); // 无需吃药就能完成（最简单的）任务
+                    continue;
+                }
+                if pills == 0 {
+                    return false; // 没药了
+                }
+                pills -= 1;
+                valid_tasks.pop_back(); // 完成（能完成的）最难的任务
+            }
+            true
+        };
+
+        let mut left = 0;
+        let mut right = tasks.len().min(m) + 1;
+        while left < right {
+            let mid = left + (right - left) / 2;
+            if check(mid) {
+                left = mid + 1;
+            } else {
+                right = mid;
+            }
+        }
+        left as i32 - 1
+    }
+}
