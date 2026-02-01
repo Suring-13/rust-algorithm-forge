@@ -1470,3 +1470,54 @@ pub mod n3143 {
         ans
     }
 }
+
+// 1648. 销售价值减少的颜色球
+pub mod n1648 {
+    pub fn max_profit(inventory: Vec<i32>, orders: i32) -> i32 {
+        const MOD: i64 = 1_000_000_007;
+
+        let orders = orders as i64;
+        let inventory: Vec<i64> = inventory.iter().map(|&x| x as i64).collect();
+        let mut left = 0i64;
+        let mut right = *inventory.iter().max().unwrap_or(&0);
+        let mut t = -1i64;
+
+        // 1. 二分查找最大T：sum(ai-T, ai>=T) <= orders
+        while left < right {
+            let mid = left + (right - left) / 2;
+            let total: i64 = inventory
+                .iter()
+                .filter(|&&x| x >= mid)
+                .map(|&x| x - mid)
+                .sum();
+            if total > orders {
+                left = mid + 1;
+            } else {
+                t = mid;
+                right = mid;
+            }
+        }
+
+        // 等差数列求和：x到y的和 (x+y)*(y-x+1)/2
+        let range_sum = |x: i64, y: i64| -> i64 { (x + y) * (y - x + 1) / 2 };
+
+        // 2. 计算剩余订单数
+        let used: i64 = inventory.iter().filter(|&&x| x >= t).map(|&x| x - t).sum();
+        let mut rest = orders - used;
+        let mut ans = 0i64;
+
+        // 3. 累加利润
+        for &ai in &inventory {
+            if ai >= t {
+                if rest > 0 {
+                    ans = (ans + range_sum(t, ai)) % MOD;
+                    rest -= 1;
+                } else {
+                    ans = (ans + range_sum(t + 1, ai)) % MOD;
+                }
+            }
+        }
+
+        ans as i32
+    }
+}
