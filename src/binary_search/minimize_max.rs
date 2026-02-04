@@ -62,3 +62,32 @@ pub mod n2064 {
         right
     }
 }
+
+// 1760. 袋子里最少数目的球
+pub mod n1760 {
+    pub fn minimum_size(nums: Vec<i32>, max_operations: i32) -> i32 {
+        let check = |m: i32| -> bool {
+            let mut total = 0i64;
+            for &x in &nums {
+                total += ((x - 1) / m) as i64;
+                if total > max_operations as i64 {
+                    // 提前终止，优化性能
+                    return true;
+                }
+            }
+            false
+        };
+
+        let mut left = 1;
+        let mut right = *nums.iter().max().unwrap();
+        while left < right {
+            let mid = left + (right - left) / 2;
+            if check(mid) {
+                left = mid + 1;
+            } else {
+                right = mid;
+            }
+        }
+        right
+    }
+}
