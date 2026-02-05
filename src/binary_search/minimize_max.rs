@@ -91,3 +91,47 @@ pub mod n1760 {
         right
     }
 }
+
+// 1631. 最小体力消耗路径
+pub mod n1631 {
+    pub fn minimum_effort_path(heights: Vec<Vec<i32>>) -> i32 {
+        let m = heights.len();
+        let n = heights[0].len();
+        let mut left = 0;
+        let mut right = 1_000_000;
+        let mut ans = 0;
+        let dirs = [(-1, 0), (1, 0), (0, -1), (0, 1)];
+
+        while left < right {
+            let mid = left + (right - left) / 2;
+            let mut q = std::collections::VecDeque::new();
+            let mut seen = vec![vec![false; n]; m];
+            q.push_back((0, 0));
+            seen[0][0] = true;
+
+            while let Some((x, y)) = q.pop_front() {
+                for &(dx, dy) in &dirs {
+                    let nx = x as i32 + dx;
+                    let ny = y as i32 + dy;
+                    if nx >= 0 && nx < m as i32 && ny >= 0 && ny < n as i32 {
+                        let nx = nx as usize;
+                        let ny = ny as usize;
+                        if !seen[nx][ny] && (heights[x][y] - heights[nx][ny]).abs() <= mid {
+                            q.push_back((nx, ny));
+                            seen[nx][ny] = true;
+                        }
+                    }
+                }
+            }
+
+            if seen[m - 1][n - 1] {
+                ans = mid;
+                right = mid;
+            } else {
+                left = mid + 1;
+            }
+        }
+
+        ans
+    }
+}
