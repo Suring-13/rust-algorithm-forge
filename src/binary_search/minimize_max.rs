@@ -135,3 +135,36 @@ pub mod n1631 {
         ans
     }
 }
+
+// 2439. 最小化数组中的最大值
+pub mod n2439 {
+    pub fn minimize_array_value(nums: Vec<i32>) -> i32 {
+        // 核心检查函数：判断当前limit是否满足条件
+        let check = |limit: i32| -> bool {
+            let mut extra = 0;
+            // 反向遍历，将超出部分向左传递
+            for &num in nums.iter().skip(1).rev() {
+                let new_num = num as i64 + extra;
+                extra = 0.max(new_num - limit as i64);
+            }
+            nums[0] as i64 + extra <= limit as i64
+        };
+
+        let mut left = *nums.iter().min().unwrap();
+        let mut right = *nums.iter().max().unwrap();
+        // 初始答案设为右边界（最大值一定是合法解）
+        let mut ans = right;
+
+        while left < right {
+            let mid = left + (right - left) / 2;
+            if check(mid) {
+                ans = mid;
+                right = mid;
+            } else {
+                left = mid + 1;
+            }
+        }
+
+        ans
+    }
+}
