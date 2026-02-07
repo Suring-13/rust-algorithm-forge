@@ -168,3 +168,34 @@ pub mod n2439 {
         ans
     }
 }
+
+// 2560. 打家劫舍 IV
+pub mod n2560 {
+    pub fn min_capability(nums: Vec<i32>, k: i32) -> i32 {
+        let check = |mx: i32| -> bool {
+            let (mut f0, mut f1) = (0, 0);
+            for &x in nums.iter() {
+                if x > mx {
+                    f0 = f1;
+                } else {
+                    let new_f = f1.max(f0 + 1);
+                    f0 = f1;
+                    f1 = new_f;
+                }
+            }
+            f1 < k
+        };
+
+        let (mut left, mut right) = (*nums.iter().min().unwrap(), *nums.iter().max().unwrap() + 1);
+
+        while left < right {
+            let mid = left + (right - left) / 2;
+            if check(mid) {
+                left = mid + 1;
+            } else {
+                right = mid;
+            }
+        }
+        right
+    }
+}
