@@ -199,3 +199,63 @@ pub mod n2560 {
         right
     }
 }
+
+// 778. 水位上升的泳池中游泳
+pub mod n778 {
+    pub fn swim_in_water(grid: Vec<Vec<i32>>) -> i32 {
+        let n = grid.len();
+        if n == 0 {
+            return 0;
+        }
+
+        // 检查在水位不超过 mx 时，能否从 (0,0) 到达 (n-1,n-1)
+        let check = |mx: i32| -> bool {
+            // 初始化访问数组：n x n 的布尔数组，默认 false（未访问）
+            let mut visited = vec![vec![false; n]; n];
+            dfs(0, 0, &grid, mx, n, &mut visited)
+        };
+
+        // 深度优先搜索核心逻辑
+        fn dfs(
+            i: usize,
+            j: usize,
+            grid: &Vec<Vec<i32>>,
+            mx: i32,
+            n: usize,
+            visited: &mut Vec<Vec<bool>>,
+        ) -> bool {
+            // 到达终点
+            if i == n - 1 && j == n - 1 {
+                return true;
+            }
+            // 标记当前位置已访问
+            visited[i][j] = true;
+
+            // 四个方向：上、右、下、左
+            for &(x, y) in &[(i - 1, j), (i + 1, j), (i, j - 1), (i, j + 1)] {
+                // 检查坐标是否在合法范围内
+                if x < n && y < n {
+                    // 检查：水位限制 + 未访问过 + 递归搜索
+                    if grid[x][y] <= mx && !visited[x][y] && dfs(x, y, grid, mx, n, visited) {
+                        return true;
+                    }
+                }
+            }
+            false
+        }
+
+        let mut left = grid[0][0].max(grid[n - 1][n - 1]);
+        let mut right = (n * n - 1) as i32;
+
+        while left < right {
+            let mid = (left + right) / 2;
+            if check(mid) {
+                right = mid;
+            } else {
+                left = mid + 1;
+            }
+        }
+
+        right
+    }
+}
