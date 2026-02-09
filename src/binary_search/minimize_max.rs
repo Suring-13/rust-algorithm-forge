@@ -259,3 +259,38 @@ pub mod n778 {
         right
     }
 }
+
+// 2616. 最小化数对的最大差值
+pub mod n2616 {
+    pub fn minimize_max(mut nums: Vec<i32>, p: i32) -> i32 {
+        nums.sort_unstable();
+        let n = nums.len();
+
+        let check = |mx: i32| -> bool {
+            let mut cnt = 0;
+            let mut i = 0;
+            while i < n - 1 {
+                if nums[i + 1] - nums[i] <= mx {
+                    cnt += 1;
+                    i += 2;
+                } else {
+                    i += 1;
+                }
+            }
+            cnt < p
+        };
+
+        let mut left = 0;
+        let mut right = nums[n - 1] - nums[0];
+
+        while left < right {
+            let mid = left + (right - left) / 2;
+            if check(mid) {
+                left = mid + 1;
+            } else {
+                right = mid;
+            }
+        }
+        right
+    }
+}
