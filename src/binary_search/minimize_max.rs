@@ -294,3 +294,57 @@ pub mod n2616 {
         right
     }
 }
+
+// 3419. 图的最大边权的最小值
+pub mod n3419 {
+    pub fn min_max_weight(n: i32, edges: Vec<Vec<i32>>, _: i32) -> i32 {
+        let n = n as usize;
+        if edges.len() < n - 1 {
+            return -1;
+        }
+
+        // 建图：g[y] 保存 (x, w)
+        let mut g = vec![vec![]; n];
+        for e in &edges {
+            let x = e[0] as usize;
+            let y = e[1] as usize;
+            let w = e[2];
+            g[y].push((x, w));
+        }
+
+        // 复用 vis 数组，用当前 upper 做标记，避免重复初始化
+        let mut vis = vec![-1; n];
+
+        // 二分判定：最大边权不超过 upper 时，能否从 0 遍历所有点
+        let mut check = |upper: i32| -> bool {
+            fn dfs(x: usize, upper: i32, g: &Vec<Vec<(usize, i32)>>, vis: &mut Vec<i32>) -> usize {
+                vis[x] = upper;
+                let mut cnt = 1;
+                for &(y, w) in &g[x] {
+                    if w <= upper && vis[y] != upper {
+                        cnt += dfs(y, upper, g, vis);
+                    }
+                }
+                cnt
+            }
+            dfs(0, upper, &g, &mut vis) == n
+        };
+
+        let max_w = edges.iter().map(|e| e[2]).max().unwrap_or(0);
+        let mut left = 1;
+        let mut right = max_w + 1;
+        let mut ans = right;
+
+        while left < right {
+            let mid = left + (right - left) / 2;
+            if check(mid) {
+                right = mid;
+                ans = mid
+            } else {
+                left = mid + 1;
+            }
+        }
+
+        if ans > max_w { -1 } else { ans }
+    }
+}
