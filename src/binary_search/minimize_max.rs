@@ -348,3 +348,51 @@ pub mod n3419 {
         if ans > max_w { -1 } else { ans }
     }
 }
+
+// 2513. 最小化两个数组中的最大值
+pub mod n2513 {
+    pub fn minimize_set(d1: i32, d2: i32, unique_cnt1: i32, unique_cnt2: i32) -> i32 {
+        // 求最大公约数 gcd
+        fn gcd(a: i64, b: i64) -> i64 {
+            if b == 0 { a } else { gcd(b, a % b) }
+        }
+
+        // 求最小公倍数 lcm
+        fn lcm(a: i64, b: i64) -> i64 {
+            a / gcd(a, b) * b
+        }
+
+        let d1 = d1 as i64;
+        let d2 = d2 as i64;
+        let u1 = unique_cnt1 as i64;
+        let u2 = unique_cnt2 as i64;
+
+        let l = lcm(d1, d2);
+
+        // 二分查找
+        let mut left = 1i64;
+        let mut right = (u1 + u2) * 2;
+        let mut ans = right;
+
+        while left < right {
+            let mid = (left + right) / 2;
+
+            let cnt1 = mid / d2 - mid / l;
+            let left1 = 0.max(u1 - cnt1);
+
+            let cnt2 = mid / d1 - mid / l;
+            let left2 = 0.max(u2 - cnt2);
+
+            let common = mid - mid / d1 - mid / d2 + mid / l;
+
+            if common >= left1 + left2 {
+                ans = mid;
+                right = mid;
+            } else {
+                left = mid + 1;
+            }
+        }
+
+        ans as i32
+    }
+}
