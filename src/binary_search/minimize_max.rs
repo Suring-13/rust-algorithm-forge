@@ -396,3 +396,45 @@ pub mod n2513 {
         ans as i32
     }
 }
+
+// 3733. 完成所有送货任务的最少时间
+pub mod n3733 {
+    pub fn minimum_time(d: Vec<i32>, r: Vec<i32>) -> i64 {
+        // 求最大公约数 gcd
+        fn gcd(a: i64, b: i64) -> i64 {
+            if b == 0 { a } else { gcd(b, a % b) }
+        }
+
+        // 求最小公倍数 lcm
+        fn lcm(a: i64, b: i64) -> i64 {
+            a / gcd(a, b) * b
+        }
+
+        let d1 = d[0] as i64;
+        let d2 = d[1] as i64;
+        let r1 = r[0] as i64;
+        let r2 = r[1] as i64;
+        let l = lcm(r1, r2);
+
+        let check = |t: i64| -> bool {
+            let cond1 = d1 <= t - t / r1;
+            let cond2 = d2 <= t - t / r2;
+            let cond3 = d1 + d2 <= t - t / l;
+            cond1 && cond2 && cond3
+        };
+
+        let mut left = d1 + d2 - 1;
+        let mut right = (d1 + d2) * 2 - 1;
+
+        while left < right {
+            let mid = left + (right - left) / 2;
+            if check(mid) {
+                right = mid;
+            } else {
+                left = mid + 1;
+            }
+        }
+
+        right
+    }
+}
