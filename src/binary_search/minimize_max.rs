@@ -438,3 +438,56 @@ pub mod n3733 {
         right
     }
 }
+
+// 3399. 字符相同的最短子字符串 II
+pub mod n3399 {
+    pub fn min_length(s: String, num_ops: i32) -> i32 {
+        let s = s.as_bytes();
+        let n = s.len() as i32;
+        let num_ops = num_ops as usize;
+
+        let check = |m: i32| -> bool {
+            if m == 1 {
+                let mut cnt = 0;
+                for (i, &b) in s.iter().enumerate() {
+                    let val = (b - b'0') as usize;
+                    if val != i % 2 {
+                        cnt += 1;
+                    }
+                }
+                cnt = cnt.min(s.len() - cnt);
+                return cnt <= num_ops;
+            }
+
+            let mut cnt = 0;
+            let mut i = 0;
+            let len = s.len();
+            while i < len {
+                let c = s[i];
+                let mut j = i;
+                while j < len && s[j] == c {
+                    j += 1;
+                }
+                let l = j - i;
+                cnt += l / (m as usize + 1);
+                i = j;
+            }
+            cnt <= num_ops
+        };
+
+        let mut left = 1;
+        let mut right = n;
+        let mut ans = right;
+        while left < right {
+            let mid = left + (right - left) / 2;
+            if check(mid) {
+                right = mid;
+                ans = mid;
+            } else {
+                left = mid + 1;
+            }
+        }
+
+        ans
+    }
+}
