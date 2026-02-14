@@ -491,3 +491,79 @@ pub mod n3399 {
         ans
     }
 }
+
+// 3605. 数组的最小稳定性因子
+pub mod n3605 {
+    pub fn min_stable(nums: Vec<i32>, max_c: i32) -> i32 {
+        // 求最大公约数 gcd
+        fn gcd(a: i32, b: i32) -> i32 {
+            if b == 0 { a } else { gcd(b, a % b) }
+        }
+
+        // 判断：能否用最多 max_c 次分割，使得每段长度 ≤ upper
+        let check = |upper: usize| -> bool {
+            // (当前gcd, 最小左端点)
+            let mut intervals: Vec<(i32, usize)> = Vec::new();
+            let mut c = max_c;
+
+            for (i, &x) in nums.iter().enumerate() {
+                // 对所有已有区间，和当前数取 gcd
+                for p in &mut intervals {
+                    p.0 = gcd(p.0, x);
+                }
+
+                // 单独以 x 作为新区间
+                intervals.push((x, i));
+
+                // 去重：合并 gcd 相同的，保留最左
+                let mut idx = 1;
+                for j in 1..intervals.len() {
+                    if intervals[j].0 != intervals[j - 1].0 {
+                        intervals[idx] = intervals[j];
+                        idx += 1;
+                    }
+                }
+                intervals.truncate(idx);
+
+                // intervals 的性质：越靠左，GCD 越小
+                // 去掉 gcd = 1 的
+                if !intervals.is_empty() && intervals[0].0 == 1 {
+                    intervals.remove(0);
+                }
+
+                // 最长有效子数组长度 > upper，必须切一刀
+                if let Some(&(g, l)) = intervals.first() {
+                    if g >= 2 && i - l + 1 > upper {
+                        if c == 0 {
+                            return false;
+                        }
+                        c -= 1;
+                        intervals.clear();
+                    }
+                }
+            }
+
+            true
+        };
+
+        let n = nums.len();
+        let max_c = max_c as usize;
+
+        // 二分答案：最小的「最大段长」
+        let mut left = 0;
+        let mut right = n / (max_c + 1);
+        let mut ans = right;
+
+        while left < right {
+            let mid = left + (right - left) / 2;
+            if check(mid) {
+                ans = mid;
+                right = mid;
+            } else {
+                left = mid + 1;
+            }
+        }
+
+        ans as i32
+    }
+}
