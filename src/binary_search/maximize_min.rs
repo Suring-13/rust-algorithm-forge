@@ -113,3 +113,37 @@ pub mod n3620 {
         left - 1
     }
 }
+
+// 2517. 礼盒的最大甜蜜度
+pub mod n2517 {
+    pub fn maximum_tastiness(mut price: Vec<i32>, k: i32) -> i32 {
+        price.sort_unstable();
+
+        let check = |d: i32| -> bool {
+            let mut cnt = 1;
+            let mut pre = price[0]; // 先选一个最小的甜蜜度
+            for &p in &price {
+                if p - pre >= d {
+                    // 可以选
+                    cnt += 1;
+                    pre = p; // 上一个选的甜蜜度
+                }
+            }
+            cnt >= k
+        };
+
+        let mut left = 0;
+        let mut right = (price.last().unwrap() - price[0]) / (k - 1) + 1;
+
+        while left < right {
+            let mid = left + (right - left) / 2;
+            if check(mid) {
+                left = mid + 1;
+            } else {
+                right = mid;
+            }
+        }
+
+        left - 1
+    }
+}
