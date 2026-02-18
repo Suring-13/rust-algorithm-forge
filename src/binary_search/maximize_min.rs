@@ -147,3 +147,75 @@ pub mod n2517 {
         left - 1
     }
 }
+
+// 2528. 最大化城市的最小电量
+pub mod n2528 {
+    pub fn max_power(stations: Vec<i32>, r: i32, k: i32) -> i64 {
+        let n = stations.len();
+        let r = r as usize;
+        let k = k as i64;
+        let stations: Vec<i64> = stations.into_iter().map(|x| x as i64).collect();
+
+        // 1. 计算前缀和（初始值为0）
+        let mut prefix = vec![0i64; n + 1];
+        for i in 0..n {
+            prefix[i + 1] = prefix[i] + stations[i];
+        }
+
+        // 2. 计算每个位置的初始供电功率
+        let mut power = vec![0i64; n];
+        for i in 0..n {
+            let left = 0.max(i as isize - r as isize) as usize;
+            let right = n.min(i + r + 1);
+            power[i] = prefix[right] - prefix[left];
+        }
+
+        // 3. 定义检查函数：判断是否能让所有位置功率 ≥ low
+        let check = |low: i64| -> bool {
+            let mut diff = vec![0i64; n]; // 差分数组
+            let mut sum_d = 0i64; // 差分数组的累加值
+            let mut built = 0i64; // 已建造的电站数
+
+            for i in 0..n {
+                sum_d += diff[i]; // 累加当前位置的差分值
+                let current_power = power[i] + sum_d;
+                let m = low - current_power;
+
+                if m <= 0 {
+                    continue; // 当前功率已满足，无需建造
+                }
+
+                // 需要建造 m 个电站
+                built += m;
+                if built > k {
+                    return false; // 超过上限，不满足
+                }
+
+                // 区间 [i, i+2r] 增加 m（差分数组优化）
+                sum_d += m; // 由于 diff[i] 后面不会再访问，我们直接加到 sum_d 中，替代diff[i]的更新
+                let right = i + 2 * r + 1;
+                if right < n {
+                    diff[right] -= m;
+                }
+            }
+
+            true
+        };
+
+        // 4. 二分查找最大的最小功率
+        let mn = *power.iter().min().unwrap();
+        let mut left = mn + k / n as i64; // 初始左边界
+        let mut right = mn + k + 1; // 初始右边界
+
+        while left < right {
+            let mid = left + (right - left) / 2;
+            if check(mid) {
+                left = mid + 1;
+            } else {
+                right = mid;
+            }
+        }
+
+        left - 1
+    }
+}
