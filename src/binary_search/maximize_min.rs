@@ -219,3 +219,61 @@ pub mod n2528 {
         left - 1
     }
 }
+
+// 3449. 最大化游戏分数的最小值
+pub mod n3449 {
+    pub fn max_score(points: Vec<i32>, m: i32) -> i64 {
+        // 定义检查函数：判断是否能通过 m 次操作让分数 ≥ low
+        let check = |low: i64| -> bool {
+            let n = points.len();
+            let mut rem = m as i64; // 剩余操作次数
+            let mut pre = 0; // 上一个位置顺带操作的次数
+
+            for (i, &p) in points.iter().enumerate() {
+                if p == 0 {
+                    return false; // 避免除零错误
+                }
+
+                // 计算还需要的操作次数：(low-1)/p +1 是需要的总次数，减去已顺带的 pre
+                let required_total = (low - 1) / p as i64 + 1;
+                let mut k = required_total - pre;
+
+                // 最后一个数如果已满足要求，直接跳出
+                if i == n - 1 && k <= 0 {
+                    break;
+                }
+
+                // 至少要走1步（必须操作当前位置）
+                if k < 1 {
+                    k = 1;
+                }
+
+                // 扣除操作次数：左右横跳的总次数是 k*2 -1
+                rem -= k * 2 - 1;
+                if rem < 0 {
+                    return false;
+                }
+
+                // 下一个位置会顺带被操作 k-1 次
+                pre = k - 1;
+            }
+
+            true
+        };
+
+        let mut left = 1;
+        let min_p = *points.iter().min().unwrap();
+        let mut right = ((m as i64 + 1) / 2) * min_p as i64 + 1;
+
+        while left < right {
+            let mid = left + (right - left) / 2;
+            if check(mid) {
+                left = mid + 1;
+            } else {
+                right = mid;
+            }
+        }
+
+        left - 1
+    }
+}
