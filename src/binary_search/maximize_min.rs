@@ -277,3 +277,74 @@ pub mod n3449 {
         left - 1
     }
 }
+
+// 3464. 正方形上的点之间的最大距离
+pub mod n3464 {
+    pub fn max_distance(side: i32, points: Vec<Vec<i32>>, k: i32) -> i32 {
+        let side = side as i64;
+        let k = k as usize;
+        let mut a = Vec::new();
+
+        // 1. 正方形坐标映射到一维数轴（顺时针）
+        for p in points {
+            let x = p[0] as i64;
+            let y = p[1] as i64;
+            let val = if x == 0 {
+                // 左边界：y轴方向，值为y
+                y
+            } else if y == side {
+                // 上边界：x轴方向，值为side + x
+                side + x
+            } else if x == side {
+                // 右边界：反向y轴，值为3*side - y
+                3 * side - y
+            } else {
+                // 下边界：反向x轴，值为4*side - x
+                4 * side - x
+            };
+            a.push(val);
+        }
+        a.sort_unstable();
+
+        // 2. 检查函数：判断是否存在k个点满足间距≥low
+        let check = |low: i64| -> bool {
+            let total_len = 4 * side;
+            for &start in &a {
+                let end = start + total_len - low; // 终点上限
+                let mut cur = start;
+                let mut count = 1; // 已选1个点（start）
+
+                // 需要再选k-1个点
+                while count < k {
+                    // 二分查找第一个≥cur+low的点
+                    let j = a.partition_point(|&x| x < cur + low);
+                    if j >= a.len() || a[j] > end {
+                        break; // 找不到符合条件的点
+                    }
+                    cur = a[j];
+                    count += 1;
+                }
+
+                if count == k {
+                    return true; // 找到k个点，满足条件
+                }
+            }
+            false
+        };
+
+        // 3. 二分查找最大间距
+        let mut left = 1i64;
+        let mut right = (4 * side) / k as i64 + 1;
+
+        while left < right {
+            let mid = (left + right) / 2;
+            if check(mid) {
+                left = mid + 1; // 满足条件，尝试更大的值
+            } else {
+                right = mid; // 不满足，尝试更小的值
+            }
+        }
+
+        left as i32 - 1
+    }
+}
