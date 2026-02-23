@@ -71,3 +71,45 @@ pub mod n378 {
         right
     }
 }
+
+// 719. 找出第 K 小的数对距离
+pub mod n719 {
+    pub fn smallest_distance_pair(mut nums: Vec<i32>, k: i32) -> i32 {
+        nums.sort_unstable();
+        let k = k as usize;
+        let n = nums.len();
+
+        // 检查函数：统计间距≤mx的数对数量是否≥k
+        let check = |mx: i32| -> bool {
+            let mut cnt = 0usize;
+            let mut i = 0usize; // 滑动窗口左指针
+            for j in 0..n {
+                // 移动左指针，直到nums[j] - nums[i] ≤ mx
+                while nums[j] - nums[i] > mx {
+                    i += 1;
+                }
+                // 累加当前右指针j对应的有效数对数量
+                cnt += j - i;
+                // 提前终止：数量已达标，无需继续遍历
+                if cnt >= k {
+                    return true;
+                }
+            }
+            cnt >= k
+        };
+
+        let mut left = 0;
+        let mut right = nums[n - 1] - nums[0];
+
+        while left < right {
+            let mid = left + (right - left) / 2;
+            if check(mid) {
+                right = mid; // 满足条件，尝试更小的mx
+            } else {
+                left = mid + 1; // 不满足，需要更大的mx
+            }
+        }
+
+        right
+    }
+}
