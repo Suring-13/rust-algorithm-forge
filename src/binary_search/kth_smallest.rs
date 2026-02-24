@@ -113,3 +113,35 @@ pub mod n719 {
         right
     }
 }
+
+// 878. 第 N 个神奇数字
+pub mod n878 {
+    pub fn nth_magical_number(n: i32, a: i32, b: i32) -> i32 {
+        const MOD: i64 = 1_000_000_007;
+
+        let n = n as i64;
+        let a = a as i64;
+        let b = b as i64;
+
+        // 最大公约数 gcd
+        fn gcd(x: i64, y: i64) -> i64 {
+            if y == 0 { x } else { gcd(y, x % y) }
+        }
+        let lcm = a / gcd(a, b) * b;
+
+        let mut left = a.min(b) + n - 1;
+        let mut right = a.min(b) * n;
+
+        while left < right {
+            let mid = left + (right - left) / 2;
+            let cnt = mid / a + mid / b - mid / lcm;
+            if cnt >= n {
+                right = mid;
+            } else {
+                left = mid + 1;
+            }
+        }
+
+        (right % MOD) as i32
+    }
+}
