@@ -145,3 +145,44 @@ pub mod n878 {
         (right % MOD) as i32
     }
 }
+
+// 1201. 丑数 III
+pub mod n1201 {
+    pub fn nth_ugly_number(n: i32, a: i32, b: i32, c: i32) -> i32 {
+        let (n, a, b, c) = (n as i64, a as i64, b as i64, c as i64);
+
+        // 最大公约数
+        fn gcd(x: i64, y: i64) -> i64 {
+            if y == 0 { x } else { gcd(y, x % y) }
+        }
+        // 最小公倍数
+        fn lcm(x: i64, y: i64) -> i64 {
+            x / gcd(x, y) * y
+        }
+
+        let lcm_ab = lcm(a, b);
+        let lcm_ac = lcm(a, c);
+        let lcm_bc = lcm(b, c);
+        let lcm_abc = lcm(lcm_ab, c);
+
+        // 计算 <=x 的丑数个数（容斥）
+        let check = |x: i64| -> bool {
+            let count = x / a + x / b + x / c - x / lcm_ab - x / lcm_ac - x / lcm_bc + x / lcm_abc;
+            count >= n
+        };
+
+        let mut left = a.min(b).min(c) + n - 1;
+        let mut right = a.min(b).min(c) * n;
+
+        while left < right {
+            let mid = left + (right - left) / 2;
+            if check(mid) {
+                right = mid;
+            } else {
+                left = mid + 1;
+            }
+        }
+
+        right as _
+    }
+}
