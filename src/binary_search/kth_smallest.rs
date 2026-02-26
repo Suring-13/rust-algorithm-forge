@@ -186,3 +186,81 @@ pub mod n1201 {
         right as _
     }
 }
+
+// 373. 查找和最小的 K 对数字
+pub mod n373 {
+    pub fn k_smallest_pairs(nums1: Vec<i32>, nums2: Vec<i32>, k: i32) -> Vec<Vec<i32>> {
+        let (m, n) = (nums1.len(), nums2.len());
+
+        let check = |mid: i32| -> bool {
+            let mut count = 0;
+            let mut i = 0;
+            let mut j = n - 1;
+
+            loop {
+                if nums1[i] + nums2[j] <= mid {
+                    count += j + 1;
+                    i += 1;
+                    if i == m {
+                        break;
+                    }
+                } else {
+                    if j == 0 {
+                        break;
+                    }
+                    j -= 1;
+                }
+            }
+            count >= k as usize
+        };
+
+        // 二分查找第 k 小的数对和，思路模仿第378题，假设存在矩阵matrix[i][j] = nums1[i] + nums2[j]
+        let (mut left, mut right) = (nums1[0] + nums2[0], nums1[m - 1] + nums2[n - 1] + 1); // 左闭右开 [left, right)
+        while left < right {
+            let mid = left + (right - left) / 2;
+            if check(mid) {
+                right = mid;
+            } else {
+                left = mid + 1;
+            }
+        }
+        let pair_sum = right;
+        let mut ans = Vec::with_capacity(k as usize);
+
+        // 因为存在重复的数对，所以要先找出小于目标值的数对，再找出等于目标值的数对
+
+        // 找数对和小于 pairSum 的数对
+        let mut i = n as i32 - 1;
+        for &num1 in nums1.iter() {
+            while i >= 0 && num1 + nums2[i as usize] >= pair_sum {
+                i -= 1;
+            }
+
+            for j in 0..i + 1 {
+                ans.push(vec![num1, nums2[j as usize]]);
+                if ans.len() == k as usize {
+                    return ans;
+                }
+            }
+        }
+
+        // 找数对和等于 pairSum 的数对
+        i = n as i32 - 1;
+        for &num1 in nums1.iter() {
+            while i >= 0 && num1 + nums2[i as usize] > pair_sum {
+                i -= 1;
+            }
+
+            // 反向更快找到足够的数对
+            for j in (0..i + 1).rev() {
+                if num1 + nums2[j as usize] == pair_sum {
+                    ans.push(vec![num1, nums2[j as usize]]);
+                }
+                if ans.len() == k as usize {
+                    return ans;
+                }
+            }
+        }
+        ans
+    }
+}
