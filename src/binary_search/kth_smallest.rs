@@ -264,3 +264,55 @@ pub mod n373 {
         ans
     }
 }
+
+// 1439. 有序矩阵中的第 k 个最小数组和
+pub mod n1439 {
+    pub fn kth_smallest(mat: Vec<Vec<i32>>, k: i32) -> i32 {
+        let sl: i32 = mat.iter().map(|row| row[0]).sum();
+        let sr: i32 = mat.iter().map(|row| row[row.len() - 1]).sum();
+
+        // 判断：和 <= s 的路径数量是否 >= k
+        let check = |k: i32, s: i32| -> bool {
+            let mut left_k = k;
+            dfs(&mat, mat.len() as i32 - 1, s - sl, &mut left_k)
+        };
+
+        fn dfs(mat: &Vec<Vec<i32>>, i: i32, s: i32, left_k: &mut i32) -> bool {
+            if i < 0 {
+                *left_k -= 1;
+                return *left_k == 0;
+            }
+
+            let i_usize = i as usize;
+            let first = mat[i_usize][0];
+
+            for &x in &mat[i_usize] {
+                let delta = x - first;
+                if delta > s {
+                    break;
+                }
+                if dfs(mat, i - 1, s - delta, left_k) {
+                    return true;
+                }
+            }
+
+            false
+        }
+
+        let mut left = sl;
+        let mut right = sr + 1;
+        let mut ans = 0;
+
+        while left < right {
+            let mid = left + (right - left) / 2;
+            if check(k, mid) {
+                right = mid;
+                ans = mid;
+            } else {
+                left = mid + 1;
+            }
+        }
+
+        ans
+    }
+}
