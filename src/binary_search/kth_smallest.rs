@@ -316,3 +316,45 @@ pub mod n1439 {
         ans
     }
 }
+
+// 786. 第 K 个最小的质数分数
+pub mod n786 {
+    pub fn kth_smallest_prime_fraction(arr: Vec<i32>, k: i32) -> Vec<i32> {
+        const EPS: f64 = 1e-8;
+        let n = arr.len();
+        let mut a = 0;
+        let mut b = 0;
+
+        let mut check = |x: f64| -> bool {
+            let mut ans = 0;
+            let mut i = 0;
+            for j in 1..n {
+                while i + 1 < n && (arr[i + 1] as f64) / (arr[j] as f64) <= x {
+                    i += 1;
+                }
+                if (arr[i] as f64) / (arr[j] as f64) <= x {
+                    ans += (i + 1) as i32;
+                }
+                if ((arr[i] as f64) / (arr[j] as f64) - x).abs() < EPS {
+                    a = arr[i];
+                    b = arr[j];
+                }
+            }
+            ans >= k
+        };
+
+        let mut left = 0.0;
+        let mut right = 1.0;
+
+        while right - left > EPS {
+            let mid = left + (right - left) / 2.0;
+            if check(mid) {
+                right = mid;
+            } else {
+                left = mid;
+            }
+        }
+
+        vec![a, b]
+    }
+}
