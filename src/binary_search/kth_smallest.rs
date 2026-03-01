@@ -358,3 +358,73 @@ pub mod n786 {
         vec![a, b]
     }
 }
+
+// 3116. 单面值组合的第 K 小金额
+pub mod n3116 {
+    pub fn find_kth_smallest(coins: Vec<i32>, k: i32) -> i64 {
+        let n = coins.len();
+        let k = k as i64;
+        if n == 0 {
+            return 0;
+        }
+
+        // 计算两个数的最大公约数（GCD）
+        fn gcd(a: i64, b: i64) -> i64 {
+            if b == 0 { a } else { gcd(b, a % b) }
+        }
+
+        // 计算两个数的最小公倍数（LCM）
+        fn lcm(a: i64, b: i64) -> i64 {
+            if a == 0 || b == 0 {
+                0
+            } else {
+                a / gcd(a, b) * b
+            }
+        }
+
+        // 检查函数：判断 ≤ m 的金额数是否 ≥ k
+        let check = |m: i64| -> bool {
+            let mut count = 0i64;
+            // 枚举所有非空子集（coins无重复，无需去重）
+            for mask in 1..(1 << n) {
+                let mut lcm_val = 1i64;
+                let mut bit_count = 0;
+                // 遍历子集的每一位
+                for j in 0..n {
+                    if (mask >> j) & 1 == 1 {
+                        bit_count += 1;
+                        lcm_val = lcm(lcm_val, coins[j] as i64);
+                        // LCM超过m，提前终止计算
+                        if lcm_val > m {
+                            break;
+                        }
+                    }
+                }
+                // 容斥原理：奇数子集加，偶数子集减
+                if lcm_val <= m {
+                    if bit_count % 2 == 1 {
+                        count += m / lcm_val
+                    } else {
+                        count -= m / lcm_val
+                    };
+                }
+            }
+            count >= k
+        };
+
+        let min_coin = *coins.iter().min().unwrap();
+        let mut left = min_coin as i64;
+        let mut right = min_coin as i64 * k;
+
+        while left < right {
+            let mid = left + (right - left) / 2;
+            if check(mid) {
+                right = mid;
+            } else {
+                left = mid + 1;
+            }
+        }
+
+        right
+    }
+}
