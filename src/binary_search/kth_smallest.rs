@@ -471,3 +471,100 @@ pub mod n3134 {
         right as _
     }
 }
+
+// 2040. 两个有序数组的第 K 小乘积
+pub mod n2040 {
+    pub fn kth_smallest_product(nums1: Vec<i32>, nums2: Vec<i32>, k: i64) -> i64 {
+        let a = &nums1;
+        let b = &nums2;
+        let n = a.len();
+        let m = b.len();
+
+        let i0 = a.partition_point(|&x| x < 0);
+        let j0 = b.partition_point(|&x| x < 0);
+
+        let check = |mx: i64| -> bool {
+            let mut cnt = 0i64;
+
+            if mx < 0 {
+                // 右上：a 负, b 正
+                let mut i = 0;
+                let mut j = j0;
+                while i < i0 && j < m {
+                    if (a[i] as i64) * (b[j] as i64) > mx {
+                        j += 1;
+                    } else {
+                        cnt += (m - j) as i64;
+                        i += 1;
+                    }
+                }
+
+                // 左下：a 正/0, b 负
+                let mut i = i0;
+                let mut j = 0;
+                while i < n && j < j0 {
+                    if (a[i] as i64) * (b[j] as i64) > mx {
+                        i += 1;
+                    } else {
+                        cnt += (n - i) as i64;
+                        j += 1;
+                    }
+                }
+            } else {
+                // 右上 + 左下 全部 <= 0 <= mx
+                cnt = (i0 * (m - j0)) as i64 + ((n - i0) * j0) as i64;
+
+                // 左上：a 负, b 负 → 乘积正
+                let mut i = 0;
+                let mut j = j0 - 1;
+                while i < i0 && j < m {
+                    if (a[i] as i64) * (b[j] as i64) > mx {
+                        i += 1;
+                    } else {
+                        cnt += (i0 - i) as i64;
+                        if j == 0 {
+                            break;
+                        }
+                        j -= 1;
+                    }
+                }
+
+                // 右下：a 正/0, b 正/0
+                let mut i = i0;
+                let mut j = m - 1;
+                while i < n && j >= j0 {
+                    if (a[i] as i64) * (b[j] as i64) > mx {
+                        if j == 0 {
+                            break;
+                        }
+                        j -= 1;
+                    } else {
+                        cnt += (j - j0 + 1) as i64;
+                        i += 1;
+                    }
+                }
+            }
+
+            cnt >= k
+        };
+
+        // 二分上下界
+        let c1 = a[0] as i64 * b[0] as i64;
+        let c2 = a[0] as i64 * b[m - 1] as i64;
+        let c3 = a[n - 1] as i64 * b[0] as i64;
+        let c4 = a[n - 1] as i64 * b[m - 1] as i64;
+        let mut left = c1.min(c2).min(c3).min(c4);
+        let mut right = c1.max(c2).max(c3).max(c4);
+
+        while left < right {
+            let mid = left + (right - left) / 2;
+            if check(mid) {
+                right = mid;
+            } else {
+                left = mid + 1;
+            }
+        }
+
+        right
+    }
+}
