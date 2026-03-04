@@ -568,3 +568,56 @@ pub mod n2040 {
         right
     }
 }
+
+// 2386. 找出数组的第 K 大和
+pub mod n2386 {
+    pub fn k_sum(mut nums: Vec<i32>, k: i32) -> i64 {
+        let mut total = 0i64;
+        for x in &mut nums {
+            if *x >= 0 {
+                total += *x as i64;
+            } else {
+                *x = -*x;
+            }
+        }
+        nums.sort_unstable();
+
+        // DFS 剪枝统计
+        fn dfs(i: usize, cur: i64, nums: &[i32], limit: i64, k: i32, cnt: &mut i32) {
+            if *cnt >= k || i >= nums.len() {
+                return;
+            }
+            let num = nums[i] as i64;
+            if cur + num > limit {
+                return;
+            }
+            *cnt += 1;
+            // 选
+            dfs(i + 1, cur + num, nums, limit, k, cnt);
+            // 不选
+            dfs(i + 1, cur, nums, limit, k, cnt);
+        }
+
+        // 判断：和 <= sum_limit 的子序列个数是否 >= k
+        let check = |sum_limit: i64| -> bool {
+            let mut cnt = 1; // 空子序列
+            dfs(0, 0, &nums, sum_limit, k, &mut cnt);
+            cnt >= k
+        };
+
+        let sum_nums: i64 = nums.iter().map(|&x| x as i64).sum();
+        let mut left = 0i64;
+        let mut right = sum_nums;
+
+        while left < right {
+            let mid = left + (right - left) / 2;
+            if check(mid) {
+                right = mid;
+            } else {
+                left = mid + 1;
+            }
+        }
+
+        total - right
+    }
+}
