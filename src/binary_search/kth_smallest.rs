@@ -621,3 +621,82 @@ pub mod n2386 {
         total - right
     }
 }
+
+// 1508. 子数组和排序后的区间和
+pub mod n1508 {
+    pub fn range_sum(nums: Vec<i32>, n: i32, left: i32, right: i32) -> i32 {
+        const MODULO: i64 = 1_000_000_007;
+
+        let n = n as usize;
+        let left = left as i64;
+        let right = right as i64;
+
+        // 前缀和 prefixSums[0..=n]
+        let mut prefix_sums = vec![0i64; n + 1];
+        for i in 0..n {
+            prefix_sums[i + 1] = prefix_sums[i] + nums[i] as i64;
+        }
+
+        // 前缀的前缀和 prefixPrefixSums[0..=n]
+        let mut prefix_prefix_sums = vec![0i64; n + 1];
+        for i in 0..n {
+            prefix_prefix_sums[i + 1] = prefix_prefix_sums[i] + prefix_sums[i + 1];
+        }
+
+        // 二分求 <= x 的子数组和个数
+        let get_count = |x: i64| -> i64 {
+            let mut count = 0i64;
+            let mut j = 1usize;
+            for i in 0..n {
+                while j <= n && prefix_sums[j] - prefix_sums[i] <= x {
+                    j += 1;
+                }
+                j -= 1;
+                count += (j - i) as i64;
+            }
+            count
+        };
+
+        // 二分求第 k 小的子数组和
+        let get_kth = |k: i64| -> i64 {
+            let mut left = 0i64;
+            let mut right = prefix_sums[n];
+            while left < right {
+                let mid = left + (right - left) / 2;
+                let cnt = get_count(mid);
+                if cnt >= k {
+                    right = mid;
+                } else {
+                    left = mid + 1;
+                }
+            }
+            right
+        };
+
+        // 求前 k 小的子数组和之和
+        let get_sum = |k: i64| -> i64 {
+            if k == 0 {
+                return 0;
+            }
+            let num = get_kth(k);
+            let mut total = 0i64;
+            let mut count = 0i64;
+            let mut j = 1usize;
+            for i in 0..n {
+                while j <= n && prefix_sums[j] - prefix_sums[i] < num {
+                    j += 1;
+                }
+                j -= 1;
+                let part =
+                    prefix_prefix_sums[j] - prefix_prefix_sums[i] - prefix_sums[i] * (j - i) as i64;
+                total += part;
+                count += (j - i) as i64;
+            }
+            total += num * (k - count);
+            total
+        };
+
+        let ans = (get_sum(right) - get_sum(left - 1)).rem_euclid(MODULO);
+        ans as i32
+    }
+}
