@@ -1,5 +1,6 @@
 //! 包含data structures相关算法实现
 
+pub mod enum_tricks; // 枚举技巧
 pub mod fenwick; // 树状数组
 pub mod heap; // 堆
 pub mod prefix_sum; // 前缀和/差分
