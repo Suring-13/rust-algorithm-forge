@@ -102,7 +102,7 @@ pub mod n704 {
 // 744. 寻找比目标字母大的最小字母
 pub mod n744 {
     pub fn next_greatest_letter(letters: Vec<char>, target: char) -> char {
-        if letters.len() > 0 && letters.last().unwrap() <= &target {
+        if !letters.is_empty() && letters.last().unwrap() <= &target {
             return letters[0];
         }
         let (mut left, mut right) = (0, letters.len()); // 左闭右开区间 [left, right)
@@ -288,7 +288,7 @@ pub mod n3488 {
         // 1. 构建数字到索引列表的哈希映射
         let mut indices: HashMap<i32, Vec<i32>> = HashMap::new();
         for (idx, &num) in nums.iter().enumerate() {
-            indices.entry(num).or_insert_with(Vec::new).push(idx as i32);
+            indices.entry(num).or_default().push(idx as i32);
         }
 
         let n = nums.len() as i32;
@@ -667,11 +667,11 @@ pub mod n475 {
             let n = houses.len();
             let m = heaters.len();
             let mut j = 0;
-            for i in 0..n {
-                while j < m && houses[i] > heaters[j] + x {
+            for &houses_item in houses.iter().take(n) {
+                while j < m && houses_item > heaters[j] + x {
                     j += 1;
                 }
-                if j >= m || houses[i] < heaters[j] - x {
+                if j >= m || houses_item < heaters[j] - x {
                     return true;
                 }
             }
@@ -1072,8 +1072,8 @@ pub mod n1898 {
         let check = |k: usize| -> bool {
             let mut state = vec![true; ns];
             // 标记k个要移除的位置为false
-            for i in 0..k {
-                let idx = removable[i] as usize;
+            for &removable_item in removable.iter().take(k) {
+                let idx = removable_item as usize;
                 state[idx] = false;
             }
             let mut j = 0;

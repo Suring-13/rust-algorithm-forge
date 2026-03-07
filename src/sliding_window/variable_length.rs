@@ -427,9 +427,8 @@ pub mod n2875 {
 }
 
 // 76. 最小覆盖子串
-#[allow(non_snake_case)]
 pub mod n76 {
-    pub fn min_window(S: String, t: String) -> String {
+    pub fn min_window(s: String, t: String) -> String {
         fn is_covered(cnt_s: &[i32; 128], cnt_t: &[i32; 128]) -> bool {
             for i in b'A'..=b'Z' {
                 if cnt_s[i as usize] < cnt_t[i as usize] {
@@ -450,13 +449,13 @@ pub mod n76 {
             cnt_t[c as usize] += 1;
         }
 
-        let s = S.as_bytes();
-        let m = s.len();
+        let s_bytes = s.as_bytes();
+        let m = s_bytes.len();
         let mut ans_left = 0;
         let mut ans_right = m;
 
         let mut left = 0;
-        for (right, &c) in s.iter().enumerate() {
+        for (right, &c) in s_bytes.iter().enumerate() {
             // 移动子串右端点
             cnt_s[c as usize] += 1; // 右端点字母移入子串
             while is_covered(&cnt_s, &cnt_t) {
@@ -466,19 +465,19 @@ pub mod n76 {
                     ans_left = left; // 记录此时的左右端点
                     ans_right = right;
                 }
-                cnt_s[s[left] as usize] -= 1; // 左端点字母移出子串
+                cnt_s[s_bytes[left] as usize] -= 1; // 左端点字母移出子串
                 left += 1;
             }
         }
 
         if ans_right < m {
-            S[ans_left..=ans_right].to_string()
+            s[ans_left..=ans_right].to_string()
         } else {
             String::new()
         }
     }
 
-    pub fn min_window1(S: String, t: String) -> String {
+    pub fn min_window1(s: String, t: String) -> String {
         let mut cnt = [0; 128];
         let mut less = 0;
         for c in t.bytes() {
@@ -489,13 +488,13 @@ pub mod n76 {
             cnt[c] += 1;
         }
 
-        let s = S.as_bytes();
-        let m = s.len();
+        let s_bytes = s.as_bytes();
+        let m = s_bytes.len();
         let mut ans_left = 0;
         let mut ans_right = m;
 
         let mut left = 0;
-        for (right, &c) in s.iter().enumerate() {
+        for (right, &c) in s_bytes.iter().enumerate() {
             // 移动子串右端点
             let c = c as usize;
             cnt[c] -= 1; // 右端点字母移入子串
@@ -510,7 +509,7 @@ pub mod n76 {
                     ans_left = left; // 记录此时的左右端点
                     ans_right = right;
                 }
-                let x = s[left] as usize; // 左端点字母
+                let x = s_bytes[left] as usize; // 左端点字母
                 if cnt[x] == 0 {
                     // x 移出窗口之前，检查出现次数，
                     // 如果窗口内 x 的出现次数和 t 一样，
@@ -523,7 +522,7 @@ pub mod n76 {
         }
 
         if ans_right < m {
-            S[ans_left..=ans_right].to_string()
+            s[ans_left..=ans_right].to_string()
         } else {
             String::new()
         }
@@ -840,7 +839,7 @@ pub mod n3298 {
             return 0;
         }
 
-        let mut diff = vec![0; 26]; // t 的字母出现次数与 s 的字母出现次数之差
+        let mut diff = [0; 26]; // t 的字母出现次数与 s 的字母出现次数之差
         for c in t.bytes() {
             diff[(c - b'a') as usize] += 1;
         }
@@ -895,8 +894,8 @@ pub mod n930 {
                 l1 += 1;
             }
 
-            // 计算 sum >= goal+1 的左边界
-            while l2 <= r && tmp_sum_2 >= goal + 1 {
+            // 计算 sum > goal 的左边界
+            while l2 <= r && tmp_sum_2 > goal {
                 tmp_sum_2 -= nums[l2];
                 l2 += 1;
             }
@@ -920,18 +919,18 @@ pub mod n1248 {
 
         for (right, &num) in nums.iter().enumerate() {
             // 更新奇数计数（判断是否为奇数）
-            cnt1 += (num & 1) as i32;
-            cnt2 += (num & 1) as i32;
+            cnt1 += num & 1;
+            cnt2 += num & 1;
 
             // 计算 cnt >= k 的左边界
             while left1 <= right && cnt1 >= k {
-                cnt1 -= (nums[left1] & 1) as i32;
+                cnt1 -= nums[left1] & 1;
                 left1 += 1;
             }
 
-            // 计算 cnt >= k + 1 的左边界
-            while left2 <= right && cnt2 >= k + 1 {
-                cnt2 -= (nums[left2] & 1) as i32;
+            // 计算 cnt > k 的左边界
+            while left2 <= right && cnt2 > k {
+                cnt2 -= nums[left2] & 1;
                 left2 += 1;
             }
 
@@ -1011,12 +1010,10 @@ pub mod n3306 {
 
 // 992. K 个不同整数的子数组
 pub mod n992 {
-    use std::collections::HashMap;
-
     pub fn subarrays_with_k_distinct(nums: Vec<i32>, k: i32) -> i32 {
         let k = k as usize;
-        let mut cnt1 = HashMap::new(); // 用于统计大于等于k个不同整数的窗口
-        let mut cnt2 = HashMap::new(); // 用于统计大于等于k+1个不同整数的窗口
+        let mut cnt1 = std::collections::HashMap::new(); // 用于统计大于等于k个不同整数的窗口
+        let mut cnt2 = std::collections::HashMap::new(); // 用于统计大于等于k+1个不同整数的窗口
         let mut ans = 0;
         let mut left1 = 0;
         let mut left2 = 0;
@@ -1035,8 +1032,8 @@ pub mod n992 {
                 left1 += 1;
             }
 
-            // 计算 cnt >= k + 1 的左边界
-            while left2 <= right && cnt2.len() >= k + 1 {
+            // 计算 cnt > k 的左边界
+            while left2 <= right && cnt2.len() > k {
                 let out = nums[left2];
                 *cnt2.get_mut(&out).unwrap() -= 1;
                 if cnt2[&out] == 0 {

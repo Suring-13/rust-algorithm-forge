@@ -164,10 +164,10 @@ pub mod n2528 {
 
         // 2. 计算每个位置的初始供电功率
         let mut power = vec![0i64; n];
-        for i in 0..n {
+        for (i, power_item) in power.iter_mut().take(n).enumerate() {
             let left = 0.max(i as isize - r as isize) as usize;
             let right = n.min(i + r + 1);
-            power[i] = prefix[right] - prefix[left];
+            *power_item = prefix[right] - prefix[left];
         }
 
         // 3. 定义检查函数：判断是否能让所有位置功率 ≥ low

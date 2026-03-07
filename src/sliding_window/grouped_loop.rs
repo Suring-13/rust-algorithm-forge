@@ -123,7 +123,7 @@ pub mod n2348 {
             if x != 0 {
                 last = i; // 记录上一个非 0 元素的位置
             } else {
-                ans += (i - last) as i64;
+                ans += i - last;
             }
         }
         ans
@@ -363,7 +363,7 @@ pub mod n1887 {
 
 // 845. 数组中的最长山脉
 pub mod n845 {
-    pub fn longest_mountain(arr: &Vec<i32>) -> i32 {
+    pub fn longest_mountain(arr: Vec<i32>) -> i32 {
         let mut ret = 0;
         let n = arr.len();
         let mut i = 0;
@@ -555,7 +555,7 @@ pub mod n1839 {
             }
         }
 
-        ans as i32
+        ans
     }
 }
 
@@ -722,8 +722,8 @@ pub mod n467 {
 
             // 每个字符最多统计26个（字母只有26个）
             let end = i.min(start + 26);
-            for j in start..end {
-                let c = s_bytes[j];
+            for (j, &s_bytes_item) in s_bytes.iter().enumerate().take(end).skip(start) {
+                let c = s_bytes_item;
                 // 记录以当前字符开头的最长有效子串长度
                 let entry = map.entry(c).or_insert(0);
                 *entry = (*entry).max(i - j);

@@ -390,10 +390,10 @@ pub mod n3116 {
                 let mut lcm_val = 1i64;
                 let mut bit_count = 0;
                 // 遍历子集的每一位
-                for j in 0..n {
+                for (j, &coins_item) in coins.iter().take(n).enumerate() {
                     if (mask >> j) & 1 == 1 {
                         bit_count += 1;
-                        lcm_val = lcm(lcm_val, coins[j] as i64);
+                        lcm_val = lcm(lcm_val, coins_item as i64);
                         // LCM超过m，提前终止计算
                         if lcm_val > m {
                             break;
@@ -433,7 +433,7 @@ pub mod n3116 {
 pub mod n3134 {
     pub fn median_of_uniqueness_array(nums: Vec<i32>) -> i32 {
         let n = nums.len();
-        let k = ((n * (n + 1) / 2 + 1) / 2) as i64;
+        let k = (n * (n + 1) / 2).div_ceil(2) as i64;
 
         let check = |upper: usize| -> bool {
             let mut cnt = 0i64;

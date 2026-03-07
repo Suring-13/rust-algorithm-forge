@@ -228,8 +228,6 @@ pub mod n1052 {
     pub fn max_satisfied(customers: Vec<i32>, grumpy: Vec<i32>, minutes: i32) -> i32 {
         let window_size = minutes as usize;
         let mut s = [0, 0]; // s[0] 老板不生气时的顾客数量，s[1] 老板生气时的顾客数量
-        #[allow(unused_assignments)]
-        let mut max_s1 = 0;
 
         customers
             .iter()
@@ -240,9 +238,9 @@ pub mod n1052 {
             });
         if customers.len() < window_size {
             return s[0] + s[1];
-        } else {
-            max_s1 = s[1];
         }
+
+        let mut max_s1 = s[1];
 
         for (i, (&c, &g)) in customers
             .iter()

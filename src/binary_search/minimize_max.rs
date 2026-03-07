@@ -532,14 +532,15 @@ pub mod n3605 {
                 }
 
                 // 最长有效子数组长度 > upper，必须切一刀
-                if let Some(&(g, l)) = intervals.first() {
-                    if g >= 2 && i - l + 1 > upper {
-                        if c == 0 {
-                            return false;
-                        }
-                        c -= 1;
-                        intervals.clear();
+                if let Some(&(g, l)) = intervals.first()
+                    && g >= 2
+                    && i - l + 1 > upper
+                {
+                    if c == 0 {
+                        return false;
                     }
+                    c -= 1;
+                    intervals.clear();
                 }
             }
 

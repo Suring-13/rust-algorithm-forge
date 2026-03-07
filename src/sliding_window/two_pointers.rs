@@ -1,6 +1,6 @@
 // 344. 反转字符串
 pub mod n344 {
-    pub fn reverse_string(s: &mut Vec<char>) {
+    pub fn reverse_string(s: &mut [char]) {
         let n = s.len();
         let mut left = 0;
         let mut right = n - 1;
@@ -48,7 +48,7 @@ pub mod n125 {
                 i += 1;
             } else if !s[j].is_ascii_alphanumeric() {
                 j -= 1;
-            } else if s[i].to_ascii_lowercase() == s[j].to_ascii_lowercase() {
+            } else if s[i].eq_ignore_ascii_case(&s[j]) {
                 i += 1;
                 j -= 1;
             } else {
@@ -593,7 +593,7 @@ pub mod n1577 {
                         r = r.wrapping_sub(1); // 避免underflow
                     }
 
-                    count += (left_count * right_count) as i32;
+                    count += left_count * right_count;
                     left = l;
                     right = r;
                 }
@@ -887,7 +887,7 @@ pub mod n1782 {
 // 3649. 完美对的数目
 pub mod n3649 {
     pub fn perfect_pairs(mut nums: Vec<i32>) -> i64 {
-        nums.sort_by(|a, b| a.abs().cmp(&b.abs()));
+        nums.sort_by_key(|a| a.abs());
 
         let mut ans = 0;
         let mut left = 0;
@@ -1150,7 +1150,7 @@ pub mod n1793 {
 
 // 27. 移除元素
 pub mod n27 {
-    pub fn remove_element(nums: &mut Vec<i32>, val: i32) -> i32 {
+    pub fn remove_element(nums: &mut [i32], val: i32) -> i32 {
         let mut left = 0;
         let mut right = nums.len(); // 初始指向数组末尾的下一个位置，左闭右开区间 [left, right)
 
@@ -1175,7 +1175,7 @@ pub mod n27 {
 
 // 26. 删除有序数组中的重复项
 pub mod n26 {
-    pub fn remove_duplicates(nums: &mut Vec<i32>) -> i32 {
+    pub fn remove_duplicates(nums: &mut [i32]) -> i32 {
         let mut k = 1;
 
         for i in 1..nums.len() {
@@ -1191,7 +1191,7 @@ pub mod n26 {
 
 // 80. 删除有序数组中的重复项 II
 pub mod n80 {
-    pub fn remove_duplicates(nums: &mut Vec<i32>) -> i32 {
+    pub fn remove_duplicates(nums: &mut [i32]) -> i32 {
         let n = nums.len();
         // 长度小于等于2时无需处理，直接返回原长度
         if n <= 2 {
@@ -1235,7 +1235,7 @@ pub mod n2273 {
 
 // 283. 移动零
 pub mod n283 {
-    pub fn move_zeroes(nums: &mut Vec<i32>) {
+    pub fn move_zeroes(nums: &mut [i32]) {
         let n = nums.len();
         let mut left = 0; // 指向非零元素应放置的位置
 
@@ -1318,7 +1318,7 @@ pub mod n2460 {
 
 // 1089. 复写零
 pub mod n1089 {
-    pub fn duplicate_zeros(arr: &mut Vec<i32>) {
+    pub fn duplicate_zeros(arr: &mut [i32]) {
         let n = arr.len();
         let mut i = 0;
         let mut j = 0;
@@ -1364,7 +1364,7 @@ pub mod n1089 {
 
 // 75. 颜色分类
 pub mod n75 {
-    pub fn sort_colors(nums: &mut Vec<i32>) {
+    pub fn sort_colors(nums: &mut [i32]) {
         let n = nums.len();
         if n < 2 {
             return;
@@ -1445,7 +1445,7 @@ pub mod n2540 {
 
 // 88. 合并两个有序数组
 pub mod n88 {
-    pub fn merge(nums1: &mut Vec<i32>, m: i32, nums2: &mut Vec<i32>, n: i32) {
+    pub fn merge(nums1: &mut [i32], m: i32, nums2: &mut [i32], n: i32) {
         let mut p1 = m as usize;
         let mut p2 = n as usize;
         let mut p = p1 + p2;
@@ -1510,9 +1510,9 @@ pub mod n1855 {
         let mut res = 0; // 存储最大距离的结果（初始化为 0）
 
         // 遍历 nums2 的每个元素（j 为当前索引）
-        for j in 0..n2 {
+        for (j, &nums2_item) in nums2.iter().take(n2).enumerate() {
             // 移动 i 指针：确保 i < n1 且 nums1[i] > nums2[j] 时，i 后移（满足 nums1[i] ≤ nums2[j] 的前提）
-            while i < n1 && nums1[i] > nums2[j] {
+            while i < n1 && nums1[i] > nums2_item {
                 i += 1;
             }
             if i < n1 && i <= j {
@@ -1853,12 +1853,10 @@ pub mod n524 {
             }
 
             // 比较长度和字典序
-            if i == t_bytes.len() {
-                if t_bytes.len() > result.as_bytes().len()
-                    || (t_bytes.len() == result.as_bytes().len() && t < result)
-                {
-                    result = t;
-                }
+            if i == t_bytes.len() && t_bytes.len() > result.len()
+                || (t_bytes.len() == result.len() && t < result)
+            {
+                result = t;
             }
         }
 

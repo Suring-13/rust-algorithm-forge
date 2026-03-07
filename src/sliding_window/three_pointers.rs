@@ -60,13 +60,13 @@ pub mod n795 {
 // 2444. 统计定界子数组的数目
 pub mod n2444 {
     pub fn count_subarrays(nums: Vec<i32>, min_k: i32, max_k: i32) -> i64 {
-        let mut res = 0 as i64;
+        let mut res = 0_i64;
         let (mut border, mut last_min, mut last_max) = (-1, -1, -1);
         for (i, &x) in nums.iter().enumerate() {
             if x < min_k || x > max_k {
                 border = i as i64;
-                last_min = -1 as i64;
-                last_max = -1 as i64;
+                last_min = -1_i64;
+                last_max = -1_i64;
             }
             if x == min_k {
                 last_min = i as i64;
