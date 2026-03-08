@@ -32,3 +32,23 @@ pub mod n1512 {
         ans
     }
 }
+
+// 2441. 与对应负数同时存在的最大正整数
+pub mod n2441 {
+    pub fn find_max_k(nums: Vec<i32>) -> i32 {
+        let mut ans = -1;
+        let mut s = std::collections::HashSet::new();
+
+        for &x in &nums {
+            // 检查当前数字的相反数是否在集合中
+            if s.contains(&(-x)) {
+                // 更新最大的绝对值
+                ans = ans.max(x.abs());
+            }
+            // 将当前数字加入集合
+            s.insert(x);
+        }
+
+        ans
+    }
+}
