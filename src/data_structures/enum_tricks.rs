@@ -52,3 +52,16 @@ pub mod n2441 {
         ans
     }
 }
+
+// 121. 买卖股票的最佳时机
+pub mod n121 {
+    pub fn max_profit(prices: Vec<i32>) -> i32 {
+        let mut ans = 0;
+        let mut min_price = prices[0];
+        for p in prices {
+            ans = ans.max(p - min_price);
+            min_price = min_price.min(p);
+        }
+        ans
+    }
+}
