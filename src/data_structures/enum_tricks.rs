@@ -65,3 +65,16 @@ pub mod n121 {
         ans
     }
 }
+
+// 2016. 增量元素之间的最大差值
+pub mod n2016 {
+    pub fn maximum_difference(nums: Vec<i32>) -> i32 {
+        let mut ans = 0;
+        let mut pre_min = nums[0];
+        for x in nums {
+            ans = ans.max(x - pre_min);
+            pre_min = pre_min.min(x);
+        }
+        if ans > 0 { ans } else { -1 }
+    }
+}
