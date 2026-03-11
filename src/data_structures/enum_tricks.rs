@@ -78,3 +78,23 @@ pub mod n2016 {
         if ans > 0 { ans } else { -1 }
     }
 }
+
+// 624. 数组列表中的最大距离
+pub mod n624 {
+    pub fn max_distance(arrays: Vec<Vec<i32>>) -> i32 {
+        let mut ans = 0;
+        let mut mn = i32::MAX / 2; // 防止减法溢出
+        let mut mx = i32::MIN / 2;
+        for a in arrays {
+            let x = a[0];
+            let y = a[a.len() - 1];
+            // 优化：不需要求绝对值，因为
+            // 如果 A[n−1]−mn<0，则 A[0]≤A[n−1]<mn≤mx，mx−A[0]≥mn−A[n−1]=|A[n−1]−mn| >0
+            // 如果 mx−A[0]<0， 则 mn≤mx<A[0]≤A[n−1], A[n−1]−mn≥A[0]-mx=|mx−A[0]| > 0
+            ans = ans.max(y - mn).max(mx - x);
+            mn = mn.min(x);
+            mx = mx.max(y);
+        }
+        ans
+    }
+}
