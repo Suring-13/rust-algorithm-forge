@@ -98,3 +98,24 @@ pub mod n624 {
         ans
     }
 }
+
+// 2342. 数位和相等数对的最大和
+pub mod n2342 {
+    pub fn maximum_sum(nums: Vec<i32>) -> i32 {
+        let mut ans = -1;
+        let mut mx = [i32::MIN; 82]; // 至多 9 个 9 相加
+        for num in nums {
+            // 枚举 num = nums[j]
+            let mut s = 0; // num 的数位和
+            let mut x = num;
+            while x > 0 {
+                // 枚举 num 的每个数位
+                s += (x % 10) as usize;
+                x /= 10;
+            }
+            ans = ans.max(mx[s] + num); // 左边找一个数位和也为 s 的最大的 nums[i]
+            mx[s] = mx[s].max(num); // 维护数位和等于 s 的最大元素
+        }
+        ans
+    }
+}
