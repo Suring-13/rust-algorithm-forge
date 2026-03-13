@@ -119,3 +119,21 @@ pub mod n2342 {
         ans
     }
 }
+
+// 1128. 等价多米诺骨牌对的数量
+pub mod n1128 {
+    pub fn num_equiv_domino_pairs(dominoes: Vec<Vec<i32>>) -> i32 {
+        let mut ans = 0;
+        let mut cnt = [[0; 10]; 10];
+        for d in dominoes {
+            let mut a = d[0] as usize;
+            let mut b = d[1] as usize;
+            if a > b {
+                std::mem::swap(&mut a, &mut b);
+            }
+            ans += cnt[a][b];
+            cnt[a][b] += 1;
+        }
+        ans
+    }
+}
