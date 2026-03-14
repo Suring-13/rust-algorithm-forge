@@ -137,3 +137,22 @@ pub mod n1128 {
         ans
     }
 }
+
+// 1679. K 和数对的最大数目
+pub mod n1679 {
+    pub fn max_operations(nums: Vec<i32>, k: i32) -> i32 {
+        let mut cnt = std::collections::HashMap::new();
+        let mut ans = 0;
+        for x in nums {
+            if let Some(c) = cnt.get_mut(&(k - x))
+                && *c > 0
+            {
+                *c -= 1;
+                ans += 1;
+                continue;
+            }
+            *cnt.entry(x).or_insert(0) += 1;
+        }
+        ans
+    }
+}
