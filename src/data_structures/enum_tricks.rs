@@ -156,3 +156,23 @@ pub mod n1679 {
         ans
     }
 }
+
+// 219. 存在重复元素 II
+pub mod n219 {
+    pub fn contains_nearby_duplicate(nums: Vec<i32>, k: i32) -> bool {
+        let mut last = std::collections::HashMap::new();
+        let k = k as usize;
+
+        for (i, x) in nums.iter().enumerate() {
+            if let Some(&j) = last.get(x)
+                && i - j <= k
+            {
+                return true;
+            }
+
+            last.insert(x, i);
+        }
+
+        false
+    }
+}
