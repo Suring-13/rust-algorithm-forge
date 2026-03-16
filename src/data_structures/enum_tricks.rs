@@ -176,3 +176,20 @@ pub mod n219 {
         false
     }
 }
+
+// 2260. 必须拿起的最小连续卡牌数
+pub mod n2260 {
+    pub fn minimum_card_pickup(cards: Vec<i32>) -> i32 {
+        let mut ans = cards.len() + 1;
+        let mut pos = std::collections::HashMap::new();
+
+        for (i, &v) in cards.iter().enumerate() {
+            if let Some(&p) = pos.get(&v) {
+                ans = ans.min(i - p + 1);
+            }
+            pos.insert(v, i);
+        }
+
+        if ans <= cards.len() { ans as i32 } else { -1 }
+    }
+}
