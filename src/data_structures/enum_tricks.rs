@@ -193,3 +193,29 @@ pub mod n2260 {
         if ans <= cards.len() { ans as i32 } else { -1 }
     }
 }
+
+// 2001. 可互换矩形的组数
+pub mod n2001 {
+    pub fn interchangeable_rectangles(rectangles: Vec<Vec<i32>>) -> i64 {
+        // 求最大公约数
+        fn gcd(a: i32, b: i32) -> i32 {
+            if b == 0 { a } else { gcd(b, a % b) }
+        }
+
+        let mut map = std::collections::HashMap::new();
+        let mut ans = 0i64;
+
+        for rect in rectangles {
+            let w = rect[0];
+            let h = rect[1];
+            let g = gcd(w, h);
+            // 因为浮点数不能比较，所以使用约分后的分式作为 key
+            let key = (w / g, h / g);
+
+            ans += *map.get(&key).unwrap_or(&0);
+            *map.entry(key).or_insert(0) += 1;
+        }
+
+        ans
+    }
+}
