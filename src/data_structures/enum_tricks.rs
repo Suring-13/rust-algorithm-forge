@@ -219,3 +219,29 @@ pub mod n2001 {
         ans
     }
 }
+
+// 2815. 数组中的最大数对和
+pub mod n2815 {
+    pub fn max_sum(nums: Vec<i32>) -> i32 {
+        let mut ans = -1; // 最终答案，初始为 -1
+        let mut max_val = [i32::MIN; 10]; // max_val[d] = 最大位是 d 的最大数
+
+        for &v in &nums {
+            // 遍历每个数
+            let mut max_d = 0; // 求当前数字 v 的最大位
+            let mut x = v;
+            while x > 0 {
+                max_d = max_d.max(x % 10); // 取个位，更新最大位
+                x /= 10;
+            }
+
+            let max_d = max_d as usize;
+            // 当前数 + 之前同最大位的最大数 → 更新答案
+            ans = ans.max(v + max_val[max_d]);
+            // 更新同最大位的最大数
+            max_val[max_d] = max_val[max_d].max(v);
+        }
+
+        ans
+    }
+}
