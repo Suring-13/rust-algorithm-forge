@@ -245,3 +245,29 @@ pub mod n2815 {
         ans
     }
 }
+
+// 3623. 统计梯形的数目 I
+pub mod n3623 {
+    pub fn count_trapezoids(points: Vec<Vec<i32>>) -> i32 {
+        const MOD: i64 = 1_000_000_007;
+        let mut cnt = std::collections::HashMap::new();
+
+        // 统计每一行（水平线）有多少个点
+        for p in &points {
+            let y = p[1];
+            *cnt.entry(y).or_insert(0) += 1;
+        }
+
+        let mut ans = 0i64;
+        let mut s = 0i64;
+
+        for &c in cnt.values() {
+            let k = (c as i64) * (c as i64 - 1) / 2;
+            ans += s * k;
+            ans %= MOD;
+            s += k;
+        }
+
+        ans as i32
+    }
+}
