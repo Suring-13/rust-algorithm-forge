@@ -271,3 +271,18 @@ pub mod n3623 {
         ans as i32
     }
 }
+
+// 2364. 统计坏数对的数目
+pub mod n2364 {
+    pub fn count_bad_pairs(nums: Vec<i32>) -> i64 {
+        let n = nums.len() as i64;
+        let mut ans = n * (n - 1) / 2;
+        let mut cnt = std::collections::HashMap::new();
+        for (i, x) in nums.into_iter().enumerate() {
+            let e = cnt.entry(x - i as i32).or_insert(0);
+            ans -= *e as i64;
+            *e += 1;
+        }
+        ans
+    }
+}
