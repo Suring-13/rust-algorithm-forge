@@ -286,3 +286,30 @@ pub mod n2364 {
         ans
     }
 }
+
+// 3805. 统计凯撒加密对数目
+pub mod n3805 {
+    pub fn count_pairs(words: Vec<String>) -> i32 {
+        let mut cnt = std::collections::HashMap::new();
+        let mut ans = 0;
+
+        for s in words {
+            let bytes = s.as_bytes();
+
+            let base = bytes[0];
+            // 构建归一化后的 bytes 数组
+            let mut normalized = Vec::with_capacity(bytes.len());
+            for &b in bytes {
+                // 加26是为了确保非负
+                let offset = (b + 26 - base) % 26;
+                // 归一化为从 b'a' 开始的字节； 也可以把加a去掉，因为所有的加a，相当与大家都没加
+                normalized.push(b'a' + offset);
+            }
+
+            ans += cnt.get(&normalized).unwrap_or(&0);
+            *cnt.entry(normalized).or_insert(0) += 1;
+        }
+
+        ans
+    }
+}
