@@ -313,3 +313,35 @@ pub mod n3805 {
         ans
     }
 }
+
+// 3371. 识别数组中的最大异常值
+pub mod n3371 {
+    pub fn get_largest_outlier(nums: Vec<i32>) -> i32 {
+        // 1. 统计数字出现次数
+        let mut cnt = std::collections::HashMap::new();
+        for num in nums.iter() {
+            *cnt.entry(num).or_insert(0) += 1;
+        }
+
+        // 2. 计算总和
+        let total: i32 = nums.iter().sum();
+
+        // 3. 初始化结果为极小值
+        let mut ans = i32::MIN;
+
+        // 4. 遍历每个数字计算 t
+        for &y in nums.iter() {
+            let t = total - 2 * y;
+
+            // 检查 t 是否在统计结果中
+            if let Some(&count) = cnt.get(&t) {
+                // 满足条件：t≠y 或 t=y但出现次数>1
+                if t != y || count > 1 {
+                    ans = ans.max(t);
+                }
+            }
+        }
+
+        ans
+    }
+}
