@@ -345,3 +345,35 @@ pub mod n3371 {
         ans
     }
 }
+
+// 3761. 镜像对之间最小绝对距离
+pub mod n3761 {
+    pub fn min_mirror_pair_distance(nums: Vec<i32>) -> i32 {
+        // 数字反转
+        fn reverse_num(mut x: i32) -> i32 {
+            let mut rev = 0i32;
+            while x > 0 {
+                rev = rev * 10 + (x % 10);
+                x /= 10;
+            }
+            rev
+        }
+
+        let mut last_index = std::collections::HashMap::new();
+        let mut min_dist = i32::MAX;
+
+        for (j, &x) in nums.iter().enumerate() {
+            let j = j as i32;
+
+            // 如果当前数已经被作为「反转数」存过，更新最小距离
+            if let Some(&prev) = last_index.get(&x) {
+                min_dist = min_dist.min(j - prev);
+            }
+
+            let rev = reverse_num(x);
+            last_index.insert(rev, j);
+        }
+
+        if min_dist == i32::MAX { -1 } else { min_dist }
+    }
+}
