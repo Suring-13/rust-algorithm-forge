@@ -377,3 +377,16 @@ pub mod n3761 {
         if min_dist == i32::MAX { -1 } else { min_dist }
     }
 }
+
+// 1014. 最佳观光组合
+pub mod n1014 {
+    pub fn max_score_sightseeing_pair(values: Vec<i32>) -> i32 {
+        let mut ans = 0;
+        let mut mx = 0; // j 左边的 values[i] + i 的最大值
+        for (j, &v) in values.iter().enumerate() {
+            ans = ans.max(mx + v - j as i32);
+            mx = mx.max(v + j as i32);
+        }
+        ans
+    }
+}
