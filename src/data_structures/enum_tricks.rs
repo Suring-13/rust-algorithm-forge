@@ -390,3 +390,30 @@ pub mod n1014 {
         ans
     }
 }
+
+// 1814. 统计一个数组中好对子的数目
+pub mod n1814 {
+    pub fn count_nice_pairs(nums: Vec<i32>) -> i32 {
+        fn reverse(mut x: i32) -> i32 {
+            let mut rev = 0;
+            while x > 0 {
+                rev = rev * 10 + x % 10;
+                x /= 10;
+            }
+            rev
+        }
+        const MOD: i64 = 1_000_000_007;
+
+        let mut cnt = std::collections::HashMap::new();
+        let mut ans = 0i64;
+
+        for &num in &nums {
+            let rev = reverse(num);
+            let key = num - rev;
+            ans += *cnt.get(&key).unwrap_or(&0) as i64;
+            *cnt.entry(key).or_insert(0) += 1;
+        }
+
+        (ans % MOD) as _
+    }
+}
