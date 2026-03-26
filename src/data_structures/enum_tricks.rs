@@ -417,3 +417,27 @@ pub mod n1814 {
         (ans % MOD) as _
     }
 }
+
+// 3584. 子序列首尾元素的最大乘积
+pub mod n3584 {
+    pub fn maximum_product(nums: Vec<i32>, m: i32) -> i64 {
+        let m = m as usize;
+        let nums: Vec<i64> = nums.into_iter().map(|x| x as i64).collect();
+        let mut ans = i64::MIN;
+        let mut mx = i64::MIN;
+        let mut mn = i64::MAX;
+
+        for i in (m - 1)..nums.len() {
+            // 维护左边 [0, i-m+1] 的最小/最大值
+            let y = nums[i - m + 1];
+            mn = mn.min(y);
+            mx = mx.max(y);
+
+            // 枚举右端点
+            let x = nums[i];
+            ans = ans.max((x * mn).max(x * mx));
+        }
+
+        ans
+    }
+}
