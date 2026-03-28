@@ -464,3 +464,20 @@ pub mod n2905 {
         vec![-1, -1]
     }
 }
+
+// 1010. 总持续时间可被 60 整除的歌曲
+pub mod n1010 {
+    pub fn num_pairs_divisible_by60(time: Vec<i32>) -> i32 {
+        let mut ans = 0i64;
+        let mut cnt = [0; 60];
+
+        for &t in &time {
+            let rem = (t % 60) as usize;
+            let target = (60 - rem) % 60;
+            ans += cnt[target] as i64;
+            cnt[rem] += 1;
+        }
+
+        ans as i32
+    }
+}
