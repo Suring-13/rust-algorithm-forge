@@ -481,3 +481,18 @@ pub mod n1010 {
         ans as i32
     }
 }
+
+// 3185. 构成整天的下标对数目 II
+pub mod n3185 {
+    pub fn count_complete_day_pairs(hours: Vec<i32>) -> i64 {
+        const H: usize = 24;
+        let mut ans = 0i64;
+        let mut cnt = [0; H];
+        for t in hours {
+            let t = t as usize % H;
+            ans += cnt[(H - t) % H] as i64;
+            cnt[t] += 1;
+        }
+        ans
+    }
+}
