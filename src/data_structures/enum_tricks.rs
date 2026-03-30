@@ -496,3 +496,34 @@ pub mod n3185 {
         ans
     }
 }
+
+// 2748. 美丽下标对的数目
+pub mod n2748 {
+    pub fn count_beautiful_pairs(nums: Vec<i32>) -> i32 {
+        // 最大公约数 gcd
+        fn gcd(x: i32, y: i32) -> i32 {
+            if y == 0 { x } else { gcd(y, x % y) }
+        }
+
+        let mut ans = 0;
+        let mut cnt = [0; 10];
+
+        for &x in &nums {
+            let last = x % 10;
+
+            for (y, &cnt_item) in cnt.iter().enumerate() {
+                if cnt_item > 0 && gcd(y as i32, last) == 1 {
+                    ans += cnt_item;
+                }
+            }
+
+            let mut first = x;
+            while first >= 10 {
+                first /= 10;
+            }
+            cnt[first as usize] += 1;
+        }
+
+        ans
+    }
+}
