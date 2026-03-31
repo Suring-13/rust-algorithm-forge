@@ -527,3 +527,21 @@ pub mod n2748 {
         ans
     }
 }
+
+// 2506. 统计相似字符串对的数目
+pub mod n2506 {
+    pub fn similar_pairs(words: Vec<String>) -> i32 {
+        let mut cnt = std::collections::HashMap::new();
+        let mut ans = 0;
+        for s in words {
+            let mut mask = 0; // 初始化一个空的集合
+            for c in s.bytes() {
+                mask |= 1 << (c - b'a'); // 把 c 加到集合中
+            }
+            let e = cnt.entry(mask).or_insert(0);
+            ans += *e;
+            *e += 1;
+        }
+        ans
+    }
+}
