@@ -560,3 +560,30 @@ pub mod n2874 {
         ans
     }
 }
+
+// 1497. 检查数组对是否可以被 k 整除
+pub mod n1497 {
+    pub fn can_arrange(arr: Vec<i32>, k: i32) -> bool {
+        let mut cnt = std::collections::HashMap::new();
+        let mut ans = 0;
+
+        for &x in &arr {
+            // 让余数 m 一定落在 [0, k-1], 也可以用数学求模的API：x.rem_euclid(k)
+            let m = (x % k + k) % k;
+
+            // 必须 (k - m) % k
+            // 原因：当 m == 0 时，k - m = k，而我们真正要匹配的是 0
+            // 不加 %k 会去查 key=k，永远匹配不到存的 key=0，直接错误
+            let target = (k - m) % k;
+
+            if *cnt.get(&target).unwrap_or(&0) > 0 {
+                ans += 1;
+                *cnt.get_mut(&target).unwrap() -= 1;
+            } else {
+                cnt.entry(m).and_modify(|c| *c += 1).or_insert(1);
+            }
+        }
+
+        ans == arr.len() / 2
+    }
+}
