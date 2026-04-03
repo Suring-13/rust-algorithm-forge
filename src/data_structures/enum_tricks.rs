@@ -587,3 +587,37 @@ pub mod n1497 {
         ans == arr.len() / 2
     }
 }
+
+// 1031. 两个无重叠子数组的最大和
+pub mod n1031 {
+    pub fn max_sum_two_no_overlap(nums: Vec<i32>, first_len: i32, second_len: i32) -> i32 {
+        let first_len = first_len as usize;
+        let second_len = second_len as usize;
+        // 计算前缀和数组
+        let mut s = vec![0];
+        let mut sum = 0;
+        for &num in &nums {
+            sum += num;
+            s.push(sum);
+        }
+
+        let mut ans = 0;
+        let mut max_sum_a = 0;
+        let mut max_sum_b = 0;
+        let total_len = first_len + second_len;
+
+        for i in total_len..s.len() {
+            // 更新 maxSumA：前一段是 firstLen，后一段是 secondLen
+            max_sum_a = max_sum_a.max(s[i - second_len] - s[i - first_len - second_len]);
+            // 更新 maxSumB：前一段是 secondLen，后一段是 firstLen
+            max_sum_b = max_sum_b.max(s[i - first_len] - s[i - first_len - second_len]);
+
+            // 计算两种组合的最大值
+            let case1 = max_sum_a + (s[i] - s[i - second_len]);
+            let case2 = max_sum_b + (s[i] - s[i - first_len]);
+            ans = ans.max(case1).max(case2);
+        }
+
+        ans
+    }
+}
