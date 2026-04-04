@@ -621,3 +621,37 @@ pub mod n1031 {
         ans
     }
 }
+
+// 2555. 两个线段获得的最多奖品
+pub mod n2555 {
+    pub fn maximize_win(prize_positions: Vec<i32>, k: i32) -> i32 {
+        let n = prize_positions.len();
+
+        if k * 2 + 1 >= prize_positions[n - 1] - prize_positions[0] {
+            return n as _;
+        }
+
+        let mut ans = 0;
+        let mut mx = 0;
+        let mut left = 0;
+        let mut right = 0;
+
+        for (mid, &p) in prize_positions.iter().enumerate() {
+            // 把 prize_positions[mid] 视作第二条线段的左端点，计算第二条线段可以覆盖的最大奖品下标
+            while right < n && prize_positions[right] - p <= k {
+                right += 1;
+            }
+            // 循环结束后，right-1 是第二条线段可以覆盖的最大奖品下标
+            ans = ans.max(mx + right - mid);
+
+            // 把 prize_positions[mid] 视作第一条线段的右端点，计算第一条线段可以覆盖的最小奖品下标
+            while p - prize_positions[left] > k {
+                left += 1;
+            }
+            // 循环结束后，left 是第一条线段可以覆盖的最小奖品下标
+            mx = mx.max(mid - left + 1);
+        }
+
+        ans as _
+    }
+}
