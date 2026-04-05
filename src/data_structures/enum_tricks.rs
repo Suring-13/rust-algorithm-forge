@@ -655,3 +655,27 @@ pub mod n2555 {
         ans as _
     }
 }
+
+// 1995. 统计特殊四元组
+pub mod n1995 {
+    pub fn count_quadruplets(nums: Vec<i32>) -> i32 {
+        let n = nums.len();
+        let mut ans = 0;
+        let mut hashmap = std::collections::HashMap::new();
+
+        for c in 0..n {
+            // 枚举nums[d] - nums[c]
+            for d in (c + 1)..n {
+                let key = nums[d] - nums[c];
+                ans += hashmap.get(&key).copied().unwrap_or(0);
+            }
+            // 维护nums[a] + nums[b]
+            for a in 0..c {
+                let key = nums[a] + nums[c];
+                *hashmap.entry(key).or_insert(0) += 1;
+            }
+        }
+
+        ans
+    }
+}
