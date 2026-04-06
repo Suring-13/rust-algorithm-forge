@@ -679,3 +679,45 @@ pub mod n1995 {
         ans
     }
 }
+
+// 3404. 统计特殊子序列的数目
+pub mod n3404 {
+    pub fn number_of_subsequences(nums: Vec<i32>) -> i64 {
+        let mut ans: i64 = 0;
+        let mut cnt = std::collections::HashMap::new();
+        let n = nums.len();
+
+        // 求最大公约数
+        fn gcd(a: i32, b: i32) -> i32 {
+            if b == 0 { a } else { gcd(b, a % b) }
+        }
+
+        // 枚举 c 的位置
+        for i in 4..n.saturating_sub(2) {
+            // b = nums[i-2]
+            let b = nums[i - 2];
+
+            // 枚举 a: nums[0 .. i-3]
+            for &a_num in &nums[0..i - 3] {
+                let a = a_num;
+                let g = gcd(a, b);
+                // 因为浮点数不能比较，所以使用约分后的分式作为 key
+                let key = (a / g, b / g);
+                *cnt.entry(key).or_insert(0) += 1;
+            }
+
+            let c = nums[i];
+
+            // 枚举 d: nums[i+2 ..]
+            for &d_num in &nums[i + 2..] {
+                let d = d_num;
+                let g = gcd(d, c);
+                // 因为浮点数不能比较，所以使用约分后的分式作为 key
+                let key = (d / g, c / g);
+                ans += cnt.get(&key).unwrap_or(&0);
+            }
+        }
+
+        ans
+    }
+}
