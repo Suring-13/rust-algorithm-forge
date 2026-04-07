@@ -721,3 +721,45 @@ pub mod n3404 {
         ans
     }
 }
+
+// 3267. 统计近似相等数对 II
+pub mod n3267 {
+    pub fn count_pairs(mut nums: Vec<i32>) -> i32 {
+        nums.sort_unstable();
+
+        let mut cnt = std::collections::HashMap::new();
+        let mut ans = 0;
+
+        for &x in &nums {
+            let mut st = std::collections::HashSet::new();
+            st.insert(x);
+
+            let mut s: Vec<char> = x.to_string().chars().collect();
+            let m = s.len();
+
+            for i in 0..m {
+                for j in (i + 1)..m {
+                    s.swap(i, j);
+                    let num1 = s.iter().collect::<String>().parse::<i32>().unwrap();
+                    st.insert(num1);
+
+                    for p in (i + 1)..m {
+                        for q in (p + 1)..m {
+                            s.swap(p, q);
+                            let num2 = s.iter().collect::<String>().parse::<i32>().unwrap();
+                            st.insert(num2);
+                            s.swap(p, q);
+                        }
+                    }
+                    s.swap(i, j);
+                }
+            }
+
+            let sum: i32 = st.iter().map(|v| cnt.get(v).unwrap_or(&0)).sum();
+            ans += sum;
+            *cnt.entry(x).or_insert(0) += 1;
+        }
+
+        ans
+    }
+}
