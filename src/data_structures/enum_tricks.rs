@@ -763,3 +763,35 @@ pub mod n3267 {
         ans
     }
 }
+
+// 3480. 删除一个冲突对后最大子数组数目
+pub mod n3480 {
+    pub fn max_subarrays(n: i32, conflicting_pairs: Vec<Vec<i32>>) -> i64 {
+        let mut groups = vec![vec![]; (n + 1) as usize];
+        for p in conflicting_pairs {
+            let a = p[0];
+            let b = p[1];
+            let (x, y) = if a < b { (a, b) } else { (b, a) };
+            groups[x as usize].push(y);
+        }
+
+        let mut ans = 0i64;
+        let mut extra = vec![0i64; (n + 2) as usize];
+        let mut b = vec![n + 1, n + 1];
+
+        for i in (1..=n).rev() {
+            // b + groups[i]
+            b.extend(&groups[i as usize]);
+
+            // 排序取前2个最小
+            b.sort_unstable();
+            b.truncate(2);
+
+            ans += (b[0] - i) as i64;
+            extra[b[0] as usize] += (b[1] - b[0]) as i64;
+        }
+
+        let max_extra = *extra.iter().max().unwrap();
+        ans + max_extra
+    }
+}
