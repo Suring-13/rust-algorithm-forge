@@ -795,3 +795,28 @@ pub mod n3480 {
         ans + max_extra
     }
 }
+
+// 454. 四数相加 II
+pub mod n454 {
+    pub fn four_sum_count(
+        nums1: Vec<i32>,
+        nums2: Vec<i32>,
+        nums3: Vec<i32>,
+        nums4: Vec<i32>,
+    ) -> i32 {
+        let mut cnt = std::collections::HashMap::new();
+        for x in nums1 {
+            for &y in &nums2 {
+                *cnt.entry(x + y).or_insert(0) += 1;
+            }
+        }
+
+        let mut ans = 0;
+        for x in nums3 {
+            for &y in &nums4 {
+                ans += cnt.get(&(-x - y)).unwrap_or(&0);
+            }
+        }
+        ans
+    }
+}
