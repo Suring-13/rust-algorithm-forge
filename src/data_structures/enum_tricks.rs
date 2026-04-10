@@ -820,3 +820,40 @@ pub mod n454 {
         ans
     }
 }
+
+// 220. 存在重复元素 III
+pub mod n220 {
+    pub fn contains_nearby_almost_duplicate(
+        nums: Vec<i32>,
+        index_diff: i32,
+        value_diff: i32,
+    ) -> bool {
+        let mut window: Vec<i32> = Vec::new();
+        let idx_diff = index_diff as usize;
+
+        for r in 0..nums.len() {
+            // 移除窗口左侧过期元素 [r-index_diff , r]
+            if r > idx_diff {
+                let val = nums[r - idx_diff - 1];
+                // 找到删除位置
+                let pos = window.binary_search(&val).unwrap();
+                window.remove(pos);
+            }
+
+            let cur = nums[r];
+            // 找 >= cur - value_diff 的第一个元素
+            let target = cur - value_diff;
+            let pos = window.binary_search(&target).unwrap_or_else(|p| p);
+
+            if pos < window.len() && window[pos] <= cur + value_diff {
+                return true;
+            }
+
+            // 有序插入当前元素
+            let insert_pos = window.binary_search(&cur).unwrap_or_else(|p| p);
+            window.insert(insert_pos, cur);
+        }
+
+        false
+    }
+}
