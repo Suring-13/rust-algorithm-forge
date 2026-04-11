@@ -857,3 +857,26 @@ pub mod n220 {
         false
     }
 }
+
+// 3027. 人员站位的方案数 II
+pub mod n3027 {
+    pub fn number_of_pairs(mut points: Vec<Vec<i32>>) -> i32 {
+        points.sort_unstable_by_key(|p| (p[0], -p[1])); // x 升序，y 降序
+        let mut ans = 0;
+        for (i, p) in points.iter().enumerate() {
+            let y1 = p[1];
+            let mut max_y = i32::MIN;
+            for q in &points[i + 1..] {
+                let y2 = q[1];
+                if y2 <= y1 && y2 > max_y {
+                    max_y = y2;
+                    ans += 1;
+                }
+                if max_y == y1 {
+                    break;
+                }
+            }
+        }
+        ans
+    }
+}
