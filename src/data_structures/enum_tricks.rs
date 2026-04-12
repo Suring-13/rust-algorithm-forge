@@ -880,3 +880,29 @@ pub mod n3027 {
         ans
     }
 }
+
+// 3713. 最长的平衡子串 I
+pub mod n3713 {
+    pub fn longest_balanced(s: String) -> i32 {
+        let s = s.as_bytes();
+        let mut ans = 0;
+
+        for i in 0..s.len() {
+            let mut cnt = std::collections::HashMap::new();
+            let mut mx = 0;
+
+            for (j, s_item) in s.iter().enumerate().skip(i) {
+                *cnt.entry(*s_item).or_insert(0) += 1;
+
+                mx = mx.max(cnt[s_item]);
+
+                let total = (j - i + 1) as i32;
+                if mx * cnt.len() as i32 == total {
+                    ans = ans.max(total);
+                }
+            }
+        }
+
+        ans
+    }
+}
