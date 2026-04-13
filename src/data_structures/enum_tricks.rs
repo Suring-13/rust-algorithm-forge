@@ -906,3 +906,26 @@ pub mod n3713 {
         ans
     }
 }
+
+// 2909. 元素和最小的山形三元组 II
+pub mod n2909 {
+    pub fn minimum_sum(nums: Vec<i32>) -> i32 {
+        let n = nums.len();
+        let mut suf = vec![0; n]; // 后缀最小值
+        suf[n - 1] = nums[n - 1];
+        for i in (2..n - 1).rev() {
+            suf[i] = suf[i + 1].min(nums[i]);
+        }
+
+        let mut ans = i32::MAX;
+        let mut pre = nums[0]; // 前缀最小值
+        for j in 1..n - 1 {
+            // 山形
+            if pre < nums[j] && nums[j] > suf[j + 1] {
+                ans = ans.min(pre + nums[j] + suf[j + 1]);
+            }
+            pre = pre.min(nums[j]);
+        }
+        if ans == i32::MAX { -1 } else { ans }
+    }
+}
