@@ -929,3 +929,38 @@ pub mod n2909 {
         if ans == i32::MAX { -1 } else { ans }
     }
 }
+
+// 3583. 统计特殊三元组
+pub mod n3583 {
+    pub fn special_triplets(nums: Vec<i32>) -> i32 {
+        const MOD: i64 = 1_000_000_007;
+        // 后缀计数器初始化
+        let mut suf = std::collections::HashMap::new();
+        for v in nums.iter() {
+            *suf.entry(*v).or_insert(0) += 1;
+        }
+
+        let mut ans: i64 = 0;
+        let mut pre = std::collections::HashMap::new();
+
+        for x in nums.iter() {
+            // 先把当前 x 从后缀剔除
+            if let Some(cnt) = suf.get_mut(x) {
+                *cnt -= 1;
+                if *cnt == 0 {
+                    suf.remove(x);
+                }
+            }
+
+            let target = x * 2;
+            let left = pre.get(&target).copied().unwrap_or(0) as i64;
+            let right = suf.get(&target).copied().unwrap_or(0) as i64;
+            ans += left * right;
+
+            // 当前 x 加入前缀
+            *pre.entry(x).or_insert(0) += 1;
+        }
+
+        (ans % MOD) as _
+    }
+}
