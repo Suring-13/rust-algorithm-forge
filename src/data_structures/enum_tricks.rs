@@ -964,3 +964,35 @@ pub mod n3583 {
         (ans % MOD) as _
     }
 }
+
+// 1930. 长度为 3 的不同回文子序列
+pub mod n1930 {
+    pub fn count_palindromic_subsequence(s: String) -> i32 {
+        let s = s.as_bytes();
+        let mut ans = 0;
+
+        // 枚举 26 个字母
+        for c in b'a'..=b'z' {
+            // 找到左边界和右边界
+            let left = s.iter().position(|&ch| ch == c);
+            let right = s.iter().rposition(|&ch| ch == c);
+
+            // 如果左边界存在且右边界比左边界大 (至少间隔 1 个字符)
+            if let (Some(l), Some(r)) = (left, right)
+                && r - l >= 2
+            {
+                // 保证中间有字符
+                let mut middle_chars = [false; 26];
+                // 遍历中间区域
+                for &ch in s.iter().take(r).skip(l + 1) {
+                    let idx = (ch - b'a') as usize;
+                    if !middle_chars[idx] {
+                        middle_chars[idx] = true;
+                        ans += 1;
+                    }
+                }
+            }
+        }
+        ans
+    }
+}
