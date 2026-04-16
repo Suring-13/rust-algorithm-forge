@@ -996,3 +996,27 @@ pub mod n1930 {
         ans
     }
 }
+
+// 3128. 直角三角形
+pub mod n3128 {
+    pub fn number_of_right_triangles(grid: Vec<Vec<i32>>) -> i64 {
+        if grid.is_empty() || grid[0].is_empty() {
+            return 0;
+        }
+        let row_cnt: Vec<i64> = grid
+            .iter()
+            .map(|r| r.iter().filter(|&&x| x == 1).count() as i64)
+            .collect();
+        let n = grid[0].len();
+        let col_cnt: Vec<i64> = (0..n)
+            .map(|j| grid.iter().filter(|&r| r[j] == 1).count() as i64)
+            .collect();
+
+        grid.iter()
+            .enumerate()
+            .flat_map(|(i, row)| row.iter().enumerate().map(move |(j, &v)| (i, j, v)))
+            .filter(|(_, _, v)| *v == 1)
+            .map(|(i, j, _)| (row_cnt[i] - 1) * (col_cnt[j] - 1))
+            .sum()
+    }
+}
