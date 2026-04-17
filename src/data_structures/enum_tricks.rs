@@ -1020,3 +1020,25 @@ pub mod n3128 {
             .sum()
     }
 }
+
+// 447. 回旋镖的数量
+pub mod n447 {
+    pub fn number_of_boomerangs(points: Vec<Vec<i32>>) -> i32 {
+        let mut ans = 0;
+        let mut dist_count = std::collections::HashMap::new();
+
+        for p1 in &points {
+            dist_count.clear();
+            for p2 in &points {
+                let dx = p1[0] - p2[0];
+                let dy = p1[1] - p2[1];
+                let dist_sq = dx * dx + dy * dy;
+
+                let cnt = dist_count.entry(dist_sq).or_insert(0);
+                ans += 2 * *cnt;
+                *cnt += 1;
+            }
+        }
+        ans
+    }
+}
