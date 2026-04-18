@@ -1042,3 +1042,42 @@ pub mod n447 {
         ans
     }
 }
+
+// 456. 132 模式
+pub mod n456 {
+    pub fn find132pattern(nums: Vec<i32>) -> bool {
+        let n = nums.len();
+        if n < 3 {
+            return false;
+        }
+
+        let mut left_min = nums[0];
+
+        // 右侧用 Vec + 保持有序
+        let mut right_all = nums[2..].to_vec();
+        right_all.sort_unstable();
+
+        for j in 1..n - 1 {
+            let num_j = nums[j];
+
+            if left_min < num_j {
+                // 二分查找：找到第一个 > left_min 的值
+                let idx = right_all.partition_point(|&x| x <= left_min);
+                if idx < right_all.len() && right_all[idx] < num_j {
+                    return true;
+                }
+            }
+
+            // 更新左侧最小值
+            left_min = left_min.min(num_j);
+
+            // 删除一个 nums[j+1]（保持有序）
+            let val = nums[j + 1];
+            if let Ok(pos) = right_all.binary_search(&val) {
+                right_all.remove(pos);
+            }
+        }
+
+        false
+    }
+}
