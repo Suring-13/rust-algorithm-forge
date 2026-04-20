@@ -1120,3 +1120,42 @@ pub mod n1534 {
         ans as _
     }
 }
+
+// 2242. 节点序列的最大得分
+pub mod n2242 {
+    pub fn maximum_score(scores: Vec<i32>, edges: Vec<Vec<i32>>) -> i32 {
+        let n = scores.len();
+        let mut g: Vec<Vec<(i32, usize)>> = vec![vec![]; n];
+
+        for e in &edges {
+            let x = e[0] as usize;
+            let y = e[1] as usize;
+            g[x].push((scores[y], y));
+            g[y].push((scores[x], x));
+        }
+
+        // 每个点只保留分数最大的 3 个邻居
+        for adj in &mut g {
+            adj.sort_by(|a, b| b.0.cmp(&a.0));
+            adj.truncate(3);
+        }
+
+        let mut ans = -1;
+
+        for e in &edges {
+            let x = e[0] as usize;
+            let y = e[1] as usize;
+
+            for &(score_a, a) in &g[x] {
+                for &(score_b, b) in &g[y] {
+                    if y != a && a != b && b != x {
+                        let total = score_a + scores[x] + scores[y] + score_b;
+                        ans = ans.max(total);
+                    }
+                }
+            }
+        }
+
+        ans
+    }
+}
