@@ -1159,3 +1159,29 @@ pub mod n2242 {
         ans
     }
 }
+
+// 2552. 统计上升四元组
+pub mod n2552 {
+    pub fn count_quadruplets(nums: Vec<i32>) -> i64 {
+        let n = nums.len();
+        let mut cnt4 = 0i64;
+        let mut cnt3 = vec![0i64; n];
+
+        for l in 2..n {
+            let mut cnt2 = 0i64;
+            for j in 0..l {
+                // 3 < 4
+                if nums[j] < nums[l] {
+                    cnt4 += cnt3[j];
+                    // 把 j 当作 i，把 l 当作 k，现在 nums[i] < nums[k]，即 1 < 2
+                    cnt2 += 1;
+                } else {
+                    // 把 l 当作 k，现在 nums[j] > nums[k]，即 3 > 2
+                    cnt3[j] += cnt2;
+                }
+            }
+        }
+
+        cnt4
+    }
+}
