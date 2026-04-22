@@ -1185,3 +1185,61 @@ pub mod n2552 {
         cnt4
     }
 }
+
+// 3257. 放三个车的价值之和最大 II
+pub mod n3257 {
+    pub fn maximum_value_sum(board: Vec<Vec<i32>>) -> i64 {
+        const INF: i64 = -1_000_000_001;
+        let m = board.len();
+        let mut suf = vec![[(INF, 0usize); 3]; m];
+        let mut top = [(INF, 0); 3];
+
+        // 更新当前行 top3 (最大、次大、第三大 + 列号)
+        let update = |row: &[i32], t: &mut [(i64, usize); 3]| {
+            for (j, &num) in row.iter().enumerate() {
+                let x = num as i64;
+                if x > t[0].0 {
+                    if t[0].1 != j {
+                        if t[1].1 != j {
+                            t[2] = t[1];
+                        }
+                        t[1] = t[0];
+                    }
+                    t[0] = (x, j);
+                } else if x > t[1].0 && j != t[0].1 {
+                    if t[1].1 != j {
+                        t[2] = t[1];
+                    }
+                    t[1] = (x, j);
+                } else if x > t[2].0 && j != t[0].1 && j != t[1].1 {
+                    t[2] = (x, j);
+                }
+            }
+        };
+
+        for i in (2..m).rev() {
+            update(&board[i], &mut top);
+            suf[i] = top;
+        }
+
+        let mut ans = i64::MIN;
+        let mut pre = [(INF, 0); 3];
+
+        for i in 0..m - 2 {
+            update(&board[i], &mut pre);
+            let mid = &board[i + 1];
+            for (j2, &y) in mid.iter().enumerate() {
+                let y = y as i64;
+                for &a in &pre {
+                    for &b in &suf[i + 2] {
+                        if a.1 != j2 && b.1 != j2 && a.1 != b.1 {
+                            ans = ans.max(a.0 + y + b.0);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        ans
+    }
+}
