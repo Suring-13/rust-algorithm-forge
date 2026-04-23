@@ -1243,3 +1243,44 @@ pub mod n3257 {
         ans
     }
 }
+
+// 3446. 按对角线进行矩阵排序
+pub mod n3446 {
+    pub fn sort_matrix(mut grid: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
+        let m = grid.len();
+        let n = grid[0].len();
+
+        // 遍历所有反对角线：d = i - j
+        for d in -(n as i32 - 1)..m as i32 {
+            let mut arr = Vec::new();
+            // 收集当前对角线上所有元素
+            let mut i = d.max(0);
+            let mut j = i - d;
+            while (i as usize) < m && (j as usize) < n {
+                arr.push(grid[i as usize][j as usize]);
+                i += 1;
+                j += 1;
+            }
+
+            // 右上区域：d < 0 → 升序
+            // 左下区域：d ≥ 0 → 降序
+            if d < 0 {
+                arr.sort_unstable();
+            } else {
+                arr.sort_unstable_by(|a, b| b.cmp(a));
+            }
+
+            // 放回矩阵
+            let mut idx = 0;
+            let mut i = d.max(0);
+            let mut j = i - d;
+            while (i as usize) < m && (j as usize) < n {
+                grid[i as usize][j as usize] = arr[idx];
+                idx += 1;
+                i += 1;
+                j += 1;
+            }
+        }
+        grid
+    }
+}
