@@ -1284,3 +1284,43 @@ pub mod n3446 {
         grid
     }
 }
+
+// 2711. 对角线上不同值的数量差
+pub mod n2711 {
+    pub fn difference_of_distinct_values(grid: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
+        let m = grid.len();
+        let n = grid[0].len();
+        let mut ans = vec![vec![0; n]; m];
+
+        // 遍历所有左上→右下对角线 i - j = d
+        for d in -(n as i32 - 1)..m as i32 {
+            let mut set = std::collections::HashSet::new();
+
+            // 正向：左上往右下走，统计左上不同数数量
+            for i in 0..m {
+                let j = i as i32 - d;
+                if j < 0 || j >= n as i32 {
+                    continue;
+                }
+                let j = j as usize;
+                ans[i][j] = set.len() as i32;
+                set.insert(grid[i][j]);
+            }
+
+            set.clear();
+
+            // 反向：右下往左上走，统计右下不同数数量，计算绝对值差
+            for i in (0..m).rev() {
+                let j = i as i32 - d;
+                if j < 0 || j >= n as i32 {
+                    continue;
+                }
+                let j = j as usize;
+                ans[i][j] = (ans[i][j] - set.len() as i32).abs();
+                set.insert(grid[i][j]);
+            }
+        }
+
+        ans
+    }
+}
