@@ -1324,3 +1324,38 @@ pub mod n2711 {
         ans
     }
 }
+
+// 1329. 将矩阵按对角线排序
+pub mod n1329 {
+    pub fn diagonal_sort(mut mat: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
+        // 1. 获取矩阵尺寸：m行，n列
+        let m = mat.len() as i32;
+        let n = mat[0].len() as i32;
+
+        // 2. 临时数组：存储单条对角线的元素（长度取行列最小值，足够用）
+        let mut a = vec![0; m.min(n) as usize];
+
+        // 3. 遍历所有对角线：k = i - j，范围覆盖所有可能的对角线
+        for d in -(n - 1)..m {
+            // 4. 计算当前对角线的 行起始/结束索引
+            let left_i = d.max(0) as usize; // 行起始（不能小于0）
+            let right_i = (d + n).min(m) as usize; // 行结束（不能超过总行数）, 左闭右开区间
+
+            // 5. 提取当前对角线所有元素 → 存入临时数组a
+            for i in left_i..right_i {
+                a[i - left_i] = mat[i][(i as i32 - d) as usize];
+            }
+
+            // 6. 对当前对角线元素 原地升序排序
+            a[..right_i - left_i].sort_unstable();
+
+            // 7. 将排序后的元素 放回原矩阵的对角线位置
+            for i in left_i..right_i {
+                mat[i][(i as i32 - d) as usize] = a[i - left_i];
+            }
+        }
+
+        // 8. 返回排序后的矩阵
+        mat
+    }
+}
