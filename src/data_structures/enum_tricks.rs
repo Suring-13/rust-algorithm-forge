@@ -1359,3 +1359,31 @@ pub mod n1329 {
         mat
     }
 }
+
+// 498. 对角线遍历
+pub mod n498 {
+    pub fn find_diagonal_order(mat: Vec<Vec<i32>>) -> Vec<i32> {
+        let m = mat.len();
+        let n = mat[0].len();
+        let mut ans = Vec::with_capacity(m * n);
+
+        // 遍历所有对角线：k = i + j
+        for k in 0..m + n - 1 {
+            let min_j = k.saturating_sub(m - 1);
+            let max_j = k.min(n - 1);
+            if k % 2 == 0 {
+                // 偶数从左到右
+                for j in min_j..=max_j {
+                    ans.push(mat[k - j][j]);
+                }
+            } else {
+                // 奇数从右到左
+                for j in (min_j..=max_j).rev() {
+                    ans.push(mat[k - j][j]);
+                }
+            }
+        }
+
+        ans
+    }
+}
