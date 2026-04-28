@@ -23,3 +23,20 @@ pub mod n303 {
         }
     }
 }
+
+// 3427. 变长子数组求和
+pub mod n3427 {
+    pub fn subarray_sum(nums: &[i32]) -> i32 {
+        let len = nums.len();
+        let mut prefix = vec![0i32; len + 1];
+        let mut ans = 0i32;
+
+        for (i, &x) in nums.iter().enumerate() {
+            prefix[i + 1] = prefix[i] + x;
+            let left = i.saturating_sub(x as usize);
+            ans += prefix[i + 1] - prefix[left];
+        }
+
+        ans
+    }
+}
