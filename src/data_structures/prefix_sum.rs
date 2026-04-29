@@ -40,3 +40,28 @@ pub mod n3427 {
         ans
     }
 }
+
+// 2559. 统计范围内的元音字符串数
+pub mod n2559 {
+    pub fn vowel_strings(words: Vec<String>, queries: Vec<Vec<i32>>) -> Vec<i32> {
+        let vowels = [b'a', b'e', b'i', b'o', b'u'];
+
+        // 前缀和数组
+        let mut pre_sum = vec![0; words.len() + 1];
+        for (i, w) in words.iter().enumerate() {
+            let first = w.as_bytes()[0];
+            let last = w.as_bytes().last().unwrap();
+            let valid = vowels.contains(&first) && vowels.contains(last);
+            pre_sum[i + 1] = pre_sum[i] + if valid { 1 } else { 0 };
+        }
+
+        queries
+            .into_iter()
+            .map(|q| {
+                let l = q[0] as usize;
+                let r = q[1] as usize;
+                pre_sum[r + 1] - pre_sum[l]
+            })
+            .collect()
+    }
+}
