@@ -65,3 +65,24 @@ pub mod n2559 {
             .collect()
     }
 }
+
+// 1310. 子数组异或查询
+pub mod n1310 {
+    pub fn xor_queries(arr: Vec<i32>, queries: Vec<Vec<i32>>) -> Vec<i32> {
+        // 构造 0 开头的迭代器: 0 followed by arr
+        let iter = std::iter::once(0).chain(arr);
+
+        // 前缀异或
+        let mut prexor = Vec::new();
+        iter.fold(0, |acc, val| {
+            let new_acc = acc ^ val;
+            prexor.push(new_acc);
+            new_acc
+        });
+
+        queries
+            .into_iter()
+            .map(|q| prexor[q[0] as usize] ^ prexor[q[1] as usize + 1])
+            .collect()
+    }
+}
