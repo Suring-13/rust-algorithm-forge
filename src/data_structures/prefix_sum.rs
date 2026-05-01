@@ -86,3 +86,24 @@ pub mod n1310 {
             .collect()
     }
 }
+
+// 3152. 特殊数组 II
+pub mod n3152 {
+    pub fn is_array_special(nums: Vec<i32>, queries: Vec<Vec<i32>>) -> Vec<bool> {
+        let s: Vec<i32> = std::iter::once(0)
+            .chain(
+                nums.windows(2)
+                    .map(|w| (w[0] % 2 == w[1] % 2) as i32)
+                    .scan(0, |s, x| {
+                        *s += x;
+                        Some(*s)
+                    }),
+            )
+            .collect();
+
+        queries
+            .into_iter()
+            .map(|q| s[q[0] as usize] == s[q[1] as usize])
+            .collect()
+    }
+}
