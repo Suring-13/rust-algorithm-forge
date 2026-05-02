@@ -107,3 +107,20 @@ pub mod n3152 {
             .collect()
     }
 }
+
+// 1749. 任意子数组和的绝对值的最大值
+pub mod n1749 {
+    pub fn max_absolute_sum(nums: Vec<i32>) -> i32 {
+        let mut s = 0;
+        let mut mx = 0;
+        let mut mn = 0;
+
+        for x in nums {
+            s += x;
+            mx = mx.max(s);
+            mn = mn.min(s);
+        }
+
+        mx - mn
+    }
+}
