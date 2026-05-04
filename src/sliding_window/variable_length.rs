@@ -538,7 +538,7 @@ pub mod n632 {
                 pairs.push((x, i));
             }
         }
-        pairs.sort_unstable_by(|a, b| a.0.cmp(&b.0));
+        pairs.sort_unstable_by_key(|a| a.0);
 
         let mut ans_l = pairs[0].0;
         let mut ans_r = pairs[pairs.len() - 1].0;

@@ -1136,7 +1136,7 @@ pub mod n2242 {
 
         // 每个点只保留分数最大的 3 个邻居
         for adj in &mut g {
-            adj.sort_by(|a, b| b.0.cmp(&a.0));
+            adj.sort_by_key(|b| std::cmp::Reverse(b.0));
             adj.truncate(3);
         }
 
