@@ -139,3 +139,34 @@ pub mod n53 {
         ans
     }
 }
+
+// 3652. 按策略买卖股票的最佳时机
+pub mod n3652 {
+    pub fn max_profit(prices: Vec<i32>, strategy: Vec<i32>, k: i32) -> i64 {
+        let n = prices.len();
+
+        // 前缀和 s: accumulate(p * s)
+        let mut s = vec![0; n + 1];
+        for i in 0..n {
+            s[i + 1] = s[i] + prices[i] as i64 * strategy[i] as i64;
+        }
+
+        // 前缀和 s_sell: accumulate(prices)
+        let mut s_sell = vec![0; n + 1];
+        for i in 0..n {
+            s_sell[i + 1] = s_sell[i] + prices[i] as i64;
+        }
+
+        // 修改一次的最大收益
+        let mut ans = i64::MIN;
+        let k = k as usize;
+        for i in k..=n {
+            let half = k / 2;
+            let val = s[i - k] + (s[n] - s[i]) + (s_sell[i] - s_sell[i - half]);
+            ans = ans.max(val);
+        }
+
+        // 不修改 与 修改一次 取最大
+        ans.max(s[n])
+    }
+}
