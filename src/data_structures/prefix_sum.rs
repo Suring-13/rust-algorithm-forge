@@ -170,3 +170,56 @@ pub mod n3652 {
         ans.max(s[n])
     }
 }
+
+// 3361. 两个字符串的切换距离
+pub mod n3361 {
+    pub fn shift_distance(
+        s: String,
+        t: String,
+        next_cost: Vec<i32>,
+        previous_cost: Vec<i32>,
+    ) -> i64 {
+        const ORD_A: u8 = b'a';
+        // 构造双倍长度数组，处理环形移位
+        let mut nxt_arr = next_cost.clone();
+        nxt_arr.extend(&next_cost);
+        // 前缀和：带 initial 0
+        let mut nxt_sum = vec![0i64];
+        let mut sum = 0i64;
+        for &val in &nxt_arr {
+            sum += val as i64;
+            nxt_sum.push(sum);
+        }
+
+        // 构造双倍长度数组
+        let mut pre_arr = previous_cost.clone();
+        pre_arr.extend(&previous_cost);
+        // 前缀和：不带 initial 0
+        let mut pre_sum = Vec::new();
+        let mut sum = 0i64;
+        for &val in &pre_arr {
+            sum += val as i64;
+            pre_sum.push(sum);
+        }
+
+        let mut ans = 0i64;
+        // 逐字符遍历计算
+        for (sc, tc) in s.bytes().zip(t.bytes()) {
+            let x = (sc - ORD_A) as usize;
+            let y = (tc - ORD_A) as usize;
+
+            // 计算正向代价 next
+            let nxt_idx = if y < x { y + 26 } else { y };
+            let cost_nxt = nxt_sum[nxt_idx] - nxt_sum[x];
+
+            // 计算反向代价 previous
+            let pre_idx = if x < y { x + 26 } else { x };
+            let cost_pre = pre_sum[pre_idx] - pre_sum[y];
+
+            // 取最小值累加
+            ans += cost_nxt.min(cost_pre);
+        }
+
+        ans
+    }
+}
