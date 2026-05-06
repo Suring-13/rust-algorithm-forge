@@ -223,3 +223,26 @@ pub mod n3361 {
         ans
     }
 }
+
+// 560. 和为 K 的子数组
+pub mod n560 {
+    pub fn subarray_sum(nums: Vec<i32>, k: i32) -> i32 {
+        // 哈希表：key=前缀和，value=该前缀和出现次数
+        let mut cnt = std::collections::HashMap::with_capacity(nums.len() + 1);
+        // 初始化：前缀和为0出现1次，适配 s - k = 0 的情况
+        cnt.insert(0, 1);
+        let mut s = 0; // 当前前缀和
+        let mut ans = 0; // 答案计数
+
+        for x in nums {
+            s += x; // 累加更新前缀和
+            // 前面有多少个前缀和等于 s - k，就加多少个子数组
+            if let Some(&c) = cnt.get(&(s - k)) {
+                ans += c;
+            }
+            // 当前前缀和次数+1，不存在则初始化为0再+1
+            *cnt.entry(s).or_insert(0) += 1;
+        }
+        ans
+    }
+}
