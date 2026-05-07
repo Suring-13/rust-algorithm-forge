@@ -246,3 +246,20 @@ pub mod n560 {
         ans
     }
 }
+
+// 930. 和相同的二元子数组
+pub mod n930 {
+    pub fn num_subarrays_with_sum(nums: Vec<i32>, goal: i32) -> i32 {
+        let mut sum = 0;
+        let mut cnt = std::collections::HashMap::new();
+        let mut ret = 0;
+
+        for &num in &nums {
+            *cnt.entry(sum).or_insert(0) += 1;
+            sum += num;
+            ret += cnt.get(&(sum - goal)).copied().unwrap_or(0);
+        }
+
+        ret
+    }
+}
