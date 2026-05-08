@@ -263,3 +263,32 @@ pub mod n930 {
         ret
     }
 }
+
+// 1524. 和为奇数的子数组数目
+pub mod n1524 {
+    pub fn num_of_subarrays(arr: Vec<i32>) -> i32 {
+        const MOD: i64 = 1_000_000_007;
+        let mut odd = 0;
+        let mut even = 1;
+        let mut subarrays: i64 = 0;
+        let mut total: i64 = 0;
+
+        for &x in &arr {
+            total += x as i64;
+
+            subarrays += if total % 2 == 0 {
+                odd as i64
+            } else {
+                even as i64
+            };
+
+            if total % 2 == 0 {
+                even += 1;
+            } else {
+                odd += 1;
+            }
+        }
+
+        (subarrays % MOD) as i32
+    }
+}
