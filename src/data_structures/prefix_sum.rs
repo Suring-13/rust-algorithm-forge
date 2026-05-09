@@ -292,3 +292,18 @@ pub mod n1524 {
         (subarrays % MOD) as i32
     }
 }
+
+// 974. 和可被 K 整除的子数组
+pub mod n974 {
+    pub fn subarrays_div_by_k(nums: Vec<i32>, k: i32) -> i32 {
+        let mut map = std::collections::HashMap::from([(0, 1)]);
+        let mut s = 0;
+        let mut res = 0;
+        for x in nums {
+            s = (s + x).rem_euclid(k);
+            res += map.get(&s).unwrap_or(&0);
+            *map.entry(s).or_insert(0) += 1;
+        }
+        res
+    }
+}
