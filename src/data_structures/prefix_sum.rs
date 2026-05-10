@@ -307,3 +307,28 @@ pub mod n974 {
         res
     }
 }
+
+// 523. 连续的子数组和
+pub mod n523 {
+    pub fn check_subarray_sum(nums: Vec<i32>, k: i32) -> bool {
+        let mut sum = 0;
+        let mut map = std::collections::HashMap::new();
+        map.insert(0, -1);
+
+        for (idx, &n) in nums.iter().enumerate() {
+            sum += n;
+            let rem = sum % k;
+            match map.get(&rem) {
+                Some(&pre) => {
+                    if idx as i32 - pre >= 2 {
+                        return true;
+                    }
+                }
+                None => {
+                    map.insert(rem, idx as i32);
+                }
+            }
+        }
+        false
+    }
+}
