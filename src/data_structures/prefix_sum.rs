@@ -332,3 +332,20 @@ pub mod n523 {
         false
     }
 }
+
+// 2588. 统计美丽子数组数目
+pub mod n2588 {
+    pub fn beautiful_subarrays(nums: Vec<i32>) -> i64 {
+        let mut ans = 0;
+        let mut s = 0;
+        let mut cnt = std::collections::HashMap::with_capacity(nums.len() + 1);
+        cnt.insert(0, 1);
+        for x in nums {
+            s ^= x;
+            let e = cnt.entry(s).or_insert(0);
+            ans += *e as i64;
+            *e += 1;
+        }
+        ans
+    }
+}
