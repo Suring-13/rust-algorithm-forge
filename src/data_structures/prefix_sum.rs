@@ -349,3 +349,23 @@ pub mod n2588 {
         ans
     }
 }
+
+// 525. 连续数组
+pub mod n525 {
+    pub fn find_max_length(nums: Vec<i32>) -> i32 {
+        // key: 前缀和, value: 第一次出现的下标
+        let mut pos = std::collections::HashMap::from([(0, -1)]);
+        let mut ans = 0;
+        let mut sum = 0;
+
+        for (i, &x) in nums.iter().enumerate() {
+            sum += if x == 1 { 1 } else { -1 };
+            if let Some(&prev_idx) = pos.get(&sum) {
+                ans = ans.max(i as i32 - prev_idx);
+            } else {
+                pos.insert(sum, i as i32);
+            }
+        }
+        ans
+    }
+}
