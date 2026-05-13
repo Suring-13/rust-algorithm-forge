@@ -369,3 +369,33 @@ pub mod n525 {
         ans
     }
 }
+
+// 3755. 最大平衡异或子数组的长度
+pub mod n3755 {
+    pub fn max_balanced_subarray(nums: Vec<i32>) -> i32 {
+        let mut ans = 0;
+        // key: (xor, diff), value: 首次下标
+        let mut pos = std::collections::HashMap::from([((0, 0), -1)]);
+
+        let mut xor = 0;
+        let mut diff = 0;
+
+        for (i, &x) in nums.iter().enumerate() {
+            xor ^= x;
+            if x % 2 == 1 {
+                diff += 1;
+            } else {
+                diff -= 1;
+            }
+
+            let key = (xor, diff);
+            if let Some(&prev) = pos.get(&key) {
+                ans = ans.max(i as i32 - prev);
+            } else {
+                pos.insert(key, i as i32);
+            }
+        }
+
+        ans
+    }
+}
