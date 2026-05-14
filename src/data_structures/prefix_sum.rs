@@ -399,3 +399,32 @@ pub mod n3755 {
         ans
     }
 }
+
+// 3026. 最大好子数组和
+pub mod n3026 {
+    pub fn maximum_subarray_sum(nums: Vec<i32>, k: i32) -> i64 {
+        let mut min_s = std::collections::HashMap::new();
+        // 默认初始无穷大
+        const INF: i64 = i64::MAX / 2;
+        let mut s: i64 = 0;
+        let mut ans: i64 = -INF;
+
+        for &x in &nums {
+            // 取 min_s[x-k] 和 min_s[x+k] 的较小值
+            let val1 = *min_s.get(&(x - k)).unwrap_or(&INF);
+            let val2 = *min_s.get(&(x + k)).unwrap_or(&INF);
+            let pre_min = val1.min(val2);
+            if pre_min != INF {
+                ans = ans.max(s + x as i64 - pre_min);
+            }
+
+            // 更新 min_s[x]：保留最小的前缀和
+            let entry = min_s.entry(x).or_insert(INF);
+            *entry = (*entry).min(s);
+
+            s += x as i64;
+        }
+
+        if ans == -INF { 0 } else { ans }
+    }
+}
