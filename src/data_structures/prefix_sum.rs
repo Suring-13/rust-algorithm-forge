@@ -428,3 +428,46 @@ pub mod n3026 {
         if ans == -INF { 0 } else { ans }
     }
 }
+
+// 1477. 找两个和为目标值且不重叠的子数组
+pub mod n1477 {
+    pub fn min_sum_of_lengths(mut arr: Vec<i32>, target: i32) -> i32 {
+        // key: 前缀和, value: 该前缀和对应的下标
+        let mut pos = std::collections::HashMap::from([(0, -1)]);
+
+        let n = arr.len() as i32;
+        // 前缀和
+        let mut s = 0;
+        // 最终答案，初始设为不可能的最大值 n+1
+        let mut ans = n + 1;
+        // 记录遍历到当前位置之前，满足和为target的最短子数组长度
+        let mut min_l = n;
+
+        for i in 0..(n as usize) {
+            let x = arr[i];
+            s += x;
+
+            // 找前缀和 = s - target 的位置 j
+            if let Some(&j) = pos.get(&(s - target)) {
+                // 当前满足条件的子数组长度 (j, i]
+                let len = i as i32 - j;
+
+                // j == -1 说明当前是第一段，前面没有可用第二段，用n占位（不参与更新ans）
+                // arr[j as usize] 存的是 j 位置之前的最小合法长度
+                let pre_min = if j == -1 { n } else { arr[j as usize] };
+                ans = ans.min(len + pre_min);
+
+                // 更新全局最短单段长度
+                min_l = min_l.min(len);
+            }
+
+            // 把当前位置的值覆盖为：到当前为止前面的最小合法长度
+            arr[i] = min_l;
+            // 更新/记录当前前缀和所在下标
+            pos.insert(s, i as i32);
+        }
+
+        // 没找到合法两个子数组返回-1
+        if ans == n + 1 { -1 } else { ans }
+    }
+}
