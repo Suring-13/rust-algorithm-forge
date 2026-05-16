@@ -471,3 +471,28 @@ pub mod n1477 {
         if ans == n + 1 { -1 } else { ans }
     }
 }
+
+// 1546. 和为目标值且不重叠的非空子数组的最大数目
+pub mod n1546 {
+    pub fn max_non_overlapping(nums: Vec<i32>, target: i32) -> i32 {
+        let mut prefix_sum = 0;
+        let mut res = 0;
+        let mut map = std::collections::HashMap::from([(0, 0)]);
+        let mut last = 0;
+
+        for i in 1..=nums.len() {
+            prefix_sum += nums[i - 1];
+
+            if let Some(&pos) = map.get(&(prefix_sum - target))
+                && pos >= last
+            {
+                res += 1;
+                last = i;
+            }
+
+            map.insert(prefix_sum, i);
+        }
+
+        res
+    }
+}
