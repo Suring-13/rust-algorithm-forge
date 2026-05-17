@@ -496,3 +496,37 @@ pub mod n1546 {
         res
     }
 }
+
+// 1124. 表现良好的最长时间段
+pub mod n1124 {
+    // 由于我们只需要考虑值在闭区间 [−n,0] 内的前缀和，用数组记录是更加高效的。同时，为了避免用负数访问数组，可以在计算过程中把前缀和取反。
+    pub fn longest_wpi(hours: Vec<i32>) -> i32 {
+        let n = hours.len();
+        let mut pos = vec![0; n + 2];
+        let mut ans = 0;
+        let mut s = 0;
+
+        for (i, &h) in hours.iter().enumerate() {
+            let idx = (i + 1) as i32;
+            // 取反，改为减法
+            s -= if h > 8 { 1 } else { -1 };
+
+            if s < 0 {
+                ans = idx;
+            } else {
+                // 原本是 s-1，取反改为 s+1
+                let key = (s + 1) as usize;
+                if pos[key] != 0 {
+                    ans = ans.max(idx - pos[key]);
+                }
+                // 首次出现则记录位置
+                let s_key = s as usize;
+                if pos[s_key] == 0 {
+                    pos[s_key] = idx;
+                }
+            }
+        }
+
+        ans
+    }
+}
