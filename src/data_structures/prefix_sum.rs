@@ -530,3 +530,26 @@ pub mod n1124 {
         ans
     }
 }
+
+// 3728. 边界与内部和相等的稳定子数组
+pub mod n3728 {
+    pub fn count_stable_subarrays(capacity: &[i32]) -> i64 {
+        let mut map = std::collections::HashMap::new();
+        if capacity.len() < 2 {
+            return 0;
+        }
+
+        let mut pre_sum = capacity[0] as i64;
+        let mut res = 0i64;
+
+        for pair in capacity.windows(2) {
+            let prev = pair[0] as i64;
+            let curr = pair[1] as i64;
+
+            res += map.get(&(curr, pre_sum)).copied().unwrap_or(0);
+            *map.entry((prev, prev + pre_sum)).or_insert(0) += 1;
+            pre_sum += curr;
+        }
+        res
+    }
+}
