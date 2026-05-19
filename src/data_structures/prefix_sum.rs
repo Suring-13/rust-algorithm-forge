@@ -553,3 +553,23 @@ pub mod n3728 {
         res
     }
 }
+
+// 3381. 长度可被 K 整除的子数组的最大元素和
+pub mod n3381 {
+    pub fn max_subarray_sum(nums: Vec<i32>, k: i32) -> i64 {
+        let k = k as usize;
+        let mut min_s = vec![i64::MAX / 2; k];
+        // 为了适配从数组开头开始的合法子数组
+        min_s[k - 1] = 0;
+        let mut s = 0i64;
+        let mut ans = i64::MIN;
+
+        for (j, &x) in nums.iter().enumerate() {
+            s += x as i64;
+            let i = j % k;
+            ans = ans.max(s - min_s[i]);
+            min_s[i] = s.min(min_s[i]);
+        }
+        ans
+    }
+}
