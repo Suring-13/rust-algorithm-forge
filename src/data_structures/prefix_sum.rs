@@ -573,3 +573,32 @@ pub mod n3381 {
         ans
     }
 }
+
+// 2488. 统计中位数为 K 的子数组
+pub mod n2488 {
+    pub fn count_subarrays(nums: Vec<i32>, k: i32) -> i32 {
+        let n = nums.len();
+        let mut s = n as i32;
+        let mut ans = 0i32;
+        let mut cnt = vec![0i32; n * 2];
+        cnt[n] = 1;
+        let mut found_k = false;
+
+        for &x in &nums {
+            if x == k {
+                found_k = true;
+            } else if x < k {
+                s -= 1;
+            } else {
+                s += 1;
+            }
+
+            if !found_k {
+                cnt[s as usize] += 1;
+            } else {
+                ans += cnt[s as usize] + cnt[(s - 1) as usize];
+            }
+        }
+        ans
+    }
+}
