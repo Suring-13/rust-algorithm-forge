@@ -602,3 +602,33 @@ pub mod n2488 {
         ans
     }
 }
+
+// 1590. 使数组和能被 P 整除
+pub mod n1590 {
+    pub fn min_subarray(nums: Vec<i32>, p: i32) -> i32 {
+        let total_sum: i64 = nums.iter().map(|&v| v as i64).sum();
+        let x = total_sum.rem_euclid(p as i64) as i32;
+        if x == 0 {
+            return 0;
+        }
+
+        let n = nums.len() as i32;
+        let mut ans = n;
+        let mut s: i64 = 0;
+        // 由于下面 i 是从 0 开始的，前缀和下标就要从 -1 开始了
+        let mut last = std::collections::HashMap::new();
+        last.insert(0, -1);
+
+        for (i, &v) in nums.iter().enumerate() {
+            let idx = i as i32;
+            s += v as i64;
+            last.insert(s.rem_euclid(p as i64) as i32, idx);
+            // 如果不存在，-n 可以保证 i-j >= n
+            let target = (s - x as i64).rem_euclid(p as i64) as i32;
+            let j = *last.get(&target).unwrap_or(&(-n));
+            ans = ans.min(idx - j);
+        }
+
+        if ans < n { ans } else { -1 }
+    }
+}
