@@ -632,3 +632,22 @@ pub mod n1590 {
         if ans < n { ans } else { -1 }
     }
 }
+
+// 2845. 统计趣味子数组的数目
+pub mod n2845 {
+    pub fn count_interesting_subarrays(nums: Vec<i32>, modulo: i32, k: i32) -> i64 {
+        let mut cnt = std::collections::HashMap::from([(0, 1)]); // s[0]=0
+        let mut ans = 0i64;
+        let mut s = 0i32;
+
+        for x in nums {
+            if x % modulo == k {
+                s += 1;
+            }
+            let rem = (s - k).rem_euclid(modulo);
+            ans += cnt.get(&rem).unwrap_or(&0);
+            *cnt.entry(s.rem_euclid(modulo)).or_insert(0) += 1;
+        }
+        ans
+    }
+}
