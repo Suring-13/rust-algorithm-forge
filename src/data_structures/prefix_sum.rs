@@ -651,3 +651,30 @@ pub mod n2845 {
         ans
     }
 }
+
+// 3739. 统计主要元素子数组数目 II
+pub mod n3739 {
+    pub fn count_majority_subarrays(nums: Vec<i32>, target: i32) -> i64 {
+        let n = nums.len();
+        let mut s = n; // 为避免下标越界，把 s 初始化成 n
+        let mut cnt = vec![0; 2 * n + 1];
+        cnt[s] = 1;
+
+        let mut ans = 0i64;
+        let mut f = 0i64;
+
+        for &x in &nums {
+            if x == target {
+                f += cnt[s];
+                s += 1;
+            } else {
+                s -= 1;
+                f -= cnt[s];
+            }
+            ans += f;
+            cnt[s] += 1;
+        }
+
+        ans
+    }
+}
