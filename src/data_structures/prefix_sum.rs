@@ -678,3 +678,59 @@ pub mod n3739 {
         ans
     }
 }
+
+// 3900. 一次交换后的最长平衡子串
+pub mod n3900 {
+    pub fn longest_balanced(s: String) -> i32 {
+        // 统计 0 和 1 的总数量
+        let total0 = s.bytes().filter(|&b| b == b'0').count() as i32;
+        let total1 = s.len() as i32 - total0;
+
+        // 哈希表：key = 前缀和，value = 存储最早/次早的索引
+        let mut pos = std::collections::HashMap::from([(0, vec![-1])]); // // 初始条件：前缀和 0 出现在索引 -1
+
+        let mut ans = 0;
+        let mut pre_sum = 0; // 前缀和：1→+1，0→-1
+
+        // 遍历字符串
+        for (i, ch) in s.bytes().enumerate() {
+            let i = i as i32;
+            // 更新前缀和
+            pre_sum += if ch == b'1' { 1 } else { -1 };
+
+            // 仅保存前两个出现的索引
+            let indices = pos.entry(pre_sum).or_insert_with(Vec::new);
+            if indices.len() < 2 {
+                indices.push(i);
+            }
+
+            // 情况1：不交换，直接取最早出现的位置计算长度
+            let first_pos = indices[0];
+            ans = ans.max(i - first_pos);
+
+            // 情况2：交换子串内1 和 子串外0 → 查找 pre_sum - 2
+            if let Some(p) = pos.get(&(pre_sum - 2)) {
+                let p0 = p[0];
+                let condition = (i - p0 - 2) / 2 < total0;
+                if condition {
+                    ans = ans.max(i - p0);
+                } else if p.len() > 1 {
+                    ans = ans.max(i - p[1]);
+                }
+            }
+
+            // 情况3：交换子串内0 和 子串外1 → 查找 pre_sum + 2
+            if let Some(p) = pos.get(&(pre_sum + 2)) {
+                let p0 = p[0];
+                let condition = (i - p0 - 2) / 2 < total1;
+                if condition {
+                    ans = ans.max(i - p0);
+                } else if p.len() > 1 {
+                    ans = ans.max(i - p[1]);
+                }
+            }
+        }
+
+        ans
+    }
+}
