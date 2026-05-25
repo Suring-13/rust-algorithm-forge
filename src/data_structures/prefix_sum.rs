@@ -734,3 +734,42 @@ pub mod n3900 {
         ans
     }
 }
+
+// 1074. 元素和为目标值的子矩阵数量
+pub mod n1074 {
+    pub fn num_submatrix_sum_target(matrix: Vec<Vec<i32>>, target: i32) -> i32 {
+        fn subarray_sum(nums: &[i32], k: i32) -> i32 {
+            let mut ans = 0;
+            let mut s = 0; // 当前前缀和
+            let mut cnt = std::collections::HashMap::with_capacity(nums.len());
+            for x in nums {
+                // 先记录当前前缀和出现次数
+                *cnt.entry(s).or_insert(0) += 1;
+                s += x;
+                // 查找 s-k 前缀和存在个数，即为合法子数组数
+                if let Some(&c) = cnt.get(&(s - k)) {
+                    ans += c;
+                }
+            }
+            ans
+        }
+
+        let col_len = matrix[0].len();
+        let mut ans = 0;
+
+        // 枚举子矩阵上边界
+        for top in 0..matrix.len() {
+            // 列累加和数组，初始全0
+            let mut col_sum = vec![0; col_len];
+            // 向下扩展下边界，逐行叠加列值
+            for row in &matrix[top..] {
+                for (col_idx, &val) in row.iter().enumerate() {
+                    col_sum[col_idx] += val;
+                }
+                // 一维数组统计合法子数组，等价子矩阵
+                ans += subarray_sum(&col_sum, target);
+            }
+        }
+        ans
+    }
+}
