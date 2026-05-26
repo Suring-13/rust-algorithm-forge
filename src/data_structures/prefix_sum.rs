@@ -773,3 +773,27 @@ pub mod n1074 {
         ans
     }
 }
+
+// 1442. 形成两个异或相等数组的三元组数目
+pub mod n1442 {
+    pub fn count_triplets(arr: Vec<i32>) -> i32 {
+        let mut cnt = std::collections::HashMap::new();
+        let mut total = std::collections::HashMap::new();
+        let mut ans = 0;
+        let mut s = 0;
+
+        for (k, &val) in arr.iter().enumerate() {
+            let t = s ^ val;
+            if let Some(&c) = cnt.get(&t) {
+                let sum_k = total[&t];
+                ans += c * k as i32 - sum_k;
+            }
+
+            *cnt.entry(s).or_insert(0) += 1;
+            *total.entry(s).or_insert(0) += k as i32;
+            s = t;
+        }
+
+        ans
+    }
+}
