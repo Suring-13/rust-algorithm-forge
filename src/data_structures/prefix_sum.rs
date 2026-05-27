@@ -797,3 +797,78 @@ pub mod n1442 {
         ans
     }
 }
+
+// 3714. 最长的平衡子串 II
+pub mod n3714 {
+    pub fn longest_balanced(s: &str) -> i32 {
+        let s_chars: Vec<char> = s.chars().collect();
+        let n = s_chars.len();
+        let mut ans = 0;
+
+        // 1. 只包含一种字母的最长连续子串
+        let mut i = 0;
+        while i < n {
+            let start = i;
+            i += 1;
+            while i < n && s_chars[i] == s_chars[i - 1] {
+                i += 1;
+            }
+            ans = ans.max((i - start) as i32);
+        }
+
+        // 2. 处理两种字母组合: x, y
+        fn two_char(s: &[char], x: char, y: char, ans: &mut i32) {
+            let n = s.len();
+            let mut i = 0;
+            while i < n {
+                let mut pos = std::collections::HashMap::new();
+                pos.insert(0, i as i32 - 1); // 前缀和初始0，位置 i-1
+                let mut d = 0; // x数量 - y数量
+
+                while i < n && (s[i] == x || s[i] == y) {
+                    if s[i] == x {
+                        d += 1;
+                    } else {
+                        d -= 1;
+                    }
+
+                    if let Some(&pre_idx) = pos.get(&d) {
+                        *ans = (*ans).max(i as i32 - pre_idx);
+                    } else {
+                        pos.insert(d, i as i32);
+                    }
+                    i += 1;
+                }
+                i += 1;
+            }
+        }
+
+        // 枚举所有两两组合
+        two_char(&s_chars, 'a', 'b', &mut ans);
+        two_char(&s_chars, 'a', 'c', &mut ans);
+        two_char(&s_chars, 'b', 'c', &mut ans);
+
+        // 3. 处理三种字母 a/b/c 共存的情况
+        let mut pos = std::collections::HashMap::new();
+        pos.insert((0, 0), -1); // 初始状态 (0,0) 位于下标 -1
+        let (mut cnt_a, mut cnt_b, mut cnt_c) = (0, 0, 0);
+
+        for (idx, &ch) in s_chars.iter().enumerate() {
+            match ch {
+                'a' => cnt_a += 1,
+                'b' => cnt_b += 1,
+                'c' => cnt_c += 1,
+                _ => (), // 题目仅 a/b/c，忽略其他
+            }
+            // 状态: (a-b, b-c)
+            let state = (cnt_a - cnt_b, cnt_b - cnt_c);
+            if let Some(&pre_idx) = pos.get(&state) {
+                ans = ans.max(idx as i32 - pre_idx);
+            } else {
+                pos.insert(state, idx as i32);
+            }
+        }
+
+        ans
+    }
+}
