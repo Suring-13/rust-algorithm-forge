@@ -872,3 +872,43 @@ pub mod n3714 {
         ans
     }
 }
+
+// 2025. 分割数组的最多方案数
+pub mod n2025 {
+    pub fn ways_to_partition(nums: &[i32], k: i32) -> i32 {
+        let n = nums.len();
+        let mut sum = vec![0; n];
+        sum[0] = nums[0];
+
+        let mut cnt_r = std::collections::HashMap::new();
+        for i in 1..n {
+            sum[i] = sum[i - 1] + nums[i];
+            *cnt_r.entry(sum[i - 1]).or_insert(0) += 1;
+        }
+
+        let tot = sum[n - 1];
+        let mut ans = if tot % 2 == 0 {
+            *cnt_r.get(&(tot / 2)).unwrap_or(&0)
+        } else {
+            0
+        };
+
+        let mut cnt_l = std::collections::HashMap::new();
+        for (i, &s) in sum.iter().enumerate() {
+            let d = k - nums[i];
+            if (tot + d) % 2 == 0 {
+                let left = *cnt_l.get(&((tot + d) / 2)).unwrap_or(&0);
+                let right = *cnt_r.get(&((tot - d) / 2)).unwrap_or(&0);
+                ans = ans.max(left + right);
+            }
+
+            // 迁移计数：左表增加，右表减少
+            *cnt_l.entry(s).or_insert(0) += 1;
+            if let Some(v) = cnt_r.get_mut(&s) {
+                *v -= 1;
+            }
+        }
+
+        ans
+    }
+}
