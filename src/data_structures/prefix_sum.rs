@@ -912,3 +912,33 @@ pub mod n2025 {
         ans
     }
 }
+
+// 3729. 统计有序数组中可被 K 整除的子数组数量
+pub mod n3729 {
+    pub fn num_good_subarrays(nums: Vec<i32>, k: i32) -> i64 {
+        let k = k as i64;
+        let mut cnt = std::collections::HashMap::from([(0, 1)]);
+        let mut pre_sum = 0i64; // 前缀和
+        let mut last_start = 0usize; // 上一个连续相同段的起始下标
+        let mut ans = 0i64;
+
+        for (i, &x) in nums.iter().enumerate() {
+            if i > 0 && x != nums[i - 1] {
+                // 上一个连续相同段结束，可以把上一段对应的前缀和添加到 cnt
+                let v = nums[i - 1] as i64;
+                let mut s = pre_sum;
+                for _ in last_start..i {
+                    *cnt.entry(s.rem_euclid(k)).or_insert(0) += 1;
+                    s -= v;
+                }
+                last_start = i;
+            }
+
+            pre_sum += x as i64;
+            let rem = pre_sum.rem_euclid(k);
+            ans += cnt.get(&rem).unwrap_or(&0);
+        }
+
+        ans
+    }
+}
