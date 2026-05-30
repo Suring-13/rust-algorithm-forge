@@ -942,3 +942,52 @@ pub mod n3729 {
         ans
     }
 }
+
+// 2949. 统计美丽子字符串 II
+pub mod n2949 {
+    pub fn beautiful_substrings(s: String, k: i32) -> i32 {
+        // 对 n 做特殊因数分解求值
+        fn calc_factor(mut n: i32) -> i32 {
+            let mut res = 1;
+            let mut i = 2;
+            while i * i <= n {
+                let i2 = i * i;
+                while n % i2 == 0 {
+                    res *= i;
+                    n /= i2;
+                }
+                if n % i == 0 {
+                    res *= i;
+                    n /= i;
+                }
+                i += 1;
+            }
+            if n > 1 {
+                res *= n;
+            }
+            res
+        }
+
+        let k = calc_factor(k * 4);
+        let mut cnt = std::collections::HashMap::from([((k - 1, 0), 1)]);
+
+        let mut ans = 0;
+        let mut pre_sum = 0;
+        let vowels = ['a', 'e', 'i', 'o', 'u'];
+
+        for (i, c) in s.chars().enumerate() {
+            if vowels.contains(&c) {
+                pre_sum += 1;
+            } else {
+                pre_sum -= 1;
+            }
+            let p = ((i as i32).rem_euclid(k), pre_sum);
+            // 累加之前出现的次数
+            ans += *cnt.get(&p).unwrap_or(&0);
+            // 当前键计数 +1
+            *cnt.entry(p).or_insert(0) += 1;
+        }
+
+        ans
+    }
+}
