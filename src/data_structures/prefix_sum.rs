@@ -991,3 +991,44 @@ pub mod n2949 {
         ans
     }
 }
+
+// 3364. 最小正和子数组
+pub mod n3364 {
+    pub fn minimum_sum_subarray(nums: Vec<i32>, l: i32, r: i32) -> i32 {
+        let l = l as usize;
+        let r = r as usize;
+        let n = nums.len();
+
+        // 前缀和数组
+        let mut prefix = vec![0; n + 1];
+        for i in 0..n {
+            prefix[i + 1] = prefix[i] + nums[i];
+        }
+
+        let mut ans = i32::MAX;
+        let mut map = std::collections::BTreeMap::new(); // 关键：用 Map 计数，支持重复值
+
+        // 遍历右端点 j
+        for j in l..prefix.len() {
+            // 加入 s[j-l]，维护窗口左边界
+            *map.entry(prefix[j - l]).or_insert(0) += 1;
+
+            // 二分查找：找到 <= prefix[j] 的最大值
+            if let Some((&val, _)) = map.range(..prefix[j]).next_back() {
+                ans = ans.min(prefix[j] - val);
+            }
+
+            // 超过 r 长度时，移除最左侧元素 s[j-r]
+            if j >= r {
+                let key = prefix[j - r];
+                *map.get_mut(&key).unwrap() -= 1;
+                if map[&key] == 0 {
+                    map.remove(&key);
+                }
+            }
+        }
+
+        // 无结果返回 -1
+        if ans == i32::MAX { -1 } else { ans }
+    }
+}
