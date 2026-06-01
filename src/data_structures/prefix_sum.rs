@@ -1032,3 +1032,43 @@ pub mod n3364 {
         if ans == i32::MAX { -1 } else { ans }
     }
 }
+
+// 363. 矩形区域不超过 K 的最大数值和
+pub mod n363 {
+    pub fn max_sum_submatrix(matrix: Vec<Vec<i32>>, k: i32) -> i32 {
+        let m = matrix.len();
+        if m == 0 {
+            return i32::MIN;
+        }
+        let n = matrix[0].len();
+        let mut ans = i32::MIN;
+
+        // 枚举上边界
+        for i in 0..m {
+            let mut total = vec![0; n];
+            // 枚举下边界
+            for matrix_item in matrix.iter().take(m).skip(i) {
+                // 逐列累加，压缩成一维数组
+                for c in 0..n {
+                    total[c] += matrix_item[c];
+                }
+
+                let mut set = std::collections::BTreeSet::new();
+                set.insert(0);
+                let mut s = 0;
+
+                for &v in &total {
+                    s += v;
+                    // 找第一个 >= (s - k) 的前缀和
+                    let target = s - k;
+                    if let Some(&pre) = set.range(target..).next() {
+                        ans = ans.max(s - pre);
+                    }
+                    set.insert(s);
+                }
+            }
+        }
+
+        ans
+    }
+}
