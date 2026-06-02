@@ -1072,3 +1072,62 @@ pub mod n363 {
         ans
     }
 }
+
+// 437. 路径总和 III
+pub mod n437 {
+    use std::cell::RefCell;
+    use std::collections::HashMap;
+    use std::rc::Rc;
+
+    //  Definition for a binary tree node.
+    #[derive(Debug, PartialEq, Eq)]
+    pub struct TreeNode {
+        pub val: i32,
+        pub left: Option<Rc<RefCell<TreeNode>>>,
+        pub right: Option<Rc<RefCell<TreeNode>>>,
+    }
+
+    impl TreeNode {
+        #[inline]
+        pub fn new(val: i32) -> Self {
+            TreeNode {
+                val,
+                left: None,
+                right: None,
+            }
+        }
+    }
+
+    pub fn path_sum(root: Option<Rc<RefCell<TreeNode>>>, target_sum: i32) -> i32 {
+        // s 表示从根到 node 的父节点的节点值之和（node 的节点值尚未计入）
+        fn dfs(
+            node: &Option<Rc<RefCell<TreeNode>>>,
+            s: i64,
+            target_sum: i64,
+            ans: &mut i32,
+            cnt: &mut HashMap<i64, i32>,
+        ) {
+            if let Some(node) = node {
+                let node = node.borrow();
+
+                let s = s + node.val as i64;
+                // 把 node 当作路径的终点，统计有多少个起点
+                *ans += *cnt.get(&(s - target_sum)).unwrap_or(&0);
+
+                *cnt.entry(s).or_insert(0) += 1; // cnt[s] += 1
+                dfs(&node.left, s, target_sum, ans, cnt);
+                dfs(&node.right, s, target_sum, ans, cnt);
+                *cnt.entry(s).or_insert(0) -= 1; // 恢复现场（撤销 cnt[s] += 1）
+            }
+        }
+
+        // key：从根到 node 的节点值之和
+        // value：节点值之和的出现次数
+        // 注意在递归过程中，哈希表只保存根到 node 的路径的前缀的节点值之和
+        let mut cnt = HashMap::new();
+        cnt.insert(0, 1);
+        let mut ans = 0;
+        dfs(&root, 0, target_sum as i64, &mut ans, &mut cnt);
+        ans
+    }
+}
