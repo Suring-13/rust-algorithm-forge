@@ -1131,3 +1131,23 @@ pub mod n437 {
         ans
     }
 }
+
+// 1685. 有序数组中差绝对值之和
+pub mod n1685 {
+    pub fn get_sum_absolute_differences(nums: Vec<i32>) -> Vec<i32> {
+        let n = nums.len();
+        // 前缀和 pre_sum[0]=0, pre_sum[1]=nums[0], pre_sum[k]=sum(nums[0..k-1])
+        let mut pre_sum = vec![0; n + 1];
+        for i in 0..n {
+            pre_sum[i + 1] = pre_sum[i] + nums[i];
+        }
+
+        let mut res = Vec::with_capacity(n);
+        for (i, &num) in nums.iter().enumerate() {
+            let left = i as i32 * num - pre_sum[i];
+            let right = pre_sum[n] - pre_sum[i] - (n - i) as i32 * num;
+            res.push(left + right);
+        }
+        res
+    }
+}
