@@ -1151,3 +1151,36 @@ pub mod n1685 {
         res
     }
 }
+
+// 2615. 等值距离和
+pub mod n2615 {
+    pub fn distance(nums: Vec<i32>) -> Vec<i64> {
+        // key:数值, value:该数值所有下标集合
+        let mut groups: std::collections::HashMap<i32, Vec<usize>> =
+            std::collections::HashMap::new();
+        for (idx, &val) in nums.iter().enumerate() {
+            groups.entry(val).or_default().push(idx);
+        }
+
+        let mut ans = vec![0i64; nums.len()];
+
+        for pos_list in groups.into_values() {
+            let n = pos_list.len();
+            // 构造前缀和 pre[0]=0, pre[1]=a[0], pre[2]=a[0]+a[1]...pre[n]=sum(a[0..n-1])
+            let mut pre = vec![0i64; n + 1];
+            for i in 0..n {
+                pre[i + 1] = pre[i] + pos_list[i] as i64;
+            }
+
+            for (j, &target) in pos_list.iter().enumerate() {
+                let target_u64 = target as i64;
+                // 左侧: target*j - pre[j]
+                let left = target_u64 * j as i64 - pre[j];
+                // 右侧: pre[n]-pre[j] - target*(n-j)
+                let right = pre[n] - pre[j] - target_u64 * (n - j) as i64;
+                ans[target] = left + right;
+            }
+        }
+        ans
+    }
+}
