@@ -1184,3 +1184,27 @@ pub mod n2615 {
         ans
     }
 }
+
+// 2602. 使数组元素全部相等的最少操作次数
+pub mod n2602 {
+    pub fn min_operations(mut nums: Vec<i32>, queries: Vec<i32>) -> Vec<i64> {
+        let n = nums.len();
+        nums.sort_unstable();
+
+        // 前缀和
+        let mut pre_sum = vec![0i64; n + 1];
+        for i in 0..n {
+            pre_sum[i + 1] = pre_sum[i] + nums[i] as i64;
+        }
+
+        let mut res = Vec::with_capacity(queries.len());
+        for &q in &queries {
+            let j = nums.binary_search_by(|&x| x.cmp(&q)).unwrap_or_else(|p| p);
+
+            let left = q as i64 * j as i64 - pre_sum[j];
+            let right = pre_sum[n] - pre_sum[j] - q as i64 * (n - j) as i64;
+            res.push(left + right);
+        }
+        res
+    }
+}
