@@ -1208,3 +1208,38 @@ pub mod n2602 {
         res
     }
 }
+
+pub mod n2968 {
+    pub fn max_frequency_score(mut nums: Vec<i32>, k: i32) -> i32 {
+        // 1. 排序数组
+        nums.sort_unstable();
+        let n = nums.len();
+        // 2. 构建前缀和数组
+        let mut prefix = vec![0i64; n + 1];
+        for i in 0..n {
+            prefix[i + 1] = prefix[i] + nums[i] as i64;
+        }
+
+        // 计算把 [l, r] 变成中位数 mid 所需的总操作数
+        let distance_sum = |l: usize, mid: usize, r: usize| -> i64 {
+            let num_mid = nums[mid] as i64;
+            let left = num_mid * (mid - l) as i64 - (prefix[mid] - prefix[l]);
+            let right = (prefix[r + 1] - prefix[mid + 1]) - num_mid * (r - mid) as i64;
+            left + right
+        };
+
+        let mut ans = 0;
+        let mut left = 0;
+        // 3. 滑动窗口枚举右端点 i
+        for i in 0..n {
+            // 操作数超过 k 则收缩左边界
+            while distance_sum(left, (left + i) / 2, i) > k as i64 {
+                left += 1;
+            }
+            // 更新最大长度
+            ans = ans.max(i - left + 1);
+        }
+
+        ans as i32
+    }
+}
