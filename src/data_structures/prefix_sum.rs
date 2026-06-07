@@ -1243,3 +1243,46 @@ pub mod n2968 {
         ans as i32
     }
 }
+
+// 1703. 得到连续 K 个 1 的最少相邻交换次数
+pub mod n1703 {
+    pub fn min_moves(nums: Vec<i32>, k: i32) -> i32 {
+        let k = k as usize;
+        // 第一步：收集所有 1 的位置，并转换为 p - i
+        let mut p = Vec::new();
+        for (idx, &val) in nums.iter().enumerate() {
+            if val == 1 {
+                p.push((idx - p.len()) as i64);
+            }
+        }
+        let m = p.len();
+        // 全是 1，无需移动
+        if m == nums.len() {
+            return 0;
+        }
+
+        let mut ans = i64::MAX;
+        let mid = k / 2;
+
+        // 初始化三个滑动和：sl, sm, sr
+        let mut sl = 0i64;
+        let mut sm: i64 = p[0..mid].iter().sum();
+        let mut sr: i64 = p[0..k].iter().sum();
+        let rem = (k % 2) as i64;
+
+        // 滑动窗口遍历
+        for i in 0..=m - k {
+            let cur = sl + sr - sm * 2 - p[i + mid] * rem;
+            ans = ans.min(cur);
+
+            // 窗口右移，更新三个和
+            sl += p[i];
+            sm += p[i + mid];
+            if i + k < m {
+                sr += p[i + k];
+            }
+        }
+
+        ans as _
+    }
+}
