@@ -1286,3 +1286,60 @@ pub mod n1703 {
         ans as _
     }
 }
+
+// 3086. 拾起 K 个 1 需要的最少行动次数
+pub mod n3086 {
+    pub fn minimum_moves(nums: Vec<i32>, k: i32, max_changes: i32) -> i64 {
+        let k = k as usize;
+        let max_changes = max_changes as usize;
+        let mut pos = Vec::new();
+        let mut max_consec = 0; // 最长连续 1 的长度
+
+        for (idx, &val) in nums.iter().enumerate() {
+            if val == 0 {
+                continue;
+            }
+            pos.push(idx as i64);
+            let curr = idx;
+            // 判断连续 1
+            if curr > 0 && nums[curr - 1] == 1 {
+                if curr > 1 && nums[curr - 2] == 1 {
+                    max_consec = 3;
+                } else {
+                    max_consec = max_consec.max(2);
+                }
+            } else {
+                max_consec = max_consec.max(1);
+            }
+        }
+
+        // 连续 1 的数量不超过 k
+        let c = max_consec.min(k);
+        if max_changes >= k - c {
+            // 全部用变更补齐
+            return (if c > 0 { c - 1 } else { 0 }) as i64 + ((k - c) * 2) as i64;
+        }
+
+        // 前缀和数组
+        let n = pos.len();
+        let mut pre_sum = vec![0i64; n + 1];
+        for i in 0..n {
+            pre_sum[i + 1] = pre_sum[i] + pos[i];
+        }
+
+        let mut ans = i64::MAX;
+        let size = k - max_changes; // 需要移动的 1 的数量
+        // 滑动窗口枚举右端点
+        for right in size..=n {
+            let left = right - size;
+            let mid = left + size / 2;
+            // 左侧距离和
+            let s1 = pos[mid] * (mid - left) as i64 - (pre_sum[mid] - pre_sum[left]);
+            // 右侧距离和
+            let s2 = (pre_sum[right] - pre_sum[mid]) - pos[mid] * (right - mid) as i64;
+            ans = ans.min(s1 + s2);
+        }
+
+        ans + (max_changes * 2) as i64
+    }
+}
