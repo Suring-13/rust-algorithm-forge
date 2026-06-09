@@ -1343,3 +1343,30 @@ pub mod n3086 {
         ans + (max_changes * 2) as i64
     }
 }
+
+// 1177. 构建回文串检测
+pub mod n1177 {
+    pub fn can_make_pali_queries(s: String, queries: Vec<Vec<i32>>) -> Vec<bool> {
+        // 前缀异或数组，初始值为0
+        let mut prefix = vec![0u32];
+        // 遍历字符串字节，用二进制位记录字符出现次数的奇偶性
+        for &b in s.as_bytes() {
+            // 将当前字符映射到对应二进制位
+            let bit = 1 << (b - b'a');
+            // 异或操作：该比特对应字母的奇偶性：奇数变偶数，偶数变奇数
+            prefix.push(prefix.last().unwrap() ^ bit);
+        }
+
+        let mut ans = Vec::with_capacity(queries.len());
+        for q in queries {
+            let left = q[0] as usize;
+            let right = q[1] as usize;
+            let k = q[2];
+            // 计算区间内二进制位为1的数量，即出现奇数次的字符个数
+            let m = (prefix[left] ^ prefix[right + 1]).count_ones();
+            // 每修改一个字符可抵消两个奇数位，判断是否满足修改次数要求
+            ans.push(m / 2 <= k as u32);
+        }
+        ans
+    }
+}
