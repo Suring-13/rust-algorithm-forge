@@ -1370,3 +1370,33 @@ pub mod n1177 {
         ans
     }
 }
+
+// 1371. 每个元音包含偶数次的最长子字符串
+pub mod n1371 {
+    pub fn find_the_longest_substring(s: String) -> i32 {
+        // pre 数组：记录每种状态第一次出现的下标，初始设为极大值
+        let mut pre = [i32::MAX; 32];
+        pre[0] = -1; // 状态0 出现在下标-1
+        let mut cur = 0;
+        let mut ans = 0;
+
+        for (idx, c) in s.chars().enumerate() {
+            let i = idx as i32;
+            match c {
+                'a' => cur ^= 1,
+                'e' => cur ^= 2,
+                'i' => cur ^= 4,
+                'o' => cur ^= 8,
+                'u' => cur ^= 16,
+                _ => (),
+            }
+
+            if pre[cur] == i32::MAX {
+                pre[cur] = i;
+            } else {
+                ans = ans.max(i - pre[cur]);
+            }
+        }
+        ans
+    }
+}
