@@ -1400,3 +1400,36 @@ pub mod n1371 {
         ans
     }
 }
+
+// 1542. 找出最长的超赞子字符串
+pub mod n1542 {
+    pub fn longest_awesome(s: String) -> i32 {
+        const D: usize = 10;
+        let n = s.len();
+        let mut pos = vec![n as i32; 1 << D];
+        pos[0] = -1; // 前缀异或和 0 初始下标 -1
+        let mut pre = 0;
+        let mut ans = 0;
+
+        for (i, c) in s.chars().enumerate() {
+            let x = c.to_digit(10).unwrap() as usize;
+            pre ^= 1 << x;
+
+            // 情况1：当前状态之前出现过，所有字符偶数次
+            ans = ans.max(i as i32 - pos[pre]);
+
+            // 情况2：恰好一个字符奇数次，枚举每一位翻转
+            for d in 0..D {
+                let target = pre ^ (1 << d);
+                ans = ans.max(i as i32 - pos[target]);
+            }
+
+            // 只记录状态第一次出现的位置
+            if pos[pre] == n as i32 {
+                pos[pre] = i as i32;
+            }
+        }
+
+        ans
+    }
+}
