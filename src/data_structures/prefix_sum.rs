@@ -1433,3 +1433,30 @@ pub mod n1542 {
         ans
     }
 }
+
+// 1915. 最美子字符串的数目
+pub mod n1915 {
+    pub fn wonderful_substrings(word: String) -> i64 {
+        // 一共 10 个小写字母，状态范围 0~1023
+        let mut cnt = [0i64; 1024];
+        cnt[0] = 1;
+        let mut ans = 0i64;
+        let mut state = 0usize;
+
+        for c in word.chars() {
+            let idx = (c as u8 - b'a') as usize;
+            state ^= 1 << idx;
+
+            // 所有字符出现偶数次
+            ans += cnt[state];
+            // 枚举恰好一个字符出现奇数次
+            for i in 0..10 {
+                ans += cnt[state ^ (1 << i)];
+            }
+
+            cnt[state] += 1;
+        }
+
+        ans
+    }
+}
