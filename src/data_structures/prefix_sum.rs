@@ -1460,3 +1460,49 @@ pub mod n1915 {
         ans
     }
 }
+
+// 2791. 树中可以形成回文的路径数
+pub mod n2791 {
+    pub fn count_palindrome_paths(parent: Vec<i32>, s: String) -> i64 {
+        let n = s.len();
+        // 建邻接表
+        let mut g = vec![vec![]; n];
+        for (i, &parent_item) in parent.iter().enumerate().take(n).skip(1) {
+            let p = parent_item as usize;
+            g[p].push(i);
+        }
+
+        let s_chars: Vec<u8> = s.into_bytes();
+        let mut cnt = std::collections::HashMap::new();
+        cnt.insert(0, 1); // 初始空路径掩码 0，出现次数 1
+
+        // 递归 dfs: 当前节点、当前前缀掩码、引用计数表、邻接表、字符数组
+        fn dfs(
+            v: usize,
+            xor: u32,
+            cnt: &mut std::collections::HashMap<u32, i64>,
+            g: &[Vec<usize>],
+            s: &[u8],
+        ) -> i64 {
+            let mut res = 0;
+            for &w in &g[v] {
+                let bit = 1 << (s[w] - b'a');
+                let x = xor ^ bit;
+
+                // 1. 掩码完全相等（异或为0）
+                res += cnt.get(&x).unwrap_or(&0);
+                // 2. 仅相差一个二进制位（单个字符奇数）
+                for i in 0..26 {
+                    res += cnt.get(&(x ^ (1 << i))).unwrap_or(&0);
+                }
+
+                // 先更新计数，再递归子树
+                *cnt.entry(x).or_insert(0) += 1;
+                res += dfs(w, x, cnt, g, s);
+            }
+            res
+        }
+
+        dfs(0, 0, &mut cnt, &g, &s_chars)
+    }
+}
