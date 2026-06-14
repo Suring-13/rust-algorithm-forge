@@ -1506,3 +1506,36 @@ pub mod n2791 {
         dfs(0, 0, &mut cnt, &g, &s_chars)
     }
 }
+
+// 3709. 设计考试分数记录器
+pub mod n3709 {
+    #[derive(Default)]
+    pub struct ExamTracker {
+        pub times: Vec<i32>,
+        pub pre_sum: Vec<i64>,
+    }
+    impl ExamTracker {
+        pub fn new() -> Self {
+            let mut tracker = Self::default();
+            tracker.pre_sum.push(0); // 前缀和初始 0
+            tracker
+        }
+
+        pub fn record(&mut self, time: i32, score: i32) {
+            self.times.push(time);
+            let last = *self.pre_sum.last().unwrap();
+            self.pre_sum.push(last + score as i64);
+        }
+
+        pub fn total_score(&self, start_time: i32, end_time: i32) -> i64 {
+            let left = match self.times.binary_search(&start_time) {
+                Ok(idx) => idx,
+                Err(idx) => idx,
+            };
+
+            let right = self.times.partition_point(|&x| x <= end_time);
+
+            self.pre_sum[right] - self.pre_sum[left]
+        }
+    }
+}
