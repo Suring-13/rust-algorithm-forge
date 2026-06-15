@@ -1539,3 +1539,49 @@ pub mod n3709 {
         }
     }
 }
+
+// 3919. 在下标间移动的最小代价
+pub mod n3919 {
+    pub fn min_cost(nums: Vec<i32>, queries: Vec<Vec<i32>>) -> Vec<i32> {
+        let n = nums.len();
+        if n == 0 {
+            return vec![];
+        }
+
+        let mut sum_l = vec![0i64; n];
+        let mut sum_r = vec![0i64; n];
+
+        for i in 1..n {
+            // 计算 sum_l[i] : i 向左走到 0 的累计代价
+            let cost_l = if i < n - 1 && nums[i] - nums[i - 1] > nums[i + 1] - nums[i] {
+                (nums[i] - nums[i - 1]) as i64
+            } else {
+                1
+            };
+            sum_l[i] = sum_l[i - 1] + cost_l;
+
+            // 计算 sum_r[i] : 0 向右走到 i 的累计代价
+            let cost_r = if i > 1 && nums[i - 1] - nums[i - 2] <= nums[i] - nums[i - 1] {
+                (nums[i] - nums[i - 1]) as i64
+            } else {
+                1
+            };
+            sum_r[i] = sum_r[i - 1] + cost_r;
+        }
+
+        // 处理查询
+        let mut ans = Vec::with_capacity(queries.len());
+        for q in queries {
+            let l = q[0] as usize;
+            let r = q[1] as usize;
+            let res = if l < r {
+                sum_r[r] - sum_r[l]
+            } else {
+                sum_l[l] - sum_l[r]
+            };
+            ans.push(res as i32);
+        }
+
+        ans
+    }
+}
