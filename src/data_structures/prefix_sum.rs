@@ -1585,3 +1585,91 @@ pub mod n3919 {
         ans
     }
 }
+
+// 1895. 最大的幻方
+pub mod n1895 {
+    pub fn largest_magic_square(grid: Vec<Vec<i32>>) -> i32 {
+        let m = grid.len();
+        if m == 0 {
+            return 1;
+        }
+        let n = grid[0].len();
+        let min_dim = std::cmp::min(m, n);
+
+        // row_sum[i][j+1] = grid[i][0..j] 行前缀和
+        let mut row_sum = vec![vec![0; n + 1]; m];
+        // col_sum[i+1][j] = grid[0..i][j] 列前缀和
+        let mut col_sum = vec![vec![0; n]; m + 1];
+        // diag_sum[i+1][j+1] 主对角线 ↘ 前缀和
+        let mut diag_sum = vec![vec![0; n + 1]; m + 1];
+        // anti_sum[i+1][j] 反对角线 ↙ 前缀和
+        let mut anti_sum = vec![vec![0; n + 1]; m + 1];
+
+        for i in 0..m {
+            for j in 0..n {
+                let x = grid[i][j];
+                row_sum[i][j + 1] = row_sum[i][j] + x;
+                col_sum[i + 1][j] = col_sum[i][j] + x;
+                diag_sum[i + 1][j + 1] = diag_sum[i][j] + x;
+                anti_sum[i + 1][j] = anti_sum[i][j + 1] + x;
+            }
+        }
+
+        // is_same_col_sum[i][j]: 右下角(i,j)矩形，连续k列和全部相等
+        let mut is_same_col_sum = vec![vec![false; n]; m];
+
+        // 从最大k往下枚举，找到直接返回
+        for k in (2..=min_dim).rev() {
+            // 第一步：预计算所有位置的 is_same_col_sum
+            for i in k..=m {
+                let mut same_cnt = 1;
+                for j in 1..n {
+                    let curr_col = col_sum[i][j] - col_sum[i - k][j];
+                    let prev_col = col_sum[i][j - 1] - col_sum[i - k][j - 1];
+                    if curr_col == prev_col {
+                        same_cnt += 1;
+                    } else {
+                        same_cnt = 1;
+                    }
+                    is_same_col_sum[i - 1][j] = same_cnt >= k;
+                }
+            }
+
+            // 第二步：滑动k×k窗口向下，校验行、列、对角线
+            for j in k..=n {
+                let mut sum_row = row_sum[0][j] - row_sum[0][j - k];
+                let mut same_cnt = 1;
+                for i in 2..=m {
+                    let row_s = row_sum[i - 1][j] - row_sum[i - 1][j - k];
+                    if row_s == sum_row {
+                        same_cnt += 1;
+                        if same_cnt >= k {
+                            let pos_i = i - 1;
+                            let pos_j = j - 1;
+                            // 列和
+                            let col_total = col_sum[i][pos_j] - col_sum[i - k][pos_j];
+                            // 主对角线和
+                            let diag_total = diag_sum[i][j] - diag_sum[i - k][j - k];
+                            // 反对角线和
+                            let anti_total = anti_sum[i][j - k] - anti_sum[i - k][j];
+
+                            if is_same_col_sum[pos_i][pos_j]
+                                && col_total == sum_row
+                                && diag_total == sum_row
+                                && anti_total == sum_row
+                            {
+                                return k as i32;
+                            }
+                        }
+                    } else {
+                        sum_row = row_s;
+                        same_cnt = 1;
+                    }
+                }
+            }
+        }
+
+        // 最小魔法方阵边长为1
+        1
+    }
+}
