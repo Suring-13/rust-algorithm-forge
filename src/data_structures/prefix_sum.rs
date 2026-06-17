@@ -1673,3 +1673,49 @@ pub mod n1895 {
         1
     }
 }
+
+// 2055. 蜡烛之间的盘子
+pub mod n2055 {
+    pub fn plates_between_candles(s: String, queries: Vec<Vec<i32>>) -> Vec<i32> {
+        let buf = s.as_bytes();
+        let n = buf.len();
+
+        // sum[i] 表示 s[0..i) 中盘子数量
+        let mut sum = vec![0; n + 1];
+
+        // left[i]: i 左侧最近蜡烛位置，无则 -1
+        let mut left = vec![-1i32; n];
+        let mut p = -1i32;
+
+        for i in 0..n {
+            sum[i + 1] = sum[i];
+            if buf[i] == b'|' {
+                p = i as i32;
+            } else {
+                sum[i + 1] += 1;
+            }
+            left[i] = p;
+        }
+
+        // right[i]: i 右侧最近蜡烛位置，无则 n
+        let mut right = vec![n as i32; n];
+        let mut p = n as i32;
+        for i in (0..n).rev() {
+            if buf[i] == b'|' {
+                p = i as i32;
+            }
+            right[i] = p;
+        }
+
+        let mut ans = vec![0; queries.len()];
+        for (idx, q) in queries.iter().enumerate() {
+            let l = right[q[0] as usize];
+            let r = left[q[1] as usize];
+            if l < r {
+                ans[idx] = sum[r as usize] - sum[l as usize];
+            }
+        }
+
+        ans
+    }
+}
