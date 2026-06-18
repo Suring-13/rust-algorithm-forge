@@ -1719,3 +1719,39 @@ pub mod n2055 {
         ans
     }
 }
+
+// 1744. 你能在你最喜欢的那天吃到你最喜欢的糖果吗？
+pub mod n1744 {
+    pub fn can_eat(candies_count: Vec<i32>, queries: Vec<Vec<i32>>) -> Vec<bool> {
+        // 前缀和
+        let mut prefix = Vec::new();
+        let mut sum = 0i64;
+        for &cnt in &candies_count {
+            sum += cnt as i64;
+            prefix.push(sum);
+        }
+
+        // 先全部初始化为 false
+        let mut ans = vec![false; queries.len()];
+        for (idx, q) in queries.into_iter().enumerate() {
+            let fav_type = q[0] as usize;
+            let fav_day = q[1] as i64;
+            let daily_cap = q[2] as i64;
+
+            let x1 = fav_day + 1;
+            let y1 = x1 * daily_cap;
+            let x2 = if fav_type == 0 {
+                1
+            } else {
+                prefix[fav_type - 1] + 1
+            };
+            let y2 = prefix[fav_type];
+
+            // 区间有交集则置为 true
+            if !(x1 > y2 || y1 < x2) {
+                ans[idx] = true;
+            }
+        }
+        ans
+    }
+}
