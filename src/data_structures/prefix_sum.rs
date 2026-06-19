@@ -1755,3 +1755,71 @@ pub mod n1744 {
         ans
     }
 }
+
+// 1878. 矩阵中最大的三个菱形和
+pub mod n1878 {
+    pub fn get_biggest_three(grid: Vec<Vec<i32>>) -> Vec<i32> {
+        let m = grid.len();
+        let n = grid[0].len();
+
+        // diag_sum[i+1][j+1] = ↘ 对角线前缀和
+        let mut diag_sum = vec![vec![0; n + 1]; m + 1];
+        // anti_sum[i+1][j] = ↙ 反对角线前缀和
+        let mut anti_sum = vec![vec![0; n + 1]; m + 1];
+
+        for i in 0..m {
+            for j in 0..n {
+                let val = grid[i][j];
+                diag_sum[i + 1][j + 1] = diag_sum[i][j] + val;
+                anti_sum[i + 1][j] = anti_sum[i][j + 1] + val;
+            }
+        }
+
+        /// 从 (x,y) 向右下取连续 k 个点之和
+        fn query_diag(diag: &[Vec<i32>], x: usize, y: usize, k: usize) -> i32 {
+            diag[x + k][y + k] - diag[x][y]
+        }
+
+        /// 从 (x,y) 向左下取连续 k 个点之和
+        fn query_anti(anti: &[Vec<i32>], x: usize, y: usize, k: usize) -> i32 {
+            anti[x + k][y + 1 - k] - anti[x][y + 1]
+        }
+
+        // top3: 最大、次大、第三大
+        let mut top = [0, 0, 0];
+
+        /// 更新前三大数值
+        fn update(top: &mut [i32; 3], v: i32) {
+            if v > top[0] {
+                top[2] = top[1];
+                top[1] = top[0];
+                top[0] = v;
+            } else if v > top[1] && v < top[0] {
+                top[2] = top[1];
+                top[1] = v;
+            } else if v > top[2] && v < top[1] {
+                top[2] = v;
+            }
+        }
+
+        for (i, grid_item) in grid.iter().enumerate().take(m) {
+            for (j, &grid_item_item) in grid_item.iter().enumerate().take(n) {
+                // 一个数也算菱形
+                update(&mut top, grid_item_item);
+                // 最大可扩张半径 k
+                let mx_k = i.min(m - 1 - i).min(j).min(n - 1 - j);
+                for k in 1..=mx_k {
+                    let a = query_diag(&diag_sum, i - k, j, k); // 菱形右上的边
+                    let b = query_diag(&diag_sum, i, j - k, k); // 菱形左下的边
+                    let c = query_anti(&anti_sum, i - k + 1, j - 1, k - 1); // 菱形左上的边
+                    let d = query_anti(&anti_sum, i, j + k, k + 1); // 菱形右下的边
+                    let total = a + b + c + d;
+                    update(&mut top, total);
+                }
+            }
+        }
+
+        // 最多返回三个最大的互不相同的菱形和
+        top.split(|&v| v == 0).next().unwrap().to_vec()
+    }
+}
