@@ -1823,3 +1823,47 @@ pub mod n1878 {
         top.split(|&v| v == 0).next().unwrap().to_vec()
     }
 }
+
+// 3756. 连接非零数字并乘以其数字和 II
+pub mod n3756 {
+    pub fn sum_and_multiply(s: String, queries: Vec<Vec<i32>>) -> Vec<i32> {
+        const MOD: i64 = 1_000_000_007;
+        const MAX_N: usize = 100_001;
+        let mut pow10 = vec![1; MAX_N];
+        for i in 1..MAX_N {
+            pow10[i] = (pow10[i - 1] * 10) % MOD;
+        }
+        let s_bytes = s.as_bytes();
+        let n = s_bytes.len();
+
+        // s 的前缀和
+        let mut sum_d = vec![0i64; n + 1];
+        // s 的前缀对应的数字（模 MOD）
+        let mut pre_num = vec![0i64; n + 1];
+        // s 的前缀中的非零数字个数
+        let mut sum_non_zero = vec![0usize; n + 1];
+
+        for i in 0..n {
+            // 字节转数字 b'0' ~ b'9'
+            let d = (s_bytes[i] - b'0') as i64;
+            sum_d[i + 1] = sum_d[i] + d;
+            pre_num[i + 1] = if d != 0 {
+                (pre_num[i] * 10 + d) % MOD
+            } else {
+                pre_num[i]
+            };
+            sum_non_zero[i + 1] = sum_non_zero[i] + if d > 0 { 1 } else { 0 };
+        }
+
+        let mut ans = Vec::with_capacity(queries.len());
+        for querie in queries {
+            let l = querie[0] as usize;
+            let r = querie[1] as usize + 1; // 避免下面多次计算 r+1
+            let length = sum_non_zero[r] - sum_non_zero[l];
+            let x = (pre_num[r] - pre_num[l] * pow10[length]).rem_euclid(MOD);
+            let total_sum = sum_d[r] - sum_d[l];
+            ans.push((x * total_sum).rem_euclid(MOD) as i32);
+        }
+        ans
+    }
+}
