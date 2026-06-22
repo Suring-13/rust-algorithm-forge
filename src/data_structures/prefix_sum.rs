@@ -1900,3 +1900,80 @@ pub mod n1031 {
         ans
     }
 }
+
+// 2245. 转角路径的乘积中最多能有几个尾随零
+pub mod n2245 {
+    pub fn max_trailing_zeros(grid: Vec<Vec<i32>>) -> i32 {
+        // 预处理：递推算出每个数的因子 2 的个数和因子 5 的个数
+        const MAX_NUM: usize = 1000;
+        let mut c2 = [0; MAX_NUM + 1];
+        let mut c5 = [0; MAX_NUM + 1];
+        for i in 2..=MAX_NUM {
+            if i % 2 == 0 {
+                c2[i] = c2[i / 2] + 1;
+            }
+            if i % 5 == 0 {
+                c5[i] = c5[i / 5] + 1;
+            }
+        }
+
+        let m = grid.len();
+        let n = grid[0].len();
+        // s[i][j] = (前缀2总数, 前缀5总数)，s[i][0] = (0,0)，s[i][1]为grid[i][0]，s[i][n]为整行总和
+        let mut s = vec![vec![(0, 0); n + 1]; m];
+        for i in 0..m {
+            let row = &grid[i];
+            s[i][0] = (0, 0);
+            for j in 0..n {
+                let v = row[j] as usize;
+                let prev = s[i][j];
+                s[i][j + 1] = (prev.0 + c2[v], prev.1 + c5[v]);
+            }
+        }
+
+        let mut ans = 0;
+        // 枚举每一列
+        for j in 0..n {
+            // 取出当前整列 col[i] = grid[i][j]
+            let col: Vec<usize> = grid.iter().map(|r| r[j] as usize).collect();
+
+            // 从上往下遍历，枚举当前点向上延伸，再左拐 / 右拐
+            let mut s2 = 0;
+            let mut s5 = 0;
+            for i in 0..m {
+                let v = col[i];
+                s2 += c2[v];
+                s5 += c5[v];
+                // 方案1：向上 + 左边前缀 [0,j)
+                let left_2 = s[i][j].0;
+                let left_5 = s[i][j].1;
+                let opt1 = std::cmp::min(s2 + left_2, s5 + left_5);
+                // 方案2：向上 + 右边后缀 [j+1, n)
+                let right_2 = s[i][n].0 - s[i][j + 1].0;
+                let right_5 = s[i][n].1 - s[i][j + 1].1;
+                let opt2 = std::cmp::min(s2 + right_2, s5 + right_5);
+                ans = ans.max(opt1).max(opt2);
+            }
+
+            // 从下往上遍历，枚举当前点向下延伸，再左拐 / 右拐
+            let mut s2 = 0;
+            let mut s5 = 0;
+            for i in (0..m).rev() {
+                let v = col[i];
+                s2 += c2[v];
+                s5 += c5[v];
+                // 方案1：向下 + 左边前缀 [0,j)
+                let left_2 = s[i][j].0;
+                let left_5 = s[i][j].1;
+                let opt1 = std::cmp::min(s2 + left_2, s5 + left_5);
+                // 方案2：向下 + 右边后缀 [j+1, n)
+                let right_2 = s[i][n].0 - s[i][j + 1].0;
+                let right_5 = s[i][n].1 - s[i][j + 1].1;
+                let opt2 = std::cmp::min(s2 + right_2, s5 + right_5);
+                ans = ans.max(opt1).max(opt2);
+            }
+        }
+
+        ans
+    }
+}
