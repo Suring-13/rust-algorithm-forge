@@ -1977,3 +1977,36 @@ pub mod n2245 {
         ans
     }
 }
+
+// 1712. 将数组分成三个子数组的方案数
+pub mod n1712 {
+    pub fn ways_to_split(nums: Vec<i32>) -> i32 {
+        const MOD: i64 = 1_000_000_007;
+        let n = nums.len();
+        let mut sum = vec![0; n + 1];
+        for (i, &v) in nums.iter().enumerate() {
+            sum[i + 1] = sum[i] + v as i64;
+        }
+
+        let mut ans: i64 = 0;
+        let total = sum[n];
+
+        for r in 2..n {
+            if 3 * sum[r] > 2 * total {
+                break;
+            }
+            // sum[1..r] 对应切片 &sum[1..r]，查找下界 2*sum[r] - total
+            let target_l1 = 2 * sum[r] - total;
+            let l1_idx = sum[1..r].partition_point(|&x| x < target_l1);
+            let l1 = l1_idx + 1;
+
+            // sum[l1..r] 查找 sum[r]/2
+            let target_r = sum[r] / 2;
+            let cnt = sum[l1..r].partition_point(|&x| x <= target_r);
+
+            ans = (ans + cnt as i64).rem_euclid(MOD);
+        }
+
+        ans as _
+    }
+}
