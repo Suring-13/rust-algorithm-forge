@@ -2010,3 +2010,46 @@ pub mod n1712 {
         ans as _
     }
 }
+
+// 1862. 向下取整数对和
+pub mod n1862 {
+    pub fn sum_of_floored_pairs(nums: Vec<i32>) -> i32 {
+        const MOD: i64 = 1_000_000_007;
+        if nums.is_empty() {
+            return 0;
+        }
+
+        // 求数组最大值
+        let upper = *nums.iter().max().unwrap() as usize;
+        let mut cnt = vec![0i64; upper + 1];
+        for &num in &nums {
+            cnt[num as usize] += 1;
+        }
+
+        // 前缀和数组
+        let mut pre = vec![0i64; upper + 2];
+        for i in 1..=upper {
+            pre[i + 1] = pre[i] + cnt[i];
+        }
+
+        let mut ans: i64 = 0;
+        for (y, &c) in cnt.iter().enumerate().take(upper + 1).skip(1) {
+            if c == 0 {
+                continue;
+            }
+            let mut d = 1;
+            loop {
+                let start = d * y;
+                if start > upper {
+                    break;
+                }
+                let end = ((d + 1) * y).min(upper + 1);
+                let count = pre[end] - pre[start];
+                ans += c * (d as i64) * count;
+                d += 1;
+            }
+        }
+
+        ans.rem_euclid(MOD) as i32
+    }
+}
