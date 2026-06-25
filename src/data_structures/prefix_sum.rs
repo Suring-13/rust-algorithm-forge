@@ -2053,3 +2053,53 @@ pub mod n1862 {
         ans.rem_euclid(MOD) as i32
     }
 }
+
+// 3748. 统计稳定子数组的数目
+pub mod n3748 {
+    pub fn count_stable_subarrays(nums: Vec<i32>, queries: Vec<Vec<i32>>) -> Vec<i64> {
+        let n = nums.len();
+        // 计算递增子数组个数的前缀和
+        let mut s = vec![0i64; n + 1];
+        let mut cnt = 0i64;
+        for (i, &x) in nums.iter().enumerate() {
+            if i > 0 && x < nums[i - 1] {
+                cnt = 0;
+            }
+            cnt += 1;
+            // 现在 cnt 表示以 i 为右端点的递增子数组个数
+            s[i + 1] = s[i] + cnt;
+        }
+
+        // nxt[i] 表示 i 右边下一个递增段的左端点，若不存在则为 n
+        let mut nxt = vec![0usize; n];
+        nxt[n - 1] = n;
+        for i in (0..n - 1).rev() {
+            nxt[i] = if nums[i] <= nums[i + 1] {
+                nxt[i + 1]
+            } else {
+                i + 1
+            };
+        }
+
+        let mut ans = Vec::with_capacity(queries.len());
+        for q in queries {
+            let l = q[0] as usize;
+            let r = q[1] as usize;
+            let l2 = nxt[l];
+            if l2 > r {
+                // l 和 r 在同一个区间
+                let m = (r - l + 1) as i64;
+                ans.push(m * (m + 1) / 2);
+            } else {
+                // l 和 r 在不同区间
+                // 分成 [l, l2) + [l2, r]
+                // 由于 [l2, r] 中的每个右端点所在递增段的左端点都在 [l2, r] 内，所以可以用前缀和计算
+                let m = (l2 - l) as i64;
+                let part1 = m * (m + 1) / 2;
+                let part2 = s[r + 1] - s[l2];
+                ans.push(part1 + part2);
+            }
+        }
+        ans
+    }
+}
