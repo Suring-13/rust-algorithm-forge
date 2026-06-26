@@ -2103,3 +2103,69 @@ pub mod n3748 {
         ans
     }
 }
+
+// 2281. 巫师的总力量和
+pub mod n2281 {
+    pub fn total_strength(strength: Vec<i32>) -> i32 {
+        const MOD: i64 = 1_000_000_007;
+        let n = strength.len();
+        let mut left = vec![-1i32; n];
+        let mut right = vec![n as i32; n];
+        let mut st = Vec::new();
+        for i in 0..n {
+            let v = strength[i];
+            while let Some(&top) = st.last() {
+                if strength[top] >= v {
+                    right[top] = i as i32;
+                    st.pop();
+                } else {
+                    break;
+                }
+            }
+            if let Some(&top) = st.last() {
+                left[i] = top as i32;
+            }
+            st.push(i);
+        }
+
+        // 一级前缀和 pre，先模MOD
+        let pre: Vec<i64> = std::iter::once(0)
+            .chain(strength.iter().scan(0i64, |acc, &x| {
+                *acc = (*acc + x as i64).rem_euclid(MOD);
+                Some(*acc)
+            }))
+            .collect();
+        // 二级前缀和 ss，累加持续模MOD
+        let ss: Vec<i64> = std::iter::once(0)
+            .chain(pre.iter().scan(0i64, |acc, &x| {
+                *acc = (*acc + x).rem_euclid(MOD);
+                Some(*acc)
+            }))
+            .collect();
+
+        let mut ans = 0i64;
+        for i in 0..n {
+            let v = strength[i] as i64;
+            let l = (left[i] + 1) as usize;
+            let r = (right[i] - 1) as usize;
+
+            let l_cnt = (i - l + 1) as i64;
+            let r_cnt = (r - i + 1) as i64;
+
+            // 分段计算，每步乘法取模，避免大数
+            let s1 = (ss[r + 2] - ss[i + 1]).rem_euclid(MOD);
+            let term1 = (l_cnt * s1).rem_euclid(MOD);
+
+            let s2 = (ss[i + 1] - ss[l]).rem_euclid(MOD);
+            let term2 = (r_cnt * s2).rem_euclid(MOD);
+
+            // tot = (term1 - term2) mod MOD
+            let tot = (term1 - term2).rem_euclid(MOD);
+
+            // 贡献：v * tot mod MOD
+            let contrib = (v * tot).rem_euclid(MOD);
+            ans = (ans + contrib).rem_euclid(MOD);
+        }
+        ans as i32
+    }
+}
