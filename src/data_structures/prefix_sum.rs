@@ -2169,3 +2169,57 @@ pub mod n2281 {
         ans as i32
     }
 }
+
+// 3445. 奇偶频次间的最大差值 II
+pub mod n3445 {
+    pub fn max_difference(s: String, k: i32) -> i32 {
+        const INF: i32 = i32::MAX / 2;
+        const NEG_INF: i32 = i32::MIN / 2;
+        let nums: Vec<i32> = s.chars().map(|c| c.to_digit(10).unwrap() as i32).collect();
+        let k_usize = k as usize;
+        let mut ans = NEG_INF;
+
+        // 枚举所有 x, y 0~4，x != y
+        for x in 0..5 {
+            for y in 0..5 {
+                if x == y {
+                    continue;
+                }
+                let mut cur_s = [0i32; 5];
+                let mut pre_s = [0i32; 5];
+                // min_s[p][q] p=pre_x%2, q=pre_y%2
+                let mut min_s = [[INF; 2]; 2];
+                let mut left = 0usize;
+
+                for (i, &v) in nums.iter().enumerate() {
+                    let vidx = v as usize;
+                    cur_s[vidx] += 1;
+                    let r = i + 1;
+
+                    // 滑动窗口左移条件
+                    while r - left >= k_usize && cur_s[x] > pre_s[x] && cur_s[y] > pre_s[y] {
+                        let px = pre_s[x];
+                        let py = pre_s[y];
+                        let p = (px & 1) as usize;
+                        let q = (py & 1) as usize;
+                        min_s[p][q] = min_s[p][q].min(px - py);
+
+                        let left_v = nums[left] as usize;
+                        pre_s[left_v] += 1;
+                        left += 1;
+                    }
+
+                    if r >= k_usize {
+                        let cx = cur_s[x];
+                        let cy = cur_s[y];
+                        let p_tar = (cx & 1 ^ 1) as usize;
+                        let q_tar = (cy & 1) as usize;
+                        let candidate = cx - cy - min_s[p_tar][q_tar];
+                        ans = ans.max(candidate);
+                    }
+                }
+            }
+        }
+        ans
+    }
+}
