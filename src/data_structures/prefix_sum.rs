@@ -2223,3 +2223,120 @@ pub mod n3445 {
         ans
     }
 }
+
+// 2983. 回文串重新排列查询
+pub mod n2983 {
+    pub fn can_make_palindrome_queries(s: String, queries: Vec<Vec<i32>>) -> Vec<bool> {
+        let full = s.as_bytes();
+        let m = full.len();
+        let n = m / 2;
+        // s 左半部分 [0, n)
+        let s_part = &full[0..n];
+        // t 右半反转
+        let mut t_part = full[n..m].to_vec();
+        t_part.reverse();
+
+        // 前缀字符计数 sum_s / sum_t
+        let mut sum_s = vec![[0u32; 26]; n + 1];
+        let mut sum_t = vec![[0u32; 26]; n + 1];
+        for i in 0..n {
+            sum_s[i + 1] = sum_s[i];
+            let c = (s_part[i] - b'a') as usize;
+            sum_s[i + 1][c] += 1;
+
+            sum_t[i + 1] = sum_t[i];
+            let c = (t_part[i] - b'a') as usize;
+            sum_t[i + 1][c] += 1;
+        }
+
+        // sum_ne: 前缀不等数量
+        let mut sum_ne = vec![0usize; n + 1];
+        for i in 0..n {
+            sum_ne[i + 1] = sum_ne[i] + if s_part[i] != t_part[i] { 1 } else { 0 };
+        }
+
+        // 获取 [l, r] 区间字符计数 l,r 闭区间 0-based
+        let count = |sum: &[[u32; 26]], l: usize, r: usize| -> [u32; 26] {
+            let mut res = [0; 26];
+            for i in 0..26 {
+                res[i] = sum[r + 1][i] - sum[l][i];
+            }
+            res
+        };
+
+        // s1 -= s2，任一负数返回 None
+        let subtract = |mut s1: [u32; 26], s2: [u32; 26]| -> Option<[u32; 26]> {
+            for i in 0..26 {
+                if s1[i] < s2[i] {
+                    return None;
+                }
+                s1[i] -= s2[i];
+            }
+            Some(s1)
+        };
+
+        // 核心校验函数 l1<=l2 时调用
+        let check = |l1: usize,
+                     r1: usize,
+                     l2: usize,
+                     r2: usize,
+                     sum_s: &[[u32; 26]],
+                     sum_t: &[[u32; 26]]|
+         -> bool {
+            // 左边 [0,l1-1] 存在不等
+            if sum_ne[l1] > 0 {
+                return false;
+            }
+            // 右边 [max(r1,r2)+1, n-1] 存在不等
+            let max_r = r1.max(r2);
+            if sum_ne[n] - sum_ne[max_r + 1] > 0 {
+                return false;
+            }
+
+            if r2 <= r1 {
+                // 区间包含
+                count(sum_s, l1, r1) == count(sum_t, l1, r1)
+            } else if r1 < l2 {
+                // 不相交，中间 [r1+1, l2-1] 必须全部相等
+                let mid_diff = sum_ne[l2] - sum_ne[r1 + 1];
+                mid_diff == 0
+                    && count(sum_s, l1, r1) == count(sum_t, l1, r1)
+                    && count(sum_s, l2, r2) == count(sum_t, l2, r2)
+            } else {
+                // 相交不包含
+                let s_seg = count(sum_s, l1, r1);
+                let t_seg1 = count(sum_t, l1, l2 - 1);
+                let a = subtract(s_seg, t_seg1);
+                if a.is_none() {
+                    return false;
+                }
+                let t_seg = count(sum_t, l2, r2);
+                let s_seg2 = count(sum_s, r1 + 1, r2);
+                let b = subtract(t_seg, s_seg2);
+                if b.is_none() {
+                    return false;
+                }
+                a.unwrap() == b.unwrap()
+            }
+        };
+
+        let mut ans = Vec::with_capacity(queries.len());
+        for q in queries {
+            let l1 = q[0] as usize;
+            let r1 = q[1] as usize;
+            let c = q[2] as usize;
+            let d = q[3] as usize;
+            let total_len = m;
+            let l2 = total_len - 1 - d;
+            let r2 = total_len - 1 - c;
+
+            let ok = if l1 <= l2 {
+                check(l1, r1, l2, r2, &sum_s, &sum_t)
+            } else {
+                check(l2, r2, l1, r1, &sum_t, &sum_s)
+            };
+            ans.push(ok);
+        }
+        ans
+    }
+}
