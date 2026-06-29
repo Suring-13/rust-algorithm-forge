@@ -2340,3 +2340,31 @@ pub mod n2983 {
         ans
     }
 }
+
+// 2300. 咒语和药水的成功对数
+pub mod n2300 {
+    pub fn successful_pairs(spells: Vec<i32>, potions: Vec<i32>, success: i64) -> Vec<i32> {
+        let mx = *potions.iter().max().unwrap();
+        let mut cnt = vec![0; (mx + 1) as usize];
+        for &y in &potions {
+            cnt[y as usize] += 1; // 统计每种药水的出现次数
+        }
+
+        // 计算 cnt 的后缀和, cnt[i] 就是 potions 值 >= i 的药水个数
+        for i in (0..mx).rev() {
+            cnt[i as usize] += cnt[(i + 1) as usize];
+        }
+
+        let mut res = Vec::with_capacity(spells.len());
+        for x in spells {
+            let low = (success - 1) / x as i64 + 1;
+            let val = if low <= mx as i64 {
+                cnt[low as usize]
+            } else {
+                0
+            };
+            res.push(val);
+        }
+        res
+    }
+}
