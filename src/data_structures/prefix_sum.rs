@@ -2368,3 +2368,33 @@ pub mod n2300 {
         res
     }
 }
+
+// 1534. 统计好三元组
+pub mod n1534 {
+    pub fn count_good_triplets(arr: Vec<i32>, a: i32, b: i32, c: i32) -> i32 {
+        let mx = *arr.iter().max().unwrap() as usize;
+        let mut s = vec![0; mx + 2];
+        let mut ans = 0;
+
+        for j in 0..arr.len() {
+            let y = arr[j];
+            // 遍历 z = arr[j+1..]
+            for &z in arr.iter().skip(j + 1) {
+                if (y - z).abs() > b {
+                    continue;
+                }
+                let l = 0.max(y - a).max(z - c) as usize;
+                let r = (mx as i32).min(y + a).min(z + c) as usize;
+                let diff = s[r + 1] - s[l];
+                ans += std::cmp::max(diff, 0);
+            }
+            // 更新前缀和 s，区间 [y+1, mx+1] 全部 +1
+            let y_usize = y as usize;
+            for s_item in s.iter_mut().take(mx + 1 + 1).skip(y_usize + 1) {
+                *s_item += 1;
+            }
+        }
+
+        ans
+    }
+}
