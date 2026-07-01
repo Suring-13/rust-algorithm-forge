@@ -2398,3 +2398,33 @@ pub mod n1534 {
         ans
     }
 }
+
+// 304. 二维区域和检索 - 矩阵不可变
+pub mod n304 {
+    pub struct NumMatrix {
+        pub sum: Vec<Vec<i32>>,
+    }
+
+    impl NumMatrix {
+        pub fn new(matrix: Vec<Vec<i32>>) -> Self {
+            let m = matrix.len();
+            let n = matrix[0].len();
+            let mut sum = vec![vec![0; n + 1]; m + 1];
+            for (i, row) in matrix.iter().enumerate() {
+                for (j, x) in row.iter().enumerate() {
+                    sum[i + 1][j + 1] = sum[i + 1][j] + sum[i][j + 1] - sum[i][j] + x;
+                }
+            }
+            Self { sum }
+        }
+
+        // 返回左上角在 (row1, col1) 右下角在 (row2, col2) 的子矩阵元素和
+        pub fn sum_region(&self, row1: i32, col1: i32, row2: i32, col2: i32) -> i32 {
+            let r1 = row1 as usize;
+            let c1 = col1 as usize;
+            let r2 = row2 as usize + 1;
+            let c2 = col2 as usize + 1;
+            self.sum[r2][c2] - self.sum[r2][c1] - self.sum[r1][c2] + self.sum[r1][c1]
+        }
+    }
+}
