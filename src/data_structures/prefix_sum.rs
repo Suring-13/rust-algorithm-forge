@@ -2428,3 +2428,35 @@ pub mod n304 {
         }
     }
 }
+
+// 1314. 矩阵区域和
+pub mod n1314 {
+    pub fn matrix_block_sum(mat: Vec<Vec<i32>>, k: i32) -> Vec<Vec<i32>> {
+        let m = mat.len();
+        let n = mat[0].len();
+        let k = k as usize;
+
+        // 二维前缀和数组，(m+1) * (n+1)
+        let mut prefix = vec![vec![0; n + 1]; m + 1];
+        for i in 0..m {
+            for j in 0..n {
+                prefix[i + 1][j + 1] =
+                    prefix[i][j + 1] + prefix[i + 1][j] - prefix[i][j] + mat[i][j];
+            }
+        }
+
+        let mut ans = vec![vec![0; n]; m];
+        for (i, ans_item) in ans.iter_mut().enumerate().take(m) {
+            for (j, ans_item_item) in ans_item.iter_mut().enumerate().take(n) {
+                let r1 = i.saturating_sub(k);
+                let c1 = j.saturating_sub(k);
+                let r2 = (m - 1).min(i + k);
+                let c2 = (n - 1).min(j + k);
+
+                *ans_item_item = prefix[r2 + 1][c2 + 1] - prefix[r1][c2 + 1] - prefix[r2 + 1][c1]
+                    + prefix[r1][c1];
+            }
+        }
+        ans
+    }
+}
