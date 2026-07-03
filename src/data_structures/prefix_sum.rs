@@ -2460,3 +2460,25 @@ pub mod n1314 {
         ans
     }
 }
+
+// 3070. 元素和小于等于 k 的子矩阵的数目
+pub mod n3070 {
+    pub fn count_submatrices(grid: Vec<Vec<i32>>, k: i32) -> i32 {
+        let m = grid.len();
+        let n = grid[0].len();
+        // 二维前缀和数组 (m+1) x (n+1)
+        let mut s = vec![vec![0; n + 1]; m + 1];
+        let mut ans = 0;
+
+        for i in 0..m {
+            for j in 0..n {
+                let x = grid[i][j];
+                s[i + 1][j + 1] = s[i + 1][j] + s[i][j + 1] - s[i][j] + x;
+                if s[i + 1][j + 1] <= k {
+                    ans += 1;
+                }
+            }
+        }
+        ans
+    }
+}
