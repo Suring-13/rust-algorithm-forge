@@ -2482,3 +2482,27 @@ pub mod n3070 {
         ans
     }
 }
+
+// 1738. 找出第 K 大的异或坐标值
+pub mod n1738 {
+    pub fn kth_largest_value(matrix: Vec<Vec<i32>>, k: i32) -> i32 {
+        let m = matrix.len();
+        let n = matrix[0].len();
+        let mut all_xor = Vec::with_capacity(m * n);
+        // 二维异或前缀和，多一行一列方便边界处理
+        let mut pre_xor = vec![vec![0; n + 1]; m + 1];
+
+        for i in 0..m {
+            for j in 0..n {
+                pre_xor[i + 1][j + 1] =
+                    pre_xor[i + 1][j] ^ pre_xor[i][j + 1] ^ pre_xor[i][j] ^ matrix[i][j];
+            }
+            // 当前行所有坐标异或值加入数组
+            all_xor.extend_from_slice(&pre_xor[i + 1][1..=n]);
+        }
+
+        // 第k大 = 升序下标 m*n - k
+        let target_idx = m * n - k as usize;
+        *all_xor.select_nth_unstable(target_idx).1
+    }
+}
