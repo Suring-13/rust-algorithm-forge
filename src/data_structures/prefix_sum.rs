@@ -2506,3 +2506,35 @@ pub mod n1738 {
         *all_xor.select_nth_unstable(target_idx).1
     }
 }
+
+// 3212. 统计 X 和 Y 频数相等的子矩阵数量
+pub mod n3212 {
+    pub fn number_of_submatrices(grid: Vec<Vec<char>>) -> i32 {
+        let m = grid.len();
+        let n = grid[0].len();
+        // s[i][j][0]: X前缀和, s[i][j][1]: Y前缀和
+        let mut pre = vec![vec![[0; 2]; n + 1]; m + 1];
+        let mut res = 0;
+
+        for i in 0..m {
+            for j in 0..n {
+                // 二维前缀和递推
+                pre[i + 1][j + 1][0] = pre[i + 1][j][0] + pre[i][j + 1][0] - pre[i][j][0];
+                pre[i + 1][j + 1][1] = pre[i + 1][j][1] + pre[i][j + 1][1] - pre[i][j][1];
+
+                let ch = grid[i][j];
+                if ch != '.' {
+                    let pos = (ch as u8 & 1) as usize;
+                    pre[i + 1][j + 1][pos] += 1;
+                }
+
+                let x = pre[i + 1][j + 1][0];
+                let y = pre[i + 1][j + 1][1];
+                if x == y && x > 0 {
+                    res += 1;
+                }
+            }
+        }
+        res
+    }
+}
