@@ -2538,3 +2538,34 @@ pub mod n3212 {
         res
     }
 }
+
+// 1292. 元素和小于等于阈值的正方形的最大边长
+pub mod n1292 {
+    pub fn max_side_length(mat: Vec<Vec<i32>>, threshold: i32) -> i32 {
+        let m = mat.len();
+        let n = mat[0].len();
+        // 前缀和数组，(m+1) * (n+1)
+        let mut s = vec![vec![0; n + 1]; m + 1];
+        for i in 0..m {
+            for j in 0..n {
+                s[i + 1][j + 1] = s[i + 1][j] + s[i][j + 1] - s[i][j] + mat[i][j];
+            }
+        }
+
+        // 查询子矩阵和：左上角(r1,c1)，右下角(r2,c2)
+        let query = |r1: usize, c1: usize, r2: usize, c2: usize| -> i32 {
+            s[r2 + 1][c2 + 1] - s[r2 + 1][c1] - s[r1][c2 + 1] + s[r1][c1]
+        };
+
+        let mut ans = 0;
+        for i in 0..m {
+            for j in 0..n {
+                // 尝试边长 ans+1 的正方形
+                while i + ans < m && j + ans < n && query(i, j, i + ans, j + ans) <= threshold {
+                    ans += 1;
+                }
+            }
+        }
+        ans as i32
+    }
+}
