@@ -2569,3 +2569,26 @@ pub mod n1292 {
         ans as i32
     }
 }
+
+// 3148. 矩阵中的最大得分
+pub mod n3148 {
+    pub fn max_score(grid: Vec<Vec<i32>>) -> i32 {
+        let mut ans = i32::MIN;
+        let m = grid.len();
+        let n = grid[0].len();
+
+        // f[i+1][j+1] 代表左上角到 (i,j) 区域内的最小值
+        let mut f = vec![vec![i32::MAX; n + 1]; m + 1];
+
+        for i in 0..m {
+            for j in 0..n {
+                let x = grid[i][j];
+                let mn = f[i + 1][j].min(f[i][j + 1]);
+                ans = ans.max(x - mn);
+                f[i + 1][j + 1] = mn.min(x);
+            }
+        }
+
+        ans
+    }
+}
