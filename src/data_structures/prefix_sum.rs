@@ -2592,3 +2592,31 @@ pub mod n3148 {
         ans
     }
 }
+
+// 2848. 与车相交的点
+pub mod n2848 {
+    pub fn number_of_points(nums: Vec<Vec<i32>>) -> i32 {
+        // 找到所有区间最大右端点，确定差分数组长度
+        let max_end = nums.iter().map(|interval| interval[1]).max().unwrap() as usize;
+
+        // 差分数组，多开一位防止 end+1 越界
+        let mut diff = vec![0; max_end + 2];
+        for interval in nums {
+            let l = interval[0] as usize;
+            let r = interval[1] as usize;
+            diff[l] += 1; // 区间起点+1
+            diff[r + 1] -= 1; // 区间结束后一位-1
+        }
+
+        let mut ans = 0;
+        let mut s = 0; // 当前位置被覆盖的区间数量
+        for d in diff {
+            s += d;
+            if s > 0 {
+                // 只要被覆盖就计数
+                ans += 1;
+            }
+        }
+        ans
+    }
+}
