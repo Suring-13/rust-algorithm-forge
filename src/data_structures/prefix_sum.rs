@@ -2620,3 +2620,30 @@ pub mod n2848 {
         ans
     }
 }
+
+// 1893. 检查是否区域内所有整数都被覆盖
+pub mod n1893 {
+    pub fn is_covered(ranges: Vec<Vec<i32>>, left: i32, right: i32) -> bool {
+        let mut d = [0i32; 52];
+        for range in ranges {
+            d[range[0] as usize] += 1;
+            d[(range[1] + 1) as usize] -= 1;
+        }
+
+        let mut s = 0;
+        // 累加 left 之前的差分
+        for &v in &d[0..left as usize] {
+            s += v;
+        }
+
+        // 遍历 [left, right] 区间
+        for &v in &d[left as usize..=(right as usize)] {
+            s += v;
+            if s == 0 {
+                return false;
+            }
+        }
+
+        true
+    }
+}
