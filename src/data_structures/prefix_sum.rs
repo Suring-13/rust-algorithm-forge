@@ -2647,3 +2647,32 @@ pub mod n1893 {
         true
     }
 }
+
+// 1854. 人口最多的年份
+pub mod n1854 {
+    pub fn maximum_population(logs: Vec<Vec<i32>>) -> i32 {
+        // 1950~2050 一共101个年份下标 0~100
+        let mut diff = [0; 101];
+
+        for log in logs {
+            let birth = (log[0] - 1950) as usize;
+            let death = (log[1] - 1950) as usize;
+            diff[birth] += 1;
+            diff[death] -= 1;
+        }
+
+        let mut max_people = 0;
+        let mut current = 0;
+        let mut year_idx = 0;
+
+        for (i, &diff_item) in diff.iter().enumerate() {
+            current += diff_item;
+            if current > max_people {
+                max_people = current;
+                year_idx = i;
+            }
+        }
+
+        year_idx as i32 + 1950
+    }
+}
