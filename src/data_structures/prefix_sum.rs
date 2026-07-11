@@ -2676,3 +2676,16 @@ pub mod n1854 {
         year_idx as i32 + 1950
     }
 }
+
+// 2960. 统计已测试设备
+pub mod n2960 {
+    pub fn count_tested_devices(battery_percentages: Vec<i32>) -> i32 {
+        let mut dec = 0;
+        for x in battery_percentages {
+            if x > dec {
+                dec += 1;
+            }
+        }
+        dec
+    }
+}
