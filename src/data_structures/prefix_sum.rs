@@ -2712,3 +2712,27 @@ pub mod n1094 {
         true
     }
 }
+
+// 1109. 航班预订统计
+pub mod n1109 {
+    pub fn corp_flight_bookings(bookings: Vec<Vec<i32>>, n: i32) -> Vec<i32> {
+        let mut nums = vec![0; n as usize];
+
+        for booking in bookings {
+            let left = booking[0] as usize - 1;
+            let right = booking[1] as usize;
+            let inc = booking[2];
+
+            nums[left] += inc;
+            if right < n as usize {
+                nums[right] -= inc;
+            }
+        }
+
+        for i in 1..n as usize {
+            nums[i] += nums[i - 1];
+        }
+
+        nums
+    }
+}
