@@ -2736,3 +2736,33 @@ pub mod n1109 {
         nums
     }
 }
+
+// 3964. 照亮道路的最少灯泡数
+pub mod n3964 {
+    pub fn min_lights(lights: Vec<i32>) -> i32 {
+        let n = lights.len();
+        let mut diff = vec![0i32; n + 1];
+        for (i, &v) in lights.iter().enumerate() {
+            if v > 0 {
+                // 照亮 [max(i-v, 0), min(i+v, n-1)]
+                let left = 0.max(i as i32 - v) as usize;
+                let right = (n - 1).min(i + v as usize);
+                diff[left] += 1;
+                diff[n.min(right + 1)] -= 1;
+            }
+        }
+
+        let mut ans = 0;
+        let mut sum_d = 0;
+        for i in 0..n {
+            sum_d += diff[i];
+            if sum_d == 0 {
+                // 在 i+1 装一个灯泡，照亮 [i, i+2]
+                ans += 1;
+                sum_d += 1; // diff[i] += 1 直接更新到 sum_d 中
+                diff[n.min(i + 3)] -= 1;
+            }
+        }
+        ans
+    }
+}
