@@ -2766,3 +2766,29 @@ pub mod n3964 {
         ans
     }
 }
+
+// 3355. 零数组变换 I
+pub mod n3355 {
+    pub fn is_zero_array(nums: Vec<i32>, queries: Vec<Vec<i32>>) -> bool {
+        let n = nums.len();
+        let mut diff = vec![0i32; n + 1];
+        for q in queries {
+            let l = q[0] as usize;
+            let r = q[1] as usize;
+            diff[l] += 1;
+            diff[r + 1] -= 1;
+        }
+
+        let mut sum_d = 0;
+        for i in 0..n {
+            sum_d += diff[i];
+            let x = nums[i];
+            // 此时 sum_d 表示 x=nums[i] 要减掉多少
+            if x > sum_d {
+                // x 无法变成 0
+                return false;
+            }
+        }
+        true
+    }
+}
