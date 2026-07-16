@@ -2792,3 +2792,16 @@ pub mod n3355 {
         true
     }
 }
+
+// 3914. 使数组非递减需要的最小累计值
+pub mod n3914 {
+    pub fn min_operations(nums: Vec<i32>) -> i64 {
+        let mut res = 0;
+        for w in nums.windows(2) {
+            let x = w[0] as i64;
+            let y = w[1] as i64;
+            res += 0.max(x - y);
+        }
+        res
+    }
+}
