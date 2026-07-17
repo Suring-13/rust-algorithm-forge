@@ -2805,3 +2805,48 @@ pub mod n3914 {
         res
     }
 }
+
+// 3453. 分割正方形 I
+pub mod n3453 {
+    pub fn separate_squares(squares: Vec<Vec<i32>>) -> f64 {
+        let mut total_area: f64 = 0.0;
+        let mut diff = std::collections::BTreeMap::new();
+
+        // 遍历所有正方形，填充差分map、累加总面积
+        for sq in squares {
+            let y = sq[1] as i64;
+            let l = sq[2] as i64;
+            let area = (l as f64) * (l as f64);
+            total_area += area;
+
+            *diff.entry(y).or_insert(0i64) += l;
+            *diff.entry(y + l).or_insert(0i64) -= l;
+        }
+
+        let mut current_area = 0.0;
+        let mut sum_len = 0i64;
+        // 取出有序y坐标列表
+        let ys: Vec<i64> = diff.keys().cloned().collect();
+
+        // 遍历相邻y区间 [y, y2)
+        for window in ys.windows(2) {
+            let y = window[0];
+            let y2 = window[1];
+            // 更新当前区间横向总长度
+            sum_len += diff[&y];
+            let height = (y2 - y) as f64;
+            let seg_area = (sum_len as f64) * height;
+            current_area += seg_area;
+
+            // 当前总面积已经过半，计算分割线
+            if current_area * 2.0 >= total_area {
+                let delta = current_area * 2.0 - total_area;
+                let res = (y2 as f64) - delta / ((sum_len as f64) * 2.0);
+                return res;
+            }
+        }
+
+        // 理论不会走到这里，兜底返回最大值
+        *ys.last().unwrap() as f64
+    }
+}
