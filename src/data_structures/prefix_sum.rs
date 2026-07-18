@@ -2850,3 +2850,38 @@ pub mod n3453 {
         *ys.last().unwrap() as f64
     }
 }
+
+// 2381. 字母移位 II
+pub mod n2381 {
+    pub fn shifting_letters(s: String, shifts: Vec<Vec<i32>>) -> String {
+        let n = s.len();
+        let mut diff = vec![0i32; n + 1];
+
+        // 差分区间更新
+        for shift in shifts {
+            let delta = if shift[2] == 1 { 1 } else { -1 };
+            diff[shift[0] as usize] += delta;
+            diff[shift[1] as usize + 1] -= delta;
+        }
+
+        // 前缀和迭代器
+        let shift_iter = diff.into_iter().scan(0, |acc, val| {
+            *acc += val;
+            Some(*acc)
+        });
+
+        // 字节zip偏移量，计算新字母
+        String::from_utf8(
+            s.bytes()
+                .zip(shift_iter)
+                .map(|(byte, shift)| {
+                    let base = (byte - b'a') as i32;
+                    // 欧几里得模
+                    let offset = (base + shift).rem_euclid(26) as u8;
+                    b'a' + offset
+                })
+                .collect(),
+        )
+        .unwrap()
+    }
+}
