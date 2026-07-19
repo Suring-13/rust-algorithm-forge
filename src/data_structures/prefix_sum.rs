@@ -2885,3 +2885,28 @@ pub mod n2381 {
         .unwrap()
     }
 }
+
+// 995. K 连续位的最小翻转次数
+pub mod n995 {
+    pub fn min_k_bit_flips(nums: Vec<i32>, k: i32) -> i32 {
+        let n = nums.len();
+        let mut diff = vec![0; n + 1];
+        let mut ans = 0;
+        let mut rev_cnt = 0;
+        let k_usize = k as usize;
+
+        for i in 0..n {
+            rev_cnt += diff[i];
+            if (nums[i] + rev_cnt) % 2 == 0 {
+                // 无法翻转，返回 -1
+                if i + k_usize > n {
+                    return -1;
+                }
+                ans += 1;
+                rev_cnt += 1;
+                diff[i + k_usize] -= 1;
+            }
+        }
+        ans
+    }
+}
