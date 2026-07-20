@@ -2910,3 +2910,38 @@ pub mod n995 {
         ans
     }
 }
+
+// 1589. 所有排列中的最大和
+pub mod n1589 {
+    pub fn max_sum_range_query(mut nums: Vec<i32>, requests: Vec<Vec<i32>>) -> i32 {
+        const MOD: i64 = 1_000_000_007;
+        let n = nums.len();
+        let mut counts = vec![0i64; n];
+
+        // 差分数组
+        for req in requests {
+            let start = req[0] as usize;
+            let end = req[1] as usize;
+            counts[start] += 1;
+            if end + 1 < n {
+                counts[end + 1] -= 1;
+            }
+        }
+
+        // 前缀和得到每个位置被访问次数
+        for i in 1..n {
+            counts[i] += counts[i - 1];
+        }
+
+        // 升序排序
+        counts.sort_unstable();
+        nums.sort_unstable();
+
+        // 大数乘积累加取模
+        let mut total = 0i64;
+        for (num, cnt) in nums.into_iter().zip(counts) {
+            total = (total + num as i64 * cnt).rem_euclid(MOD);
+        }
+        total as _
+    }
+}
