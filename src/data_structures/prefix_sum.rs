@@ -2945,3 +2945,10 @@ pub mod n1589 {
         total as _
     }
 }
+
+// 1526. 形成目标数组的子数组最少增加次数
+pub mod n1526 {
+    pub fn min_number_operations(target: Vec<i32>) -> i32 {
+        target[0] + target.windows(2).map(|w| 0.max(w[1] - w[0])).sum::<i32>()
+    }
+}
