@@ -2952,3 +2952,41 @@ pub mod n1526 {
         target[0] + target.windows(2).map(|w| 0.max(w[1] - w[0])).sum::<i32>()
     }
 }
+
+// 3356. 零数组变换 II
+pub mod n3356 {
+    pub fn min_zero_array(nums: Vec<i32>, queries: Vec<Vec<i32>>) -> i32 {
+        let n = nums.len();
+        let mut diff = vec![0; n + 1];
+        let mut sum_d = 0;
+        let mut k = 0;
+        let q_len = queries.len();
+
+        for i in 0..n {
+            let x = nums[i];
+            sum_d += diff[i];
+
+            // 当前累计减量不足，不断追加查询
+            while k < q_len && sum_d < x {
+                let l = queries[k][0] as usize;
+                let r = queries[k][1] as usize;
+                let val = queries[k][2];
+
+                diff[l] += val;
+                diff[r + 1] -= val;
+
+                // 当前i落在区间内，即时更新sum_d
+                if l <= i && i <= r {
+                    sum_d += val;
+                }
+                k += 1;
+            }
+
+            // 所有查询用完仍不够清零当前数字
+            if sum_d < x {
+                return -1;
+            }
+        }
+        k as i32
+    }
+}
