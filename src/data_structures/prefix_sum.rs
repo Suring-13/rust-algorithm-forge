@@ -2990,3 +2990,30 @@ pub mod n3356 {
         k as i32
     }
 }
+
+// 1871. 跳跃游戏 VII
+pub mod n1871 {
+    pub fn can_reach(s: String, min_jump: i32, max_jump: i32) -> bool {
+        let n = s.len();
+        let mut diff = vec![0i32; n + 1];
+
+        // 起点位置0：区间 [0,0]
+        diff[0] += 1;
+        diff[1] -= 1;
+
+        let mut sum_d = 0;
+        let chars: Vec<char> = s.chars().collect();
+
+        for i in 0..n {
+            sum_d += diff[i];
+            if sum_d > 0 && chars[i] == '0' {
+                let l = i + min_jump as usize;
+                let r = i + max_jump as usize + 1;
+                diff[l.min(n)] += 1;
+                diff[r.min(n)] -= 1;
+            }
+        }
+
+        sum_d > 0 && chars[n - 1] == '0'
+    }
+}
