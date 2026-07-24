@@ -3017,3 +3017,30 @@ pub mod n1871 {
         sum_d > 0 && chars[n - 1] == '0'
     }
 }
+
+// 1943. 描述绘画结果
+pub mod n1943 {
+    pub fn split_painting(segments: Vec<Vec<i32>>) -> Vec<Vec<i64>> {
+        let mut mp = std::collections::BTreeMap::new();
+        for seg in segments {
+            let start = seg[0];
+            let end = seg[1];
+            let color = seg[2] as i64;
+            *mp.entry(start).or_insert(0) += color;
+            *mp.entry(end).or_insert(0) -= color;
+        }
+
+        let mut ans = Vec::new();
+        let mut last_pos = 0;
+        let mut cur_color = 0i64;
+
+        for (&pos, &delta) in &mp {
+            if cur_color != 0 {
+                ans.push(vec![last_pos as i64, pos as i64, cur_color]);
+            }
+            last_pos = pos;
+            cur_color += delta;
+        }
+        ans
+    }
+}
