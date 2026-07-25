@@ -3044,3 +3044,37 @@ pub mod n1943 {
         ans
     }
 }
+
+// 3224. 使差值相等的最少数组改动次数
+pub mod n3224 {
+    pub fn min_changes(nums: Vec<i32>, k: i32) -> i32 {
+        let n = nums.len();
+        let mut d = vec![0; (k + 2) as usize];
+        for i in 0..n / 2 {
+            let mut p = nums[i];
+            let mut q = nums[n - 1 - i];
+            if p > q {
+                // 保证 p <= q
+                std::mem::swap(&mut p, &mut q);
+            }
+            let x = q - p;
+            let mx = q.max(k - p);
+            // [0, x-1] 全部 +1：把 q-p 改成小于 x 的，只需要改 p 或 q 中的一个数
+            d[0] += 1;
+            d[x as usize] -= 1;
+            // [x+1, mx] 全部 +1：把 q-p 改成大于 x 小于等于 mx 的，也只需要改 p 或 q 中的一个数
+            d[(x + 1) as usize] += 1;
+            d[(mx + 1) as usize] -= 1;
+            // [mx+1, k] 全部 +2：把 q-p 改成大于 mx 的，p 和 q 都需要改
+            d[(mx + 1) as usize] += 2;
+        }
+        // 求前缀和，取最小值
+        let mut cur = 0;
+        let mut res = i32::MAX;
+        for &val in &d {
+            cur += val;
+            res = res.min(cur);
+        }
+        res
+    }
+}
