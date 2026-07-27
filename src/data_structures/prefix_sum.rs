@@ -3111,3 +3111,33 @@ pub mod n2327 {
         ans
     }
 }
+
+// 2251. 花期内花的数目
+pub mod n2251 {
+    pub fn full_bloom_flowers(flowers: Vec<Vec<i32>>, people: Vec<i32>) -> Vec<i32> {
+        let mut diff = std::collections::BTreeMap::new();
+        for f in flowers {
+            *diff.entry(f[0]).or_insert(0) += 1;
+            *diff.entry(f[1] + 1).or_insert(0) -= 1;
+        }
+
+        let n = people.len();
+        let mut id = (0..n).collect::<Vec<_>>();
+        id.sort_unstable_by_key(|&i| people[i]);
+
+        let mut ans = vec![0; n];
+        let mut it = diff.iter().peekable();
+        let mut sum = 0;
+        for i in id {
+            while let Some(&(&t, &d)) = it.peek() {
+                if t > people[i] {
+                    break;
+                }
+                sum += d; // 累加不超过 people[i] 的差分值
+                it.next();
+            }
+            ans[i] = sum; // 从而得到这个时刻花的数量
+        }
+        ans
+    }
+}
