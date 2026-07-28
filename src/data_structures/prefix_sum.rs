@@ -3141,3 +3141,28 @@ pub mod n2251 {
         ans
     }
 }
+
+// 2772. 使数组中的所有元素都等于零
+pub mod n2772 {
+    pub fn check_array(nums: Vec<i32>, k: i32) -> bool {
+        let n = nums.len();
+        let k = k as usize;
+        let mut d = vec![0i64; n + 1];
+        let mut sum_d: i64 = 0;
+
+        for (i, &x) in nums.iter().enumerate() {
+            sum_d += d[i];
+            let val = x as i64 + sum_d;
+
+            if val == 0 {
+                continue;
+            }
+            if val < 0 || i + k > n {
+                return false;
+            }
+            sum_d -= val;
+            d[i + k] += val;
+        }
+        true
+    }
+}
