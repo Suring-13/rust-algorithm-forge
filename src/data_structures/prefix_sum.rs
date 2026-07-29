@@ -3166,3 +3166,31 @@ pub mod n2772 {
         true
     }
 }
+
+// 3229. 使数组等于目标数组所需的最少操作次数
+pub mod n3229 {
+    pub fn minimum_operations(nums: Vec<i32>, target: Vec<i32>) -> i64 {
+        let mut pos_sum = 0i64;
+        let mut neg_sum = 0i64;
+
+        let mut prev = target[0] as i64 - nums[0] as i64;
+        if prev > 0 {
+            pos_sum = prev;
+        } else {
+            neg_sum = -prev;
+        }
+
+        for i in 1..nums.len() {
+            let curr = target[i] as i64 - nums[i] as i64;
+            let d = curr - prev;
+            if d > 0 {
+                pos_sum += d;
+            } else {
+                neg_sum -= d;
+            }
+            prev = curr;
+        }
+
+        pos_sum.max(neg_sum)
+    }
+}
