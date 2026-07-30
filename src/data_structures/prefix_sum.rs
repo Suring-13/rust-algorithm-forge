@@ -3194,3 +3194,41 @@ pub mod n3229 {
         pos_sum.max(neg_sum)
     }
 }
+
+// 798. 得分最高的最小轮调
+pub mod n798 {
+    pub fn best_rotation(nums: Vec<i32>) -> i32 {
+        let n = nums.len();
+        let mut diff = vec![0; n + 1];
+        for (i, x) in nums.into_iter().enumerate() {
+            let x = x as usize;
+            // 把 x 轮调到 [x, n-1] 中，就能得到 1 分
+            if i < x {
+                // i 在 [x, n-1] 左侧
+                // 需要轮调 [i+1, i+n-x] 次
+                diff[i + 1] += 1;
+                diff[i + 1 + n - x] -= 1;
+            } else {
+                // i 在 [x, n-1] 中
+                // 先把每个 score[k] 都加一
+                diff[0] += 1;
+                // 轮调 [i+1-x, i] 次无法得分，减掉
+                diff[i + 1 - x] -= 1;
+                diff[i + 1] += 1;
+            }
+        }
+
+        let mut max_sum = 0;
+        let mut best_k = 0;
+        let mut sum = 0;
+        for (i, d) in diff.into_iter().enumerate() {
+            sum += d;
+            // 此时 sum 为轮调 i 次后的得分
+            if sum > max_sum {
+                max_sum = sum;
+                best_k = i;
+            }
+        }
+        best_k as _
+    }
+}
