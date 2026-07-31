@@ -3232,3 +3232,29 @@ pub mod n798 {
         best_k as _
     }
 }
+
+// 3347. 执行操作后元素的最高频率 II
+pub mod n3347 {
+    use std::collections::{BTreeMap, HashMap};
+    pub fn max_frequency(nums: Vec<i32>, k: i32, num_operations: i32) -> i32 {
+        let mut cnt = HashMap::new();
+        let mut diff = BTreeMap::new();
+
+        for &x in &nums {
+            *cnt.entry(x).or_insert(0) += 1;
+            // 空插入，保证key存在
+            diff.entry(x).or_insert(0);
+            *diff.entry(x - k).or_insert(0) += 1;
+            *diff.entry(x + k + 1).or_insert(0) -= 1;
+        }
+
+        let mut ans = 0;
+        let mut sum_d = 0;
+        for (&x, &d) in diff.iter() {
+            sum_d += d;
+            let current = cnt.get(&x).copied().unwrap_or(0) + num_operations;
+            ans = ans.max(sum_d.min(current));
+        }
+        ans
+    }
+}
