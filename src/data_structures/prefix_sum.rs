@@ -3258,3 +3258,45 @@ pub mod n3347 {
         ans
     }
 }
+
+// 1674. 使数组互补的最少操作次数
+pub mod n1674 {
+    pub fn min_moves(nums: Vec<i32>, limit: i32) -> i32 {
+        let n = nums.len();
+        let max_sum = 2 * limit as usize;
+        let mut diff = vec![0i32; max_sum + 2];
+
+        for i in 0..n / 2 {
+            let x = nums[i];
+            let y = nums[n - 1 - i];
+            let l = (x.min(y) + 1) as usize;
+            let r = (x.max(y) + limit) as usize;
+            let target = (x + y) as usize;
+
+            // [2, l-1] += 2
+            diff[2] += 2;
+            diff[l] -= 2;
+
+            // [l, r] += 1
+            diff[l] += 1;
+            diff[r + 1] -= 1;
+
+            // x+y 实际操作 0 次，从 [l, r] 中去掉
+            // [x+y, x+y] -= 1
+            diff[target] -= 1;
+            diff[target + 1] += 1;
+
+            // [r+1, limit*2] += 2
+            diff[r + 1] += 2;
+            // limit*2+1 不在 [2, limit*2] 中，可以省略
+        }
+
+        let mut sum_d = 0;
+        let mut ans = i32::MAX;
+        for &d in &diff[2..=max_sum] {
+            sum_d += d;
+            ans = ans.min(sum_d);
+        }
+        ans
+    }
+}
