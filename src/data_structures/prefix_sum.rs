@@ -3300,3 +3300,36 @@ pub mod n1674 {
         ans
     }
 }
+
+// 3362. 零数组变换 III
+pub mod n3362 {
+    pub fn max_removal(nums: Vec<i32>, mut queries: Vec<Vec<i32>>) -> i32 {
+        let n = nums.len();
+        // 按照左端点从小到大排序
+        queries.sort_by_key(|q| q[0]);
+        let mut heap = std::collections::BinaryHeap::new();
+        let mut diff = vec![0i32; n + 1];
+        let mut sum_d = 0;
+        let mut j = 0;
+
+        for i in 0..n {
+            let x = nums[i];
+            sum_d += diff[i];
+            // 维护左端点 <= i 的区间
+            while j < queries.len() && queries[j][0] <= i as i32 {
+                heap.push(queries[j][1]);
+                j += 1;
+            }
+            // 选择右端点最大的区间
+            while sum_d < x && !heap.is_empty() && heap.peek().unwrap() >= &(i as i32) {
+                let right = heap.pop().unwrap();
+                sum_d += 1;
+                diff[(right + 1) as usize] -= 1;
+            }
+            if sum_d < x {
+                return -1;
+            }
+        }
+        heap.len() as i32
+    }
+}
