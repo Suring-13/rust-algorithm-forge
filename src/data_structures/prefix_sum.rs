@@ -3333,3 +3333,71 @@ pub mod n3362 {
         heap.len() as i32
     }
 }
+
+// 3655. 区间乘法查询后的异或 II
+pub mod n3655 {
+    pub fn xor_after_queries(mut nums: Vec<i32>, queries: Vec<Vec<i32>>) -> i32 {
+        const MOD: i64 = 1_000_000_007;
+
+        // 快速幂 a^b mod MOD
+        fn mod_pow(mut a: i64, mut b: i64) -> i64 {
+            let mut res = 1i64;
+            while b > 0 {
+                if b & 1 == 1 {
+                    res = res * a % MOD;
+                }
+                a = a * a % MOD;
+                b >>= 1;
+            }
+            res
+        }
+
+        let n = nums.len();
+        let m = queries.len();
+        let b = (m as f64).sqrt() as usize;
+        let mut diff: Vec<Option<Vec<i64>>> = vec![None; b];
+
+        for q in queries {
+            let l = q[0] as usize;
+            let r = q[1] as usize;
+            let k = q[2] as usize;
+            let v = q[3] as i64 % MOD;
+
+            if k < b {
+                if diff[k].is_none() {
+                    diff[k] = Some(vec![1; n + k]);
+                }
+                let d = diff[k].as_mut().unwrap();
+                d[l] = d[l] * v % MOD;
+                // r = r - (r - l) % k + k
+                let rem = (r - l) % k;
+                let nr = r - rem + k;
+                // v 的模逆元
+                let inv_v = mod_pow(v, MOD - 2);
+                d[nr] = d[nr] * inv_v % MOD;
+            } else {
+                // k >= B 暴力更新
+                for i in (l..=r).step_by(k) {
+                    nums[i] = (nums[i] as i64 * v).rem_euclid(MOD) as i32;
+                }
+            }
+        }
+
+        // 处理小块差分
+        for (k, _) in diff.iter().enumerate().take(b) {
+            let Some(d) = &diff[k] else {
+                continue;
+            };
+            for start in 0..k {
+                let mut mul_d = 1i64;
+                for i in (start..n).step_by(k) {
+                    mul_d = mul_d * d[i] % MOD;
+                    nums[i] = (nums[i] as i64 * mul_d).rem_euclid(MOD) as i32;
+                }
+            }
+        }
+
+        // 全部异或起来
+        nums.into_iter().reduce(|a, b| a ^ b).unwrap()
+    }
+}
