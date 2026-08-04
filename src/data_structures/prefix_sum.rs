@@ -3401,3 +3401,59 @@ pub mod n3655 {
         nums.into_iter().reduce(|a, b| a ^ b).unwrap()
     }
 }
+
+// 3017. 按距离统计房屋对数目 II
+pub mod n3017 {
+    pub fn count_of_pairs(n: i32, mut x: i32, mut y: i32) -> Vec<i64> {
+        if x > y {
+            std::mem::swap(&mut x, &mut y);
+        }
+
+        // 不需要捷径的情况
+        if x + 1 >= y {
+            let mut res = Vec::with_capacity(n as usize);
+            let mut val = ((n - 1) * 2) as i64;
+            for _ in 0..n {
+                res.push(val);
+                val -= 2;
+            }
+            return res;
+        }
+
+        let mut diff = vec![0; (n + 2) as usize];
+
+        // 差分区间 +2
+        let add = |diff: &mut Vec<i32>, l: i32, r: i32| {
+            if l > r {
+                return;
+            }
+            diff[l as usize] += 2;
+            diff[(r + 1) as usize] -= 2;
+        };
+
+        for i in 1..n {
+            if i <= x {
+                let k = (x + y + 1) / 2;
+                add(&mut diff, 1, k - i);
+                add(&mut diff, x - i + 2, x - i + y - k);
+                add(&mut diff, x - i + 1, x - i + 1 + n - y);
+            } else if i < (x + y) / 2 {
+                let k = i + (y - x + 1) / 2;
+                add(&mut diff, 1, k - i);
+                add(&mut diff, i - x + 2, i - x + y - k);
+                add(&mut diff, i - x + 1, i - x + 1 + n - y);
+            } else {
+                add(&mut diff, 1, n - i);
+            }
+        }
+
+        // 前缀和，截取 [1..n]
+        let mut ans = Vec::with_capacity(n as usize);
+        let mut cur = 0;
+        for d in diff.iter().skip(1).take(n as usize) {
+            cur += *d as i64;
+            ans.push(cur);
+        }
+        ans
+    }
+}
