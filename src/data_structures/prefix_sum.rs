@@ -3457,3 +3457,32 @@ pub mod n3017 {
         ans
     }
 }
+
+// 56. 合并区间
+pub mod n56 {
+    // 要关注每个位置的瞬时状态切换，用扫描线法
+    pub fn merge(intervals: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
+        let mut events = std::collections::BTreeMap::new(); // 由于后面开始位置、结束位置判断逻辑特殊，这里不能用数组，要用支持自动排序的BTreeMap
+        for p in intervals {
+            *events.entry(p[0]).or_insert(0) += 1;
+            *events.entry(p[1]).or_insert(0) -= 1;
+        }
+
+        let mut ans = vec![];
+        let mut cnt = 0;
+        let mut start = 0;
+        for (x, v) in events {
+            // 计算前缀和之前，如果前缀和是0，则当前位置是开始位置
+            if cnt == 0 {
+                start = x;
+            }
+            cnt += v;
+
+            // 计算前缀和后，如果前缀和是0，则当前位置是结束位置
+            if cnt == 0 {
+                ans.push(vec![start, x]);
+            }
+        }
+        ans
+    }
+}
