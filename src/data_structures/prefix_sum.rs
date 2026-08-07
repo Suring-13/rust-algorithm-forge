@@ -3522,3 +3522,37 @@ pub mod n57 {
         ans
     }
 }
+
+// 732. 我的日程安排表 III
+pub mod n732 {
+    use std::collections::BTreeMap;
+
+    pub struct MyCalendarThree {
+        pub d: BTreeMap<i32, i32>,
+    }
+
+    impl Default for MyCalendarThree {
+        fn default() -> Self {
+            Self::new()
+        }
+    }
+
+    impl MyCalendarThree {
+        pub fn new() -> Self {
+            MyCalendarThree { d: BTreeMap::new() }
+        }
+
+        pub fn book(&mut self, start: i32, end: i32) -> i32 {
+            *self.d.entry(start).or_insert(0) += 1;
+            *self.d.entry(end).or_insert(0) -= 1;
+
+            let mut ans = 0;
+            let mut max_book = 0;
+            for &freq in self.d.values() {
+                max_book += freq;
+                ans = ans.max(max_book);
+            }
+            ans
+        }
+    }
+}
