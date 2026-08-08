@@ -44,7 +44,7 @@ pub mod n3427 {
 // 2559. 统计范围内的元音字符串数
 pub mod n2559 {
     pub fn vowel_strings(words: Vec<String>, queries: Vec<Vec<i32>>) -> Vec<i32> {
-        let vowels = [b'a', b'e', b'i', b'o', b'u'];
+        let vowels = *b"aeiou";
 
         // 前缀和数组
         let mut pre_sum = vec![0; words.len() + 1];
