@@ -3556,3 +3556,24 @@ pub mod n732 {
         }
     }
 }
+
+// 2406. 将区间分为最少组数
+pub mod n2406 {
+    pub fn min_groups(intervals: Vec<Vec<i32>>) -> i32 {
+        let mut diff = std::collections::BTreeMap::new();
+        for p in intervals {
+            let l = p[0];
+            let r = p[1];
+            *diff.entry(l).or_insert(0) += 1;
+            *diff.entry(r + 1).or_insert(0) -= 1;
+        }
+
+        let mut sum = 0;
+        let mut ans = 0;
+        for &d in diff.values() {
+            sum += d;
+            ans = ans.max(sum);
+        }
+        ans
+    }
+}
