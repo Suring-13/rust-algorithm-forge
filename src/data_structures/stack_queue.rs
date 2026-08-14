@@ -52,3 +52,18 @@ pub mod n682 {
         st.iter().sum()
     }
 }
+
+// 2390. 从字符串中移除星号
+pub mod n2390 {
+    pub fn remove_stars(s: String) -> String {
+        let mut st = Vec::new();
+        for c in s.bytes() {
+            if c == b'*' {
+                st.pop();
+            } else {
+                st.push(c);
+            }
+        }
+        String::from_utf8(st).unwrap()
+    }
+}
