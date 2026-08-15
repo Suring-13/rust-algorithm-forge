@@ -3649,3 +3649,36 @@ pub mod n2132 {
         true
     }
 }
+
+// 1472. 设计浏览器历史记录
+pub mod n1472 {
+    pub struct BrowserHistory {
+        pub history: Vec<String>,
+        pub cur: usize, // 当前页面是 history[cur]
+    }
+
+    impl BrowserHistory {
+        pub fn new(homepage: String) -> Self {
+            Self {
+                history: vec![homepage],
+                cur: 0,
+            }
+        }
+
+        pub fn visit(&mut self, url: String) {
+            self.cur += 1;
+            self.history.truncate(self.cur); // 把浏览历史前进的记录全部删除
+            self.history.push(url); // 从当前页跳转访问 url 对应的页面
+        }
+
+        pub fn back(&mut self, steps: i32) -> String {
+            self.cur = self.cur.saturating_sub(steps as usize); // 后退 steps 步
+            self.history[self.cur].clone()
+        }
+
+        pub fn forward(&mut self, steps: i32) -> String {
+            self.cur = (self.cur + steps as usize).min(self.history.len() - 1); // 前进 steps 步
+            self.history[self.cur].clone()
+        }
+    }
+}
