@@ -3682,3 +3682,24 @@ pub mod n1472 {
         }
     }
 }
+
+// 946. 验证栈序列
+pub mod n946 {
+    pub fn validate_stack_sequences(pushed: Vec<i32>, popped: Vec<i32>) -> bool {
+        let mut stack = Vec::new();
+        let mut i = 0;
+        for &num in &pushed {
+            stack.push(num);
+            // 栈不为空 且栈顶等于popped[i]，持续弹出
+            while let Some(&top) = stack.last() {
+                if top == popped[i] {
+                    stack.pop();
+                    i += 1;
+                } else {
+                    break;
+                }
+            }
+        }
+        stack.is_empty()
+    }
+}
