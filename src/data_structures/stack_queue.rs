@@ -67,3 +67,24 @@ pub mod n2390 {
         String::from_utf8(st).unwrap()
     }
 }
+
+// 3412. 计算字符串的镜像分数
+pub mod n3412 {
+    pub fn calculate_score(s: String) -> i64 {
+        // 26个字母，每个维护一个栈保存下标
+        let mut stk: Vec<Vec<usize>> = vec![Vec::new(); 26];
+        let mut ans: i64 = 0;
+
+        for (i, ch) in s.bytes().enumerate() {
+            let c = (ch - b'a') as usize;
+            let mirror = 25 - c;
+
+            if let Some(prev_idx) = stk[mirror].pop() {
+                ans += (i - prev_idx) as i64;
+            } else {
+                stk[c].push(i);
+            }
+        }
+        ans
+    }
+}
