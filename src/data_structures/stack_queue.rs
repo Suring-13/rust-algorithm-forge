@@ -88,3 +88,20 @@ pub mod n3412 {
         ans
     }
 }
+
+// 71. 简化路径
+pub mod n71 {
+    pub fn simplify_path(path: String) -> String {
+        let mut stk = vec![];
+        for s in path.split('/') {
+            match s {
+                "" | "." => continue,
+                ".." => {
+                    stk.pop();
+                }
+                _ => stk.push(s),
+            }
+        }
+        format!("/{}", stk.join("/"))
+    }
+}
