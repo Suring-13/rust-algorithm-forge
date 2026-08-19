@@ -105,3 +105,30 @@ pub mod n71 {
         format!("/{}", stk.join("/"))
     }
 }
+
+// 3170. 删除星号以后字典序最小的字符串
+pub mod n3170 {
+    pub fn clear_stars(s: String) -> String {
+        let mut chars: Vec<char> = s.chars().collect();
+        let mut stacks: Vec<Vec<usize>> = vec![vec![]; 26];
+
+        for i in 0..chars.len() {
+            let c = chars[i];
+            if c != '*' {
+                let idx = (c as u8 - b'a') as usize;
+                stacks[idx].push(i);
+            } else {
+                // 从小到大遍历26个栈，找到第一个非空栈
+                for st in &mut stacks {
+                    if !st.is_empty() {
+                        let pos = st.pop().unwrap();
+                        chars[pos] = '*';
+                        break;
+                    }
+                }
+            }
+        }
+
+        chars.into_iter().filter(|&ch| ch != '*').collect()
+    }
+}
