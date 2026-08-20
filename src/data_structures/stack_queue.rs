@@ -132,3 +132,49 @@ pub mod n3170 {
         chars.into_iter().filter(|&ch| ch != '*').collect()
     }
 }
+
+// 155. 最小栈
+pub mod n155 {
+    pub struct MinStack {
+        pub st: Vec<i64>,
+        pub mn: i64,
+    }
+
+    impl Default for MinStack {
+        fn default() -> Self {
+            Self::new()
+        }
+    }
+
+    impl MinStack {
+        pub fn new() -> Self {
+            Self {
+                st: vec![],
+                mn: i64::MAX / 2, // 防止 val‑mn 溢出
+            }
+        }
+
+        pub fn push(&mut self, val: i32) {
+            // 压入差值：val - push之前的最小值
+            self.st.push(val as i64 - self.mn);
+            // 更新全局最小值
+            self.mn = self.mn.min(val as i64);
+        }
+
+        pub fn pop(&mut self) {
+            let diff = self.st.pop().unwrap();
+            // diff < 0：代表这次入栈时更新过最小值，弹出要恢复旧最小值
+            self.mn -= diff.min(0);
+        }
+
+        pub fn top(&self) -> i32 {
+            let diff = *self.st.last().unwrap();
+            // diff>0:原值=mn+diff；diff<=0:原值就是mn
+            (self.mn + diff.max(0)) as i32
+        }
+
+        pub fn get_min(&self) -> i32 {
+            self.mn as i32
+        }
+    }
+}
