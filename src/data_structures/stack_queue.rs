@@ -178,3 +178,53 @@ pub mod n155 {
         }
     }
 }
+
+// 1381. 设计一个支持增量操作的栈
+pub mod n1381 {
+    pub struct CustomStack {
+        pub stk: Vec<i32>,
+        pub add: Vec<i32>,
+        pub top: i32,
+    }
+
+    impl CustomStack {
+        pub fn new(max_size: i32) -> Self {
+            let size = max_size as usize;
+            Self {
+                stk: vec![0; size],
+                add: vec![0; size],
+                top: -1,
+            }
+        }
+
+        pub fn push(&mut self, x: i32) {
+            if self.top != (self.stk.len() - 1) as i32 {
+                self.top += 1;
+                let idx = self.top as usize;
+                self.stk[idx] = x;
+            }
+        }
+
+        pub fn pop(&mut self) -> i32 {
+            if self.top == -1 {
+                return -1;
+            }
+            let idx = self.top as usize;
+            let ret = self.stk[idx] + self.add[idx];
+            if self.top != 0 {
+                self.add[idx - 1] += self.add[idx];
+            }
+            self.add[idx] = 0;
+            self.top -= 1;
+            ret
+        }
+
+        pub fn increment(&mut self, k: i32, val: i32) {
+            let lim = std::cmp::min(k - 1, self.top);
+            if lim >= 0 {
+                let lim_idx = lim as usize;
+                self.add[lim_idx] += val;
+            }
+        }
+    }
+}
