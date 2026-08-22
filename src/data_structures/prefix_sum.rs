@@ -3703,3 +3703,31 @@ pub mod n946 {
         stack.is_empty()
     }
 }
+
+// 636. 函数的独占时间
+pub mod n636 {
+    pub fn exclusive_time(n: i32, logs: Vec<String>) -> Vec<i32> {
+        let mut ans = vec![0; n as usize];
+        let mut stack = std::collections::VecDeque::new();
+        let mut cur = -1;
+
+        for log in logs {
+            let parts: Vec<&str> = log.split(':').collect();
+            let idx: usize = parts[0].parse().unwrap();
+            let ts: i32 = parts[2].parse().unwrap();
+
+            if parts[1] == "start" {
+                if let Some(&top) = stack.back() {
+                    ans[top] += ts - cur;
+                }
+                stack.push_back(idx);
+                cur = ts;
+            } else {
+                let func = stack.pop_back().unwrap();
+                ans[func] += ts - cur + 1;
+                cur = ts + 1;
+            }
+        }
+        ans
+    }
+}
