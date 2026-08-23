@@ -3731,3 +3731,34 @@ pub mod n636 {
         ans
     }
 }
+
+// 2434. 使用机器人打印字典序最小的字符串
+pub mod n2434 {
+    pub fn robot_with_string(s: String) -> String {
+        let n = s.len();
+
+        // 计算后缀最小值
+        let mut suf_min = vec![u8::MAX; n + 1];
+
+        for (i, ch) in s.bytes().enumerate().rev() {
+            suf_min[i] = suf_min[i + 1].min(ch);
+        }
+
+        let mut ans = Vec::with_capacity(n);
+
+        let mut st = vec![];
+
+        for (i, ch) in s.bytes().enumerate() {
+            st.push(ch);
+
+            while let Some(&top) = st.last() {
+                if top > suf_min[i + 1] {
+                    break;
+                }
+
+                ans.push(st.pop().unwrap());
+            }
+        }
+        String::from_utf8(ans).unwrap()
+    }
+}
