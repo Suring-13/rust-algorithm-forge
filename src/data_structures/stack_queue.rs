@@ -228,3 +228,58 @@ pub mod n1381 {
         }
     }
 }
+
+// 895. 最大频率栈
+pub mod n895 {
+    use std::collections::HashMap;
+
+    pub struct FreqStack {
+        // 栈套栈：stacks[i] 存放出现频率为 i+1 的元素栈
+        pub stacks: Vec<Vec<i32>>,
+        // key:值，value:该值当前出现次数
+        pub cnt: HashMap<i32, usize>,
+    }
+
+    impl Default for FreqStack {
+        fn default() -> Self {
+            Self::new()
+        }
+    }
+
+    impl FreqStack {
+        pub fn new() -> Self {
+            FreqStack {
+                stacks: Vec::new(),
+                cnt: HashMap::new(),
+            }
+        }
+
+        pub fn push(&mut self, val: i32) {
+            // 获取当前 val 的计数，不存在则0
+            let count = *self.cnt.get(&val).unwrap_or(&0);
+
+            if count == self.stacks.len() {
+                self.stacks.push(vec![val]);
+            } else {
+                self.stacks[count].push(val);
+            }
+
+            *self.cnt.entry(val).or_insert(0) += 1;
+        }
+
+        pub fn pop(&mut self) -> i32 {
+            // 弹出最右侧栈的栈顶
+            let val = self.stacks.last_mut().unwrap().pop().unwrap();
+
+            // 如果当前最高频栈空了，移除这个栈
+            if self.stacks.last().unwrap().is_empty() {
+                self.stacks.pop();
+            }
+
+            // 计数减一
+            *self.cnt.get_mut(&val).unwrap() -= 1;
+
+            val
+        }
+    }
+}
