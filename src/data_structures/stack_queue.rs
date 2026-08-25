@@ -283,3 +283,78 @@ pub mod n895 {
         }
     }
 }
+
+// 1172. 餐盘栈
+pub mod n1172 {
+    use std::collections::BinaryHeap;
+
+    pub struct DinnerPlates {
+        pub capacity: usize,
+        pub stacks: Vec<Vec<i32>>,
+        // 小顶堆：保存未满栈下标；Rust BinaryHeap 是大顶堆，存负数实现小顶堆
+        pub heap: BinaryHeap<std::cmp::Reverse<usize>>,
+    }
+
+    impl DinnerPlates {
+        pub fn new(capacity: i32) -> Self {
+            Self {
+                capacity: capacity as usize,
+                stacks: Vec::new(),
+                heap: BinaryHeap::new(),
+            }
+        }
+
+        pub fn push(&mut self, val: i32) {
+            // 如果堆顶下标已经越界，清空堆
+            if let Some(&std::cmp::Reverse(top_idx)) = self.heap.peek()
+                && top_idx >= self.stacks.len()
+            {
+                self.heap.clear();
+            }
+
+            if let Some(&std::cmp::Reverse(top_idx)) = self.heap.peek() {
+                // 存在未满栈
+                self.stacks[top_idx].push(val);
+                if self.stacks[top_idx].len() == self.capacity {
+                    self.heap.pop(); // 栈满，移出堆
+                }
+            } else {
+                // 全部栈已满，新建栈
+                self.stacks.push(vec![val]);
+                if self.capacity > 1 {
+                    let new_idx = self.stacks.len() - 1;
+                    self.heap.push(std::cmp::Reverse(new_idx));
+                }
+            }
+        }
+
+        pub fn pop(&mut self) -> i32 {
+            self.pop_at_stack(self.stacks.len() as i32 - 1)
+        }
+
+        pub fn pop_at_stack(&mut self, index: i32) -> i32 {
+            let idx = index as usize;
+            // 非法情况
+            if index < 0 || idx >= self.stacks.len() || self.stacks[idx].is_empty() {
+                return -1;
+            }
+
+            // 如果之前是满栈，弹出一个之后变成未满，下标加入堆
+            if self.stacks[idx].len() == self.capacity {
+                self.heap.push(std::cmp::Reverse(idx));
+            }
+
+            let val = self.stacks[idx].pop().unwrap();
+
+            // 清除末尾连续空栈（懒删除）
+            while let Some(last) = self.stacks.last() {
+                if last.is_empty() {
+                    self.stacks.pop();
+                } else {
+                    break;
+                }
+            }
+            val
+        }
+    }
+}
