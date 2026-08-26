@@ -358,3 +358,20 @@ pub mod n1172 {
         }
     }
 }
+
+// 2696. 删除子串后的字符串最小长度
+pub mod n2696 {
+    pub fn min_length(s: String) -> i32 {
+        let mut stack = Vec::new();
+        for c in s.chars() {
+            if let Some(&last) = stack.last()
+                && ((c == 'B' && last == 'A') || (c == 'D' && last == 'C'))
+            {
+                stack.pop();
+                continue;
+            }
+            stack.push(c);
+        }
+        stack.len() as i32
+    }
+}
