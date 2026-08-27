@@ -375,3 +375,18 @@ pub mod n2696 {
         stack.len() as i32
     }
 }
+
+// 1047. 删除字符串中的所有相邻重复项
+pub mod n1047 {
+    pub fn remove_duplicates(s: String) -> String {
+        let mut st = vec![];
+        for ch in s.bytes() {
+            if !st.is_empty() && st[st.len() - 1] == ch {
+                st.pop();
+            } else {
+                st.push(ch);
+            }
+        }
+        String::from_utf8(st).unwrap()
+    }
+}
