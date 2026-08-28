@@ -390,3 +390,22 @@ pub mod n1047 {
         String::from_utf8(st).unwrap()
     }
 }
+
+// 1544. 整理字符串
+pub mod n1544 {
+    pub fn make_good(s: String) -> String {
+        let mut stack = Vec::new();
+        for &b in s.as_bytes() {
+            if let Some(&top) = stack.last() {
+                // 大小写ASCII差值为 32
+                if top != b && (top ^ 32) == b {
+                    stack.pop();
+                    continue;
+                }
+            }
+            stack.push(b);
+        }
+
+        String::from_utf8(stack).unwrap()
+    }
+}
