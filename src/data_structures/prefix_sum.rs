@@ -3762,3 +3762,27 @@ pub mod n2434 {
         String::from_utf8(ans).unwrap()
     }
 }
+
+// 3561. 移除相邻字符
+pub mod n3561 {
+    pub fn resulting_string(s: String) -> String {
+        fn is_consecutive(x: u8, y: u8) -> bool {
+            let d = (x as i32 - y as i32).abs();
+            d == 1 || d == 25
+        }
+
+        let mut st = Vec::<u8>::new();
+        for &b in s.as_bytes() {
+            if let Some(&top) = st.last() {
+                if is_consecutive(b, top) {
+                    st.pop();
+                } else {
+                    st.push(b);
+                }
+            } else {
+                st.push(b);
+            }
+        }
+        String::from_utf8(st).unwrap()
+    }
+}
