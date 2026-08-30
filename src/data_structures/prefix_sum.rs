@@ -3786,3 +3786,19 @@ pub mod n3561 {
         String::from_utf8(st).unwrap()
     }
 }
+
+// 1003. 检查替换后的词是否有效
+pub mod n1003 {
+    pub fn is_valid(s: &str) -> bool {
+        let mut st = Vec::new();
+        for c in s.bytes() {
+            if c > b'a' && (st.is_empty() || c - st.pop().unwrap() != 1) {
+                return false;
+            }
+            if c < b'c' {
+                st.push(c);
+            }
+        }
+        st.is_empty()
+    }
+}
