@@ -562,3 +562,23 @@ pub mod n1003 {
         st.is_empty()
     }
 }
+
+// 3834. 合并相邻且相等的元素
+pub mod n3834 {
+    pub fn merge_adjacent(nums: Vec<i32>) -> Vec<i64> {
+        let mut st = Vec::new();
+        for x in nums {
+            let mut x = x as i64;
+            while let Some(&last) = st.last() {
+                if last == x {
+                    st.pop();
+                    x *= 2;
+                } else {
+                    break;
+                }
+            }
+            st.push(x);
+        }
+        st
+    }
+}
