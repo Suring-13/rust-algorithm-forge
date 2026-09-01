@@ -582,3 +582,33 @@ pub mod n3834 {
         st
     }
 }
+
+// 2216. 美化数组的最少删除数
+pub mod n2216 {
+    pub fn min_deletion(nums: Vec<i32>) -> i32 {
+        // stack：用来维护始终满足 beautiful 规则的前缀数组
+        let mut stack = Vec::new();
+        // ops：记录删除操作的总次数
+        let mut ops = 0;
+
+        for &num in &nums {
+            stack.push(num);
+            let stack_top_idx = stack.len() - 1;
+            // 栈顶下标为奇数（第二个元素、第四个……）
+            if stack_top_idx & 1 == 1 {
+                // 判断相邻两个是否相等，违反 beautiful 条件
+                if stack[stack_top_idx - 1] == stack[stack_top_idx] {
+                    stack.pop();
+                    ops += 1;
+                }
+            }
+        }
+
+        // 题目要求最终合法数组长度必须是偶数
+        if stack.len() % 2 == 1 {
+            ops += 1;
+        }
+
+        ops
+    }
+}
