@@ -612,3 +612,37 @@ pub mod n2216 {
         ops
     }
 }
+
+// 1209. 删除字符串中的所有相邻重复项 II
+pub mod n1209 {
+    pub fn remove_duplicates(s: String, k: i32) -> String {
+        let mut stack: Vec<(char, i32)> = Vec::new();
+
+        for c in s.chars() {
+            match stack.last_mut() {
+                // 和栈顶字符不一样，直接压入
+                Some(&mut (top_c, _)) if top_c != c => {
+                    stack.push((c, 1));
+                }
+                // 字符相同，判断是否刚好凑够k个
+                Some((_, cnt)) => {
+                    if *cnt == k - 1 {
+                        stack.pop();
+                    } else {
+                        *cnt += 1;
+                    }
+                }
+                // 栈为空的情况
+                None => {
+                    stack.push((c, 1));
+                }
+            }
+        }
+
+        // 拼接结果：每个字符重复对应次数
+        stack
+            .into_iter()
+            .flat_map(|(ch, count)| std::iter::repeat_n(ch, count as usize))
+            .collect()
+    }
+}
