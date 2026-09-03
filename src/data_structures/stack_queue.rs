@@ -646,3 +646,42 @@ pub mod n1209 {
             .collect()
     }
 }
+
+// 3703. 移除K-平衡子字符串
+pub mod n3703 {
+    pub fn remove_substring(s: String, k: i32) -> String {
+        let mut stack: Vec<(char, usize)> = Vec::new();
+        let k = k as usize;
+
+        for c in s.chars() {
+            if let Some(top) = stack.last_mut() {
+                if top.0 == c {
+                    top.1 += 1;
+                } else {
+                    stack.push((c, 1));
+                }
+            } else {
+                stack.push((c, 1));
+            }
+
+            if c == ')' && stack.len() > 1 {
+                let len = stack.len();
+                let top_cnt = stack[len - 1].1;
+                let prev_cnt = stack[len - 2].1;
+                if top_cnt == k && prev_cnt >= k {
+                    stack.pop();
+                    let prev = stack.last_mut().unwrap();
+                    prev.1 -= k;
+                    if prev.1 == 0 {
+                        stack.pop();
+                    }
+                }
+            }
+        }
+
+        stack
+            .iter()
+            .flat_map(|&(ch, cnt)| std::iter::repeat_n(ch, cnt))
+            .collect()
+    }
+}
