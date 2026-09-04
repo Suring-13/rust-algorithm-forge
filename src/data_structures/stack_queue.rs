@@ -685,3 +685,44 @@ pub mod n3703 {
             .collect()
     }
 }
+
+// 1717. 删除子字符串的最大得分
+pub mod n1717 {
+    pub fn maximum_gain(s: &str, x: i32, y: i32) -> i32 {
+        let (high_val, high_first, high_second, low_val, low_first, low_second) = if x > y {
+            (x, 'a', 'b', y, 'b', 'a')
+        } else {
+            (y, 'b', 'a', x, 'a', 'b')
+        };
+
+        // 第一轮：先删高分对子
+        let mut stack1 = Vec::new();
+        let mut ans = 0;
+        for c in s.chars() {
+            if let Some(&top) = stack1.last()
+                && top == high_first
+                && c == high_second
+            {
+                ans += high_val;
+                stack1.pop();
+                continue;
+            }
+            stack1.push(c);
+        }
+
+        // 第二轮：在剩余字符串删除低分对子
+        let mut stack2 = Vec::new();
+        for c in stack1 {
+            if let Some(&top) = stack2.last()
+                && top == low_first
+                && c == low_second
+            {
+                ans += low_val;
+                stack2.pop();
+                continue;
+            }
+            stack2.push(c);
+        }
+        ans
+    }
+}
