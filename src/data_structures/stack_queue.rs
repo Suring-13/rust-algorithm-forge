@@ -755,3 +755,44 @@ pub mod n2197 {
         st
     }
 }
+
+// 735. 小行星碰撞
+pub mod n735 {
+    pub fn asteroid_collision(asteroids: Vec<i32>) -> Vec<i32> {
+        let mut st = vec![];
+
+        for x in asteroids {
+            if x > 0 {
+                // x 向右
+                st.push(x);
+                continue;
+            }
+
+            let mut ok = true;
+            while let Some(&top) = st.last() {
+                if top < 0 {
+                    // 栈顶小行星向左
+                    break;
+                }
+
+                if top <= -x {
+                    // 栈顶小行星爆炸
+                    st.pop();
+                }
+
+                if top >= -x {
+                    // x 爆炸
+                    ok = false;
+                    break;
+                }
+            }
+
+            if ok {
+                // x 没有爆炸
+                st.push(x);
+            }
+        }
+
+        st
+    }
+}
