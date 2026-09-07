@@ -796,3 +796,50 @@ pub mod n735 {
         st
     }
 }
+
+// 2751. 机器人碰撞
+pub mod n2751 {
+    pub fn survived_robots_healths(
+        positions: Vec<i32>,
+        mut healths: Vec<i32>,
+        directions: String,
+    ) -> Vec<i32> {
+        // 创建一个下标数组，对下标数组排序，这样不会打乱输入顺序
+        let mut idx = (0..positions.len()).collect::<Vec<_>>();
+        idx.sort_unstable_by_key(|&i| positions[i]);
+
+        let directions = directions.as_bytes();
+        let mut st = vec![];
+
+        for i in idx {
+            if directions[i] == b'R' {
+                // 机器人 i 向右
+                st.push(i);
+                continue;
+            }
+            while let Some(&j) = st.last() {
+                // 栈顶机器人向右
+                if healths[j] > healths[i] {
+                    // 栈顶机器人的健康度大
+                    healths[i] = 0; // 移除机器人 i
+                    healths[j] -= 1;
+                    break;
+                }
+                if healths[j] == healths[i] {
+                    // 健康度一样大，都移除
+                    healths[i] = 0;
+                    healths[j] = 0;
+                    st.pop();
+                    break;
+                }
+                // 机器人 i 的健康度大
+                healths[i] -= 1;
+                healths[j] = 0; // 移除机器人 j
+                st.pop();
+            }
+        }
+
+        // 返回幸存机器人的健康度
+        healths.into_iter().filter(|&h| h > 0).collect()
+    }
+}
