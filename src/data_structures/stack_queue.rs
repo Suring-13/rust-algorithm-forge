@@ -843,3 +843,27 @@ pub mod n2751 {
         healths.into_iter().filter(|&h| h > 0).collect()
     }
 }
+
+// 853. 车队
+pub mod n853 {
+    pub fn car_fleet(target: i32, position: Vec<i32>, speed: Vec<i32>) -> i32 {
+        let mut cars: Vec<(i32, i32)> = position.into_iter().zip(speed).collect();
+        // 按 position 升序排序
+        cars.sort_by_key(|&(p, _)| p);
+
+        let mut st: Vec<(i32, i32)> = Vec::new();
+        for (p, v) in cars {
+            while let Some(&(top_p, top_v)) = st.last() {
+                // (target - top_p) * v <= (target - p) * top_v, 原来的除法移项换成乘法，避免除法不准确
+                // 等价 top到达时间 <= 当前车到达时间 → 当前会被前面的车追上合并
+                if (target - top_p) as i64 * v as i64 <= (target - p) as i64 * top_v as i64 {
+                    st.pop();
+                } else {
+                    break;
+                }
+            }
+            st.push((p, v));
+        }
+        st.len() as i32
+    }
+}
