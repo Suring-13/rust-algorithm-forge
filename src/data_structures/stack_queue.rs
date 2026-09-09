@@ -867,3 +867,33 @@ pub mod n853 {
         st.len() as i32
     }
 }
+
+// 1776. 车队 II
+pub mod n1776 {
+    pub fn get_collision_times(cars: Vec<Vec<i32>>) -> Vec<f64> {
+        let n = cars.len();
+        let mut ans = vec![-1.0; n];
+        let mut st: Vec<usize> = Vec::new(); // 栈：栈底时间大，栈顶时间小
+
+        for i in (0..n).rev() {
+            let p = cars[i][0] as f64;
+            let v = cars[i][1] as f64;
+
+            while let Some(&j) = st.last() {
+                let q = cars[j][0] as f64;
+                let w = cars[j][1] as f64;
+
+                if v > w {
+                    let t = (q - p) / (v - w);
+                    if ans[j] < 0.0 || t <= ans[j] {
+                        ans[i] = t;
+                        break;
+                    }
+                }
+                st.pop();
+            }
+            st.push(i);
+        }
+        ans
+    }
+}
