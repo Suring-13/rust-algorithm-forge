@@ -922,3 +922,23 @@ pub mod n20 {
         st.is_empty() // 所有左括号必须匹配完毕
     }
 }
+
+// 921. 使括号有效的最少添加
+pub mod n921 {
+    pub fn min_add_to_make_valid(s: String) -> i32 {
+        let mut left_count = 0;
+        let mut right_count = 0;
+        for c in s.chars() {
+            if c == '(' {
+                left_count += 1;
+            } else {
+                if left_count == 0 {
+                    right_count += 1;
+                } else {
+                    left_count -= 1;
+                }
+            }
+        }
+        left_count + right_count
+    }
+}
