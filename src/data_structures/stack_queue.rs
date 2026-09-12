@@ -942,3 +942,23 @@ pub mod n921 {
         left_count + right_count
     }
 }
+
+// 1021. 删除最外层的括号
+pub mod n1021 {
+    pub fn remove_outer_parentheses(s: String) -> String {
+        let mut res = String::new();
+        let mut level = 0;
+        for &b in s.as_bytes() {
+            if b == b')' {
+                level -= 1;
+            }
+            if level >= 1 {
+                res.push(b as char);
+            }
+            if b == b'(' {
+                level += 1;
+            }
+        }
+        res
+    }
+}
