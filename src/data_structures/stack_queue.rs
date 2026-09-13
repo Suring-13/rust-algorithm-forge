@@ -962,3 +962,20 @@ pub mod n1021 {
         res
     }
 }
+
+// 1614. 括号的最大嵌套深度
+pub mod n1614 {
+    pub fn max_depth(s: String) -> i32 {
+        let mut ans = 0;
+        let mut size = 0;
+        for &b in s.as_bytes() {
+            if b == b'(' {
+                size += 1;
+                ans = ans.max(size);
+            } else if b == b')' {
+                size -= 1;
+            }
+        }
+        ans
+    }
+}
