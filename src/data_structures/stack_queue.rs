@@ -979,3 +979,27 @@ pub mod n1614 {
         ans
     }
 }
+
+// 1190. 反转每对括号间的子串
+pub mod n1190 {
+    pub fn reverse_parentheses(s: String) -> String {
+        let mut stk: Vec<String> = Vec::new();
+        let mut buf = String::new();
+        for ch in s.chars() {
+            if ch == '(' {
+                // 把当前累积字符串压栈，清空临时串，准备接收括号内字符
+                stk.push(buf);
+                buf = String::new();
+            } else if ch == ')' {
+                // 反转当前括号内的字符串
+                buf = buf.chars().rev().collect();
+                // 弹出外层前缀，拼接
+                buf = stk.pop().unwrap() + &buf;
+            } else {
+                // 普通字符直接追加
+                buf.push(ch);
+            }
+        }
+        buf
+    }
+}
