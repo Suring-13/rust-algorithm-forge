@@ -1003,3 +1003,20 @@ pub mod n1190 {
         buf
     }
 }
+
+// 856. 括号的分数
+pub mod n856 {
+    pub fn score_of_parentheses(s: String) -> i32 {
+        let mut stk = vec![0];
+        for c in s.chars() {
+            if c == '(' {
+                stk.push(0);
+            } else {
+                let cur = stk.pop().unwrap();
+                let prev = stk.pop().unwrap();
+                stk.push(prev + std::cmp::max(cur * 2, 1));
+            }
+        }
+        stk[0]
+    }
+}
