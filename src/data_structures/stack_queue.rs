@@ -1020,3 +1020,35 @@ pub mod n856 {
         stk[0]
     }
 }
+
+// 1249. 移除无效的括号
+pub mod n1249 {
+    pub fn min_remove_to_make_valid(s: String) -> String {
+        let mut t: Vec<Option<char>> = s.chars().map(Some).collect();
+        let mut stack = Vec::new();
+
+        for (i, ch) in t.iter_mut().enumerate() {
+            match ch {
+                Some('(') => {
+                    stack.push(i);
+                }
+                Some(')') => {
+                    if stack.is_empty() {
+                        *ch = None;
+                    } else {
+                        stack.pop();
+                    }
+                }
+                _ => (),
+            }
+        }
+
+        // 栈剩下多余左括号，标记删除
+        for idx in stack {
+            t[idx] = None;
+        }
+
+        // 取出所有 Some 拼接
+        t.into_iter().flatten().collect()
+    }
+}
