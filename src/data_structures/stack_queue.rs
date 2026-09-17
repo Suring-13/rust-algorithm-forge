@@ -1052,3 +1052,18 @@ pub mod n1249 {
         t.into_iter().flatten().collect()
     }
 }
+
+// 1963. 使字符串平衡的最小交换次数
+pub mod n1963 {
+    pub fn min_swaps(s: String) -> i32 {
+        let mut c = 0;
+        for b in s.bytes() {
+            if b == b'[' || c == 0 {
+                c += 1;
+            } else {
+                c -= 1;
+            }
+        }
+        c / 2
+    }
+}
