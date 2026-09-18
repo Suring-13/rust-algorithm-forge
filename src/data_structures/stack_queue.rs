@@ -1067,3 +1067,40 @@ pub mod n1963 {
         c / 2
     }
 }
+
+// 678. 有效的括号字符串
+pub mod n678 {
+    pub fn check_valid_string(s: String) -> bool {
+        let mut left_stack: Vec<usize> = Vec::new();
+        let mut asterisk_stack: Vec<usize> = Vec::new();
+
+        for (i, c) in s.chars().enumerate() {
+            match c {
+                '(' => left_stack.push(i),
+                '*' => asterisk_stack.push(i),
+                ')' => {
+                    if left_stack.pop().is_some() {
+                        // 优先消耗左括号
+                    } else if asterisk_stack.pop().is_some() {
+                        // 消耗星号
+                    } else {
+                        return false;
+                    }
+                }
+                _ => unreachable!(),
+            }
+        }
+
+        // 剩余的左括号，用后面的*抵消
+        while !left_stack.is_empty() && !asterisk_stack.is_empty() {
+            let left_idx = left_stack.pop().unwrap();
+            let star_idx = asterisk_stack.pop().unwrap();
+            if left_idx > star_idx {
+                return false;
+            }
+        }
+
+        // 最后左括号栈必须空
+        left_stack.is_empty()
+    }
+}
