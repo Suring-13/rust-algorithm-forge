@@ -1104,3 +1104,23 @@ pub mod n678 {
         left_stack.is_empty()
     }
 }
+
+// 1111. 有效括号的嵌套深度
+pub mod n1111 {
+    pub fn max_depth_after_split(seq: String) -> Vec<i32> {
+        let mut res = Vec::with_capacity(seq.len());
+        let mut depth = 0;
+        for c in seq.chars() {
+            // 遍历到左括号，连续括号个数加 1
+            if c == '(' {
+                depth += 1;
+                res.push(depth & 1);
+            } else {
+                // 遍历到右括号，与当前栈顶左括号分在一组，因此先取模，再 -1
+                res.push(depth & 1);
+                depth -= 1;
+            }
+        }
+        res
+    }
+}
