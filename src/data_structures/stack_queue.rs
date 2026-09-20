@@ -1124,3 +1124,40 @@ pub mod n1111 {
         res
     }
 }
+
+// 1541. 平衡括号字符串的最少插入次数
+pub mod n1541 {
+    pub fn min_insertions(s: String) -> i32 {
+        let s = s.as_bytes();
+        let n = s.len();
+        let mut left = 0; // 未配对的左括号个数
+        let mut ans = 0;
+        let mut i = 0;
+
+        while i < n {
+            if s[i] == b'(' {
+                left += 1; // 未配对的左括号
+                i += 1;
+                continue;
+            }
+
+            // 当前是右括号
+            if left > 0 {
+                left -= 1; // 消耗一个左括号和这组))配对
+            } else {
+                ans += 1; // 没有左括号，先补一个左括号
+            }
+
+            // 检查下一位是不是右括号，凑一对))
+            if i < n - 1 && s[i + 1] == b')' {
+                i += 2;
+            } else {
+                ans += 1; // 缺少第二个右括号，补一个
+                i += 1;
+            }
+        }
+
+        // 剩下未匹配的左括号，每个需要2个右括号
+        ans + left * 2
+    }
+}
