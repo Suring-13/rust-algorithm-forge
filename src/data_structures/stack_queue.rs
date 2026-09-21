@@ -1161,3 +1161,35 @@ pub mod n1541 {
         ans + left * 2
     }
 }
+
+// 2116. 判断一个括号字符串是否有效
+pub mod n2116 {
+    pub fn can_be_valid(s: String, locked: String) -> bool {
+        if !s.len().is_multiple_of(2) {
+            return false;
+        }
+        let mut mn = 0;
+        let mut mx = 0;
+        for (b, lock) in s.bytes().zip(locked.bytes()) {
+            if lock == b'1' {
+                // 不能改
+                let d = if b == b'(' { 1 } else { -1 };
+                mx += d;
+                if mx < 0 {
+                    // c 不能为负
+                    return false;
+                }
+                mn += d;
+            } else {
+                // 可以改
+                mx += 1; // 改成左括号，c 加一
+                mn -= 1; // 改成右括号，c 减一
+            }
+            if mn < 0 {
+                // c 不能为负
+                mn = 1; // 此时 c 的取值范围都是奇数，最小的正奇数是 1
+            }
+        }
+        mn == 0 // 说明最终 c 能是 0
+    }
+}
