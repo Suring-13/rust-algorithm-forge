@@ -1193,3 +1193,25 @@ pub mod n2116 {
         mn == 0 // 说明最终 c 能是 0
     }
 }
+
+// 32. 最长有效括号
+pub mod n32 {
+    pub fn longest_valid_parentheses(s: String) -> i32 {
+        let mut st = vec![-1]; // 未配对括号的下标，其中栈底元素表示永远无法配对的括号下标
+        let mut ans = 0;
+
+        for (i, ch) in s.bytes().enumerate() {
+            if ch == b'(' {
+                st.push(i as i32); // 保存左括号的下标
+            } else if st.len() > 1 {
+                st.pop(); // 右括号与栈顶的左括号配对
+                ans = ans.max(i as i32 - *st.last().unwrap()); // 从 st.last()+1 到 i 都已配对，长为 i - st.last()
+            } else {
+                // s[i] 是永远无法配对的右括号
+                st[0] = i as i32; // 替换栈底
+            }
+        }
+
+        ans
+    }
+}
