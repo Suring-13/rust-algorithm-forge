@@ -1215,3 +1215,37 @@ pub mod n32 {
         ans
     }
 }
+
+// 1006. 笨阶乘
+pub mod n1006 {
+    pub fn clumsy(n: i32) -> i32 {
+        let mut stack = std::collections::VecDeque::new();
+        stack.push_back(n);
+        let mut n = n - 1;
+
+        let mut index = 0;
+        while n > 0 {
+            match index % 4 {
+                0 => {
+                    let top = stack.pop_back().unwrap();
+                    stack.push_back(top * n);
+                }
+                1 => {
+                    let top = stack.pop_back().unwrap();
+                    stack.push_back(top / n);
+                }
+                2 => {
+                    stack.push_back(n);
+                }
+                3 => {
+                    stack.push_back(-n);
+                }
+                _ => unreachable!(),
+            }
+            index += 1;
+            n -= 1;
+        }
+
+        stack.into_iter().sum()
+    }
+}
