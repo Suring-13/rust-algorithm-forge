@@ -1249,3 +1249,26 @@ pub mod n1006 {
         stack.into_iter().sum()
     }
 }
+
+// 150. 逆波兰表达式求值
+pub mod n150 {
+    pub fn eval_rpn(tokens: Vec<String>) -> i32 {
+        let mut stack = vec![];
+        for token in tokens {
+            if let Ok(val) = token.parse::<i32>() {
+                stack.push(val);
+            } else {
+                let num2 = stack.pop().unwrap(); // 注意 num1 和 num2不能搞反，因为有除法
+                let num1 = stack.pop().unwrap();
+                match token.as_str() {
+                    "+" => stack.push(num1 + num2),
+                    "-" => stack.push(num1 - num2),
+                    "*" => stack.push(num1 * num2),
+                    "/" => stack.push(num1 / num2),
+                    _ => unreachable!(),
+                }
+            }
+        }
+        stack[0]
+    }
+}
