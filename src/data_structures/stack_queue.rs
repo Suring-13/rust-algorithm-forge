@@ -1272,3 +1272,33 @@ pub mod n150 {
         stack[0]
     }
 }
+
+// 394. 字符串解码
+pub mod n394 {
+    pub fn decode_string(s: String) -> String {
+        let mut stack: Vec<(u32, String)> = Vec::new();
+        let mut res = String::new();
+        let mut multi = 0;
+
+        for c in s.chars() {
+            match c {
+                '[' => {
+                    stack.push((multi, res));
+                    res = String::new();
+                    multi = 0;
+                }
+                ']' => {
+                    let (cur_multi, last_res) = stack.pop().unwrap();
+                    res = last_res + &res.repeat(cur_multi as usize);
+                }
+                '0'..='9' => {
+                    multi = multi * 10 + c.to_digit(10).unwrap();
+                }
+                _ => {
+                    res.push(c);
+                }
+            }
+        }
+        res
+    }
+}
