@@ -1302,3 +1302,41 @@ pub mod n394 {
         res
     }
 }
+
+// 8. 字符串转换整数 (atoi)
+pub mod n8 {
+    pub fn my_atoi(s: String) -> i32 {
+        let s = s.as_bytes();
+        let n = s.len();
+
+        // 跳过前导空格
+        let mut i = 0;
+        while i < n && s[i] == b' ' {
+            i += 1;
+        }
+
+        // 处理正负号
+        let mut sign = 1;
+        if i < n && (s[i] == b'+' || s[i] == b'-') {
+            if s[i] == b'-' {
+                sign = -1;
+            }
+            i += 1;
+        }
+
+        // 处理数字
+        let mut num = 0;
+        while i < n && (b'0' <= s[i] && s[i] <= b'9') {
+            let d = (s[i] - b'0') as i32;
+            // 如果 num*10+d > i32::MAX，则最终答案已确定，提前返回
+            if num > i32::MAX / 10 || num * 10 > i32::MAX - d {
+                // 避免溢出
+                return if sign > 0 { i32::MAX } else { i32::MIN };
+            }
+            num = num * 10 + d;
+            i += 1;
+        }
+
+        sign * num
+    }
+}
