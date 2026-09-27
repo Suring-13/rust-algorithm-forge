@@ -1340,3 +1340,132 @@ pub mod n8 {
         sign * num
     }
 }
+
+// 224. 基本计算器
+pub mod n224 {
+    pub fn calculate(s: String) -> i32 {
+        /*
+         * 创建两个栈 numStack 和 opStack:
+         * numStack ： 存放所有的数字
+         * opStack ：存放所有的数字以外的操作
+         */
+        let mut num_stack = vec![];
+        let mut op_stack = vec![];
+
+        // 这里的优先级划分按照「数学」进行划分即可
+        // 使用 map 维护一个运算符优先级
+        let op_weight = std::collections::HashMap::from([
+            ('+', 1),
+            ('-', 1),
+            ('*', 2),
+            ('/', 2),
+            ('%', 2),
+            ('^', 3),
+        ]);
+
+        // 去掉字符串的所有空格
+        let s = s.replace(" ", "").chars().collect::<Vec<char>>();
+
+        // 为了防止第一个数为负数，先往 nums 加个 0
+        // 例如 -1 + 2 情况
+        num_stack.push(0);
+
+        /*
+         * 遍历字符串(分情况讨论):
+         * 1. 如果取到 ( , 直接加入 op_stack 中，等待与之匹配的 )
+         * 2. 如果取到 ) , 使用现有的 num_stack 和 op_stack 进行计算，
+         * 再弹出左括号(也就是和当前右括号相匹配的左括号)
+         * 3. 如果取到一个数字, 从当前位置开始继续往后取, 将整一个连续数字整体取出, 加入 num_stack
+         * 4. 如果取到运算符, 说明之前已经是一个完整的计算表达式, 如果有操作符而且这个操作符不是左括号，
+         * 而且只有「栈顶运算符」比「当前运算符」优先级高/同等，才可以使用现有的 num_stack 和 op_stack 进行计算,
+         * 计算结果放到 num_stack, 相到于得到了当前运算符的左操作数，最后放入当前运算符
+         */
+        let mut i = 0;
+        while i < s.len() {
+            let c = s[i];
+            if c == '(' {
+                op_stack.push(c);
+            } else if c == ')' {
+                /*
+                 * 如果运算符栈顶不是 (，说明括号内有运算，直接进行计算，再弹出左括号
+                 * 否则说明括号内没有运算，直接弹出左括号, 例如(1)
+                 * 因为混合运算，括号前可能有多个运算符可以计算，例如(1+2*3)，所以需要使用while循环把可以计算的先算完
+                 * 重复计算到最近一个左括号为止
+                 */
+                while !op_stack.is_empty() {
+                    if *op_stack.last().unwrap() != '(' {
+                        cal(&mut num_stack, &mut op_stack);
+                    } else {
+                        op_stack.pop();
+                        break;
+                    }
+                }
+            } else if c.is_ascii_digit() {
+                // 将从 i 位置开始后面的连续数字整体取出，加入 numStack
+                let mut number = 0;
+                let mut j = i;
+                while j < s.len() && s[j].is_ascii_digit() {
+                    number = number * 10 + s[j].to_digit(10).unwrap();
+                    j += 1;
+                }
+                num_stack.push(number as i32);
+                // 此时的j位置是第一个不为数字的位置，将遍历的位置调整到j-1
+                i = j - 1;
+            } else {
+                // 为防止 () 内出现的首个字符为运算符，将 (- 替换为 (0-，(+ 替换为 (0+
+                if i > 0 && s[i - 1] == '(' {
+                    num_stack.push(0);
+                }
+
+                /*
+                 * 使用现有的 num_stack 和 op_stack 计算表达式
+                 * 运算符栈不为空而且前一个是运算符不是括号才可以计算，例如(3+2+1)在读取到第一个+时不能计算
+                 * 因为是混合运算，当一个新的运算符要入栈时，之前的表达式可能有多个运算符可以计算
+                 * 需要把栈内的可以计算的都计算完，例如1*2-3/4+2在读到加号时，不仅前面的/要计算，前面的-也需要计算
+                 * 所以需要使用while循环把能计算的都两两计算完
+                 */
+                while !op_stack.is_empty() && *op_stack.last().unwrap() != '(' {
+                    // 只有满足「栈顶运算符」比「当前运算符」优先级高/同等，才进行运算
+                    if op_weight.get(op_stack.last().unwrap()) >= op_weight.get(&c) {
+                        cal(&mut num_stack, &mut op_stack);
+                    } else {
+                        break;
+                    }
+                }
+                // 操作符入栈
+                op_stack.push(c);
+            }
+            i += 1;
+        }
+
+        // 如果最后一个是数字，读取完之后没有进行计算
+        // 此时要把剩余的计算完, 可能有多个都没有计算
+        // 例如3+2*2, 所以要用while循环
+        while !op_stack.is_empty() {
+            cal(&mut num_stack, &mut op_stack);
+        }
+
+        // 使用现有的 num栈 和 op栈 进行表达式计算
+        fn cal(num_stack: &mut Vec<i32>, op_stack: &mut Vec<char>) {
+            if num_stack.len() < 2 || op_stack.is_empty() {
+                return;
+            }
+            // 取出两个数和一个运算符进行计算
+            let num2 = num_stack.pop().unwrap();
+            let num1 = num_stack.pop().unwrap();
+
+            let op = op_stack.pop().unwrap();
+            match op {
+                '+' => num_stack.push(num1 + num2),
+                '-' => num_stack.push(num1 - num2),
+                '*' => num_stack.push(num1 * num2),
+                '/' => num_stack.push(num1 / num2),
+                '%' => num_stack.push(num1 % num2),
+                '^' => num_stack.push((num1 as f64).powf(num2 as f64) as i32),
+                _ => unreachable!(),
+            }
+        }
+
+        *num_stack.last().unwrap()
+    }
+}
