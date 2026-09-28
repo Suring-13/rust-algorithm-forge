@@ -1469,3 +1469,78 @@ pub mod n224 {
         *num_stack.last().unwrap()
     }
 }
+
+// 726. 原子的数量
+pub mod n726 {
+    pub fn count_of_atoms(formula: String) -> String {
+        let mut i = 0;
+        let chars: Vec<char> = formula.chars().collect();
+        let n = chars.len();
+
+        // 解析原子符号
+        fn parse_atom(chars: &[char], i: &mut usize) -> String {
+            let mut atom = String::new();
+            atom.push(chars[*i]);
+            *i += 1;
+            while *i < chars.len() && chars[*i].is_lowercase() {
+                atom.push(chars[*i]);
+                *i += 1;
+            }
+            atom
+        }
+
+        // 解析数字，无数字返回1
+        fn parse_num(chars: &[char], i: &mut usize) -> i32 {
+            if *i == chars.len() || !chars[*i].is_ascii_digit() {
+                return 1;
+            }
+            let mut num = 0;
+            while *i < chars.len() && chars[*i].is_ascii_digit() {
+                num = num * 10 + (chars[*i].to_digit(10).unwrap() as i32);
+                *i += 1;
+            }
+            num
+        }
+
+        let mut stack: Vec<std::collections::HashMap<String, i32>> = Vec::new();
+        stack.push(std::collections::HashMap::new());
+
+        while i < n {
+            let ch = chars[i];
+            match ch {
+                '(' => {
+                    i += 1;
+                    stack.push(std::collections::HashMap::new());
+                }
+                ')' => {
+                    i += 1;
+                    let mul = parse_num(&chars, &mut i);
+                    let inner = stack.pop().unwrap();
+                    let top = stack.last_mut().unwrap();
+                    for (atom, cnt) in inner {
+                        *top.entry(atom).or_insert(0) += cnt * mul;
+                    }
+                }
+                _ => {
+                    let atom = parse_atom(&chars, &mut i);
+                    let cnt = parse_num(&chars, &mut i);
+                    *stack.last_mut().unwrap().entry(atom).or_insert(0) += cnt;
+                }
+            }
+        }
+
+        // 取出结果，排序
+        let map = stack.pop().unwrap();
+        let mut pairs: Vec<_> = map.into_iter().collect();
+        pairs.sort_by(|a, b| a.0.cmp(&b.0));
+
+        let mut ans = String::new();
+        for (name, count) in pairs {
+            ans.push_str(&name);
+            if count > 1 {
+                ans.push_str(&count.to_string());
+            }
+        }
+        ans
+    }
+}
