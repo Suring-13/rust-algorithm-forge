@@ -1544,3 +1544,46 @@ pub mod n726 {
         ans
     }
 }
+
+// 1106. 解析布尔表达式
+pub mod n1106 {
+    pub fn parse_bool_expr(expression: String) -> bool {
+        let mut stk = Vec::new();
+        for c in expression.chars() {
+            if c == ',' {
+                continue;
+            }
+            if c != ')' {
+                stk.push(c);
+                continue;
+            }
+            let mut t = 0;
+            let mut f = 0;
+            while *stk.last().unwrap() != '(' {
+                match stk.pop().unwrap() {
+                    't' => t += 1,
+                    'f' => f += 1,
+                    _ => unreachable!(),
+                }
+            }
+            stk.pop(); // pop '('
+            let op = stk.pop().unwrap();
+            match op {
+                '!' => {
+                    // ! : f==1 → true(t) else f
+                    stk.push(if f == 1 { 't' } else { 'f' });
+                }
+                '&' => {
+                    // & 没有f才是t
+                    stk.push(if f == 0 { 't' } else { 'f' });
+                }
+                '|' => {
+                    // | 有t就是t
+                    stk.push(if t > 0 { 't' } else { 'f' });
+                }
+                _ => unreachable!(),
+            }
+        }
+        stk.last().unwrap() == &'t'
+    }
+}
