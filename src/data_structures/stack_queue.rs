@@ -1587,3 +1587,79 @@ pub mod n1106 {
         stk.last().unwrap() == &'t'
     }
 }
+
+// 591. 标签验证器
+pub mod n591 {
+    pub fn is_valid(s: String) -> bool {
+        const CDATA1: &str = "<![CDATA[";
+        const CDATA2: &str = "]]>";
+        let mut stack = Vec::new();
+        let s_bytes = s.as_bytes();
+        let n = s_bytes.len();
+        let mut i = 0;
+
+        while i < n {
+            // 匹配 CDATA 开始标记 <![CDATA[ 长度9
+            if i + 8 < n && &s[i..i + 9] == CDATA1 {
+                if i == 0 {
+                    return false;
+                }
+                let mut j = i + 9;
+                let mut ok = false;
+                while j < n && !ok {
+                    if j + 2 < n && &s[j..j + 3] == CDATA2 {
+                        j += 3;
+                        ok = true;
+                    } else {
+                        j += 1;
+                    }
+                }
+                if !ok {
+                    return false;
+                }
+                i = j;
+            } else if s_bytes[i] == b'<' {
+                if i == n - 1 {
+                    return false;
+                }
+                let is_end = s_bytes[i + 1] == b'/';
+                let p = if is_end { i + 2 } else { i + 1 };
+                let mut j = p;
+                // 走到 >
+                while j < n && s_bytes[j] != b'>' {
+                    if !s_bytes[j].is_ascii_uppercase() {
+                        return false;
+                    }
+                    j += 1;
+                }
+                if j == n {
+                    return false;
+                }
+                let len = j - p;
+                if !(1..=9).contains(&len) {
+                    return false;
+                }
+                let tag = &s[p..j];
+                i = j + 1;
+                if !is_end {
+                    stack.push(tag.to_string());
+                } else {
+                    if stack.is_empty() || stack.pop().unwrap() != tag {
+                        return false;
+                    }
+                    // 栈空但是后面还有剩余字符，非法
+                    if stack.is_empty() && i < n {
+                        return false;
+                    }
+                }
+            } else {
+                // 普通文本，不能出现在最开头
+                if i == 0 {
+                    return false;
+                }
+                i += 1;
+            }
+        }
+        stack.is_empty()
+    }
+}
