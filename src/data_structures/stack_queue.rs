@@ -1663,3 +1663,192 @@ pub mod n591 {
         stack.is_empty()
     }
 }
+
+// 736. Lisp 语法解析
+pub mod n736 {
+    use std::collections::{HashMap, HashSet};
+
+    /// 单遍字符扫描 + 多栈模拟
+    /// 变量作用域方案：每个变量维护一个值栈，进入let压值，退出let批量pop回滚
+    pub fn evaluate(expression: String) -> i32 {
+        // global_var2stack: key=变量名，value=该变量多层作用域的值栈
+        // 例：x在外层=2，内层let赋值为3，则 global_var2stack["x"] = [2,3]
+        // 内层let结束时，pop一次，x回到2
+        let mut global_var2stack: HashMap<String, Vec<i32>> = HashMap::new();
+
+        // temp_var_set_stack：栈，每个元素是HashSet，存放当前let层新定义的全部变量
+        // 遇到let的右括号`)`时，遍历集合，逐个把变量的值栈pop，撤销本层赋值
+        let mut temp_var_set_stack: Vec<HashSet<String>> = Vec::new();
+
+        // value_stack：值栈，保存数字、子表达式计算的中间结果
+        let mut value_stack: Vec<i32> = Vec::new();
+
+        // let_count：栈，每个元素代表当前let内部读到的token计数器
+        // let语法：(let v1 e1 v2 e2 ... expr)
+        // token是成对出现：变量,值,变量,值...，偶数token代表一个变量赋值完成
+        let mut let_count: Vec<usize> = Vec::new();
+
+        // unassigned：待赋值变量栈
+        // 读到奇数位置token（变量名），先压入unassigned；读到后面偶数位置的值，再弹出变量完成绑定
+        let mut unassigned: Vec<String> = Vec::new();
+
+        // op_stack：运算符栈，存放 "let" / "add" / "mult"
+        // 遇到左括号后的关键字入栈；遇到右括号弹出，执行对应逻辑
+        let mut op_stack: Vec<String> = Vec::new();
+
+        // token_map：关键字集合，区分token是运算符还是普通变量名
+        let mut token_map = HashSet::new();
+        token_map.insert("let");
+        token_map.insert("add");
+        token_map.insert("mult");
+
+        // 将输入字符串转为字符数组，方便按索引访问
+        let expr_chars: Vec<char> = expression.chars().collect();
+        let mut i = 0; // 字符游标
+        let n = expr_chars.len(); // 总字符长度
+
+        // 单遍循环扫描整个表达式字符串
+        while i < n {
+            let c = expr_chars[i];
+
+            // 空格、左括号直接跳过，左括号仅标记表达式开始，真正运算符在后面token
+            if c == ' ' || c == '(' {
+                i += 1;
+                continue;
+            }
+            // ========== 遇到右括号：当前表达式结束，执行运算/作用域回滚 ==========
+            else if c == ')' {
+                // 弹出当前表达式对应的运算符
+                let op = op_stack.pop().unwrap();
+                if op.as_str() == "let" {
+                    // 是let表达式：需要撤销本层所有变量赋值，恢复外层作用域
+                    let top_set = temp_var_set_stack.pop().unwrap();
+                    // 遍历本let层定义的所有变量，每个变量的值栈pop一次
+                    for tmp_var in top_set {
+                        if let Some(vstack) = global_var2stack.get_mut(&tmp_var) {
+                            vstack.pop();
+                        }
+                    }
+                    // 弹出本层let的token计数器
+                    let_count.pop();
+                } else {
+                    // add / mult二元运算：从值栈取出两个数计算
+                    // 栈是后进先出，后入栈的是val2，先入栈的是val1
+                    let val2 = value_stack.pop().unwrap();
+                    let val1 = value_stack.pop().unwrap();
+                    let res = if op.as_str() == "add" {
+                        val1 + val2
+                    } else {
+                        val1 * val2
+                    };
+                    // 计算结果压回值栈，作为外层表达式的一个token值
+                    value_stack.push(res);
+                }
+
+                // 如果外层仍然是let表达式，这个右括号产生的结果算作let内的一个token，计数+1
+                if let Some(top_op) = op_stack.last()
+                    && top_op.as_str() == "let"
+                {
+                    *let_count.last_mut().unwrap() += 1;
+                }
+                i += 1;
+            }
+            // ========== 解析数字（包含负数，以数字字符或者负号'-'开头） ==========
+            else if c.is_ascii_digit() || c == '-' {
+                let mut minus = 1; // 符号标记，默认正数
+                let mut num = 0;
+
+                // 如果当前字符是负号，标记符号，游标前进一位读取数字部分
+                if c == '-' {
+                    minus = -1;
+                    i += 1;
+                }
+                // 持续读取字符，直到遇到空格或右括号，拼接完整数字
+                while i < n && expr_chars[i] != ' ' && expr_chars[i] != ')' {
+                    num = num * 10 + (expr_chars[i].to_digit(10).unwrap() as i32);
+                    i += 1;
+                }
+                // 应用正负号
+                num *= minus;
+                // 数字压入值栈
+                value_stack.push(num);
+
+                // 如果外层是let，读到数字代表读到一个token，let计数器+1
+                if let Some(top_op) = op_stack.last()
+                    && top_op.as_str() == "let"
+                {
+                    *let_count.last_mut().unwrap() += 1;
+                }
+            }
+            // ========== 解析字母开头token：变量名 / 关键字(let/add/mult) ==========
+            else {
+                let mut token = String::new();
+                // 持续读取字符，拼接token，直到空格或右括号终止
+                while i < n && expr_chars[i] != ' ' && expr_chars[i] != ')' {
+                    token.push(expr_chars[i]);
+                    i += 1;
+                }
+
+                // 判断当前token是不是关键字运算符
+                if token_map.contains(token.as_str()) {
+                    // 如果是let，新建一层上下文：计数器置0 + 新建集合记录本层变量
+                    if token.as_str() == "let" {
+                        let_count.push(0);
+                        temp_var_set_stack.push(HashSet::new());
+                    }
+                    // 运算符入栈
+                    op_stack.push(token);
+                } else {
+                    // token不是关键字：是变量名
+                    if let Some(top_op) = op_stack.last() {
+                        if top_op.as_str() == "let" {
+                            // 当前上下文是let表达式，token计数+1
+                            *let_count.last_mut().unwrap() += 1;
+                            let cnt = *let_count.last().unwrap();
+                            // 判断下一个字符是不是')'，用来区分是不是let最后的返回表达式
+                            let next_is_close = (i < n) && expr_chars[i] == ')';
+
+                            // cnt奇数：变量名；并且后面不是右括号，说明后面跟着值，是待赋值变量
+                            if cnt % 2 == 1 && !next_is_close {
+                                unassigned.push(token.clone());
+                                // 将变量加入本层集合，退出let时需要回滚
+                                temp_var_set_stack.last_mut().unwrap().insert(token);
+                            } else {
+                                // 偶数位置，或者是let末尾返回表达式：读取变量当前栈顶值，压入值栈
+                                let v_stack = global_var2stack.get(&token).unwrap();
+                                value_stack.push(*v_stack.last().unwrap());
+                            }
+                        } else {
+                            // 当前是add/mult上下文，直接读取变量值压入值栈
+                            let v_stack = global_var2stack.get(&token).unwrap();
+                            value_stack.push(*v_stack.last().unwrap());
+                        }
+                    } else {
+                        // 顶层表达式，直接读取变量值， 题目的测试用例永远不会走到这里
+                        let v_stack = global_var2stack.get(&token).unwrap();
+                        value_stack.push(*v_stack.last().unwrap());
+                    }
+                }
+            }
+
+            // ========== 【每次循环末尾执行】let变量绑定逻辑 ==========
+            // 当let内部token计数是>=2的偶数，代表读到了变量对应的值，执行赋值
+            if let Some(top_op) = op_stack.last()
+                && top_op.as_str() == "let"
+            {
+                let cnt = *let_count.last().unwrap();
+                if cnt >= 2 && cnt.is_multiple_of(2) {
+                    // 弹出待赋值变量名
+                    let var = unassigned.pop().unwrap();
+                    // 弹出刚刚读取到的值
+                    let val = value_stack.pop().unwrap();
+                    // 变量的值栈压入新值；不存在则新建Vec
+                    global_var2stack.entry(var).or_default().push(val);
+                }
+            }
+        }
+
+        // 扫描全部字符结束，最终结果在值栈栈顶
+        *value_stack.last().unwrap()
+    }
+}
