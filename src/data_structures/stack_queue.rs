@@ -1852,3 +1852,67 @@ pub mod n736 {
         *value_stack.last().unwrap()
     }
 }
+
+// 1096. 花括号展开 II
+pub mod n1096 {
+    use std::collections::HashSet;
+
+    pub fn brace_expansion_ii(expression: String) -> Vec<String> {
+        let mut stack: Vec<(HashSet<String>, HashSet<String>)> = Vec::new();
+        let mut res = HashSet::new();
+        let mut cur: HashSet<String> = HashSet::from_iter(vec![String::new()]);
+
+        for ch in expression.chars() {
+            match ch {
+                'a'..='z' => {
+                    // 字母：每个字符串后面追加这个字符
+                    let mut new_cur = HashSet::new();
+                    for s in &cur {
+                        let mut ns = s.clone();
+                        ns.push(ch);
+                        new_cur.insert(ns);
+                    }
+                    cur = new_cur;
+                }
+                ',' => {
+                    // 取并集，cur并入res，cur重置为空串
+                    res.extend(cur.drain());
+                    cur.insert(String::new());
+                }
+                '{' => {
+                    // 递：压栈，重置局部 res, cur
+                    stack.push((res, cur));
+                    res = HashSet::new();
+                    cur = HashSet::from_iter(vec![String::new()]);
+                }
+                '}' => {
+                    // 归：合并当前 res | cur，然后出栈恢复，做笛卡尔积
+                    let mut sub_res = res;
+                    sub_res.extend(cur);
+
+                    let (prev_res, prev_cur) = stack.pop().unwrap();
+                    res = prev_res;
+
+                    // 笛卡尔积 prev_cur × sub_res
+                    let mut new_cur = HashSet::new();
+                    for s in &prev_cur {
+                        for t in &sub_res {
+                            let mut nt = s.clone();
+                            nt.push_str(t);
+                            new_cur.insert(nt);
+                        }
+                    }
+                    cur = new_cur;
+                }
+                _ => unreachable!(),
+            }
+        }
+
+        // 最后合并 res | cur，排序返回
+        let mut total = res;
+        total.extend(cur);
+        let mut ans: Vec<String> = total.into_iter().collect();
+        ans.sort();
+        ans
+    }
+}
