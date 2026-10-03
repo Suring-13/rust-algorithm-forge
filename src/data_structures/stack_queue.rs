@@ -1916,3 +1916,58 @@ pub mod n1096 {
         ans
     }
 }
+
+// 1896. 反转表达式值的最少操作次数
+pub mod n1896 {
+    /// states栈：每个元素是元组 (p, q)
+    ///   p：该子表达式结果为0时，将它翻转为1的最小操作次数
+    ///   q：该子表达式结果为1时，将它翻转为0的最小操作次数
+    /// ops栈：保存运算符与左括号 '('、'&'、'|'
+    pub fn min_operations_to_flip(expression: String) -> i32 {
+        let mut states: Vec<(i32, i32)> = Vec::new();
+        let mut ops: Vec<char> = Vec::new();
+
+        for c in expression.chars() {
+            if c == '0' || c == '1' || c == ')' {
+                if c == '0' {
+                    // 字符是0，代表子表达式值为0
+                    // p=0：当前已是0，翻转成1需要代价1；q=1：值为1翻转成0代价0
+                    states.push((0, 1));
+                } else if c == '1' {
+                    // 字符是1，代表子表达式值为1
+                    // p=1：值0翻1代价0；q=0：当前已是1，翻转成0需要代价1
+                    states.push((1, 0));
+                } else {
+                    // 遇到右括号，弹出栈顶的左括号
+                    ops.pop();
+                }
+
+                // 运算符栈不为空，且栈顶不是左括号，执行二元运算合并
+                if !ops.is_empty() && ops[ops.len() - 1] != '(' {
+                    let op = ops.pop().unwrap();
+                    let (p2, q2) = states.pop().unwrap();
+                    let (p1, q1) = states.pop().unwrap();
+
+                    if op == '&' {
+                        // 与运算
+                        let p = std::cmp::min(p1, p2);
+                        let q = std::cmp::min(q1 + q2, 1 + std::cmp::min(q1, q2));
+                        states.push((p, q));
+                    } else {
+                        // 或运算 |
+                        let p = std::cmp::min(p1 + p2, 1 + std::cmp::min(p1, p2));
+                        let q = std::cmp::min(q1, q2);
+                        states.push((p, q));
+                    }
+                }
+            } else {
+                // 字符为 '('、'&'、'|'，压入运算符栈
+                ops.push(c);
+            }
+        }
+
+        // 取出最终表达式的状态，取p、q最大值作为答案
+        let (p, q) = states.last().unwrap();
+        *p.max(q)
+    }
+}
