@@ -1971,3 +1971,210 @@ pub mod n1896 {
         *p.max(q)
     }
 }
+
+// 770. 基本计算器 IV
+pub mod n770 {
+    use std::collections::HashMap;
+    /// 计算含有变量、括号、+ - * 的多项式表达式，并返回化简后的多项式项列表
+    /// 规则：
+    /// 1. evalvars 里的变量会被 evalints 的值替换为常数
+    /// 2. * 优先级高于 +、-
+    /// 3. 输出项排序：变量个数从多到少；变量数目相同时，按变量名字典序升序
+    /// 4. 系数为0的项丢弃；常数项直接输出数字，变量项格式：系数*变量1*变量2
+    pub fn basic_calculator_iv(
+        expression: String,
+        evalvars: Vec<String>,
+        evalints: Vec<i32>,
+    ) -> Vec<String> {
+        // ========== 1. 建立变量 -> 值的映射表 ==========
+        // 将evalvars和evalints一一对应，表达式中出现该变量直接替换成对应常数
+        let var_map: HashMap<&str, i32> = evalvars
+            .iter()
+            .zip(evalints.iter())
+            .map(|(var_name, val)| (var_name.as_str(), *val))
+            .collect();
+
+        // ========== 2. 分词：按空格分割表达式字符串得到token列表 ==========
+        // 题目输入表达式各个符号、数字、变量之间都用空格隔开
+        let tokens: Vec<&str> = expression.split_whitespace().collect();
+
+        // ========== 3. 运算符优先级定义 ==========
+        // ( 优先级最低，入栈只是标记左括号边界
+        // + - 同一优先级；*优先级最高
+        let pri: HashMap<&str, i32> = [("(", 0), ("+", 1), ("-", 1), ("*", 2)]
+            .into_iter()
+            .collect();
+
+        // ========== 多项式类型定义 ==========
+        // 多项式：HashMap，key是变量名数组（Box<[String]>），value是该项系数
+        // 空数组代表【常数项】，没有变量
+        type Poly = HashMap<Box<[String]>, i32>;
+
+        // 双栈：数字栈存放多项式，符号栈存放运算符/左括号
+        let mut num_stack: Vec<Poly> = Vec::new();
+        let mut op_stack: Vec<&str> = Vec::new();
+
+        // ========== 辅助函数：取出栈顶两个多项式和运算符，完成一次二元计算 ==========
+        // num_stack: 多项式栈，op_stack：运算符栈
+        let cal_two = |num_stack: &mut Vec<Poly>, op_stack: &mut Vec<&str>| {
+            // 栈元素不足，无法计算，直接返回
+            if num_stack.len() < 2 || op_stack.is_empty() {
+                return;
+            }
+            // 弹出运算符；注意栈顺序：先弹出b，再弹出a，计算 a op b
+            let op = op_stack.pop().unwrap();
+            let b = num_stack.pop().unwrap();
+            let a = num_stack.pop().unwrap();
+            let mut res_poly = Poly::new();
+
+            match op {
+                // ========== 多项式乘法 ==========
+                // (sum a_i * term_i) * (sum b_j * term_j) = sum (a_i*b_j)*(term_i*term_j)
+                "*" => {
+                    for (vars_a, coeff_a) in a.iter() {
+                        for (vars_b, coeff_b) in b.iter() {
+                            // 合并两组变量，并且排序，保证 a*b 和 b*a 是同一个key
+                            let mut combined_vars: Vec<String> =
+                                [vars_a.as_ref(), vars_b.as_ref()].concat();
+                            combined_vars.sort();
+                            // 转为Box切片，作为HashMap的key
+                            let key = combined_vars.into_boxed_slice();
+                            // 累加系数
+                            *res_poly.entry(key).or_insert(0) += coeff_a * coeff_b;
+                        }
+                    }
+                }
+                // ========== 多项式加法 / 减法 ==========
+                "+" | "-" => {
+                    // 先把a全部复制到结果多项式
+                    res_poly = a;
+                    // 遍历b的每一项，加到/减去结果多项式
+                    for (vars_b, &coeff_b) in b.iter() {
+                        let entry = res_poly.entry(vars_b.clone()).or_insert(0);
+                        if op == "+" {
+                            *entry += coeff_b;
+                        } else {
+                            *entry -= coeff_b;
+                        }
+                    }
+                }
+                // 其他符号不处理
+                _ => {}
+            }
+            // 将计算完成的多项式压回数字栈
+            num_stack.push(res_poly);
+        };
+
+        // ========== 辅助函数：将单个token（数字/变量）转为多项式 ==========
+        let convert = |token: &str| -> Poly {
+            let mut poly = Poly::new();
+            // 情况1：token是需要替换的变量，直接变成常数项
+            if let Some(&val) = var_map.get(token) {
+                // 空变量数组 = 常数项
+                poly.insert(Vec::new().into_boxed_slice(), val);
+            }
+            // 情况2：token是纯数字，转为常数
+            else if token.chars().all(|ch| ch.is_ascii_digit()) {
+                let num: i32 = token.parse().unwrap();
+                poly.insert(Vec::new().into_boxed_slice(), num);
+            }
+            // 情况3：普通变量，该项系数=1
+            else {
+                let vars = vec![token.to_string()];
+                poly.insert(vars.into_boxed_slice(), 1);
+            }
+            poly
+        };
+
+        // ========== 遍历所有token，执行表达式求值（双栈调度） ==========
+        for t in tokens {
+            // Case 1：当前token是运算符 ( + - * )
+            if pri.contains_key(t) {
+                // 栈顶运算符优先级 >= 当前运算符，先计算栈里的
+                while let Some(&top_op) = op_stack.last() {
+                    if pri[top_op] >= pri[t] {
+                        cal_two(&mut num_stack, &mut op_stack);
+                    } else {
+                        break;
+                    }
+                }
+                // 当前运算符入符号栈
+                op_stack.push(t);
+            }
+            // Case 2：token是【可能包裹前后括号】的数字/变量，例如 "((a))"
+            else {
+                // 把token转为字符数组，方便取下标，处理连续的左、右括号
+                let s_chars: Vec<char> = t.chars().collect();
+                let mut l = 0;
+                let mut r = s_chars.len();
+                let mut right_paren_cnt = 0;
+
+                // 剥离开头连续左括号：每遇到一个 '(', 压入符号栈
+                while l < r && s_chars[l] == '(' {
+                    op_stack.push("(");
+                    l += 1;
+                }
+
+                // 统计末尾连续右括号数量，不进栈，后面统一处理
+                while l < r && s_chars[r - 1] == ')' {
+                    right_paren_cnt += 1;
+                    r -= 1;
+                }
+
+                // 剥离括号之后中间真正内容，转多项式压入数字栈
+                let inner_token: String = s_chars[l..r].iter().collect();
+                num_stack.push(convert(&inner_token));
+
+                // 循环处理每一个右括号：一直计算直到遇到左括号
+                for _ in 0..right_paren_cnt {
+                    // 不断计算，直到栈顶是左括号
+                    while op_stack.last() != Some(&"(") {
+                        cal_two(&mut num_stack, &mut op_stack);
+                    }
+                    // 弹出左括号，丢弃
+                    op_stack.pop();
+                }
+            }
+        }
+
+        // ========== 所有token处理完毕，符号栈剩余运算符全部计算 ==========
+        while !op_stack.is_empty() {
+            cal_two(&mut num_stack, &mut op_stack);
+        }
+
+        // ========== 提取最终多项式，过滤系数=0的项 ==========
+        let final_poly = num_stack.into_iter().next().unwrap_or_default();
+        let mut terms: Vec<_> = final_poly
+            .into_iter()
+            .filter(|(_vars, coeff)| *coeff != 0)
+            .collect();
+
+        // ========== 按题目要求排序 ==========
+        // 1. 变量个数越多越靠前；
+        // 2. 变量个数相同，按变量名字典序升序
+        terms.sort_by(|(vars_a, _coeff_a), (vars_b, _coeff_b)| {
+            if vars_a.len() != vars_b.len() {
+                // 变量长度降序
+                vars_b.len().cmp(&vars_a.len())
+            } else {
+                // 变量列表字典序升序
+                vars_a.as_ref().cmp(vars_b.as_ref())
+            }
+        });
+
+        // ========== 拼接成输出字符串数组 ==========
+        let mut result = Vec::new();
+        for (vars, coeff) in terms {
+            if vars.is_empty() {
+                // 常数项，直接输出数字
+                result.push(coeff.to_string());
+            } else {
+                // 变量项：系数*var1*var2
+                let var_str = vars.join("*");
+                result.push(format!("{}*{}", coeff, var_str));
+            }
+        }
+
+        result
+    }
+}
