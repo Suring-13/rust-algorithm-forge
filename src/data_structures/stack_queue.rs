@@ -2178,3 +2178,63 @@ pub mod n770 {
         result
     }
 }
+
+// 2296. 设计一个文本编辑器
+pub mod n2296 {
+    pub struct TextEditor {
+        pub left: Vec<char>,
+        pub right: Vec<char>,
+    }
+
+    impl Default for TextEditor {
+        fn default() -> Self {
+            Self::new()
+        }
+    }
+
+    impl TextEditor {
+        pub fn new() -> Self {
+            TextEditor {
+                left: Vec::new(),
+                right: Vec::new(),
+            }
+        }
+
+        pub fn add_text(&mut self, text: String) {
+            self.left.extend(text.chars());
+        }
+
+        pub fn delete_text(&mut self, k: i32) -> i32 {
+            let pre = self.left.len();
+            let k = k as usize;
+            let cut = self.left.len().saturating_sub(k);
+            self.left.truncate(cut);
+            (pre - self.left.len()) as i32
+        }
+
+        fn text(&self) -> String {
+            let take = self.left.len().min(10);
+            self.left[self.left.len() - take..].iter().collect()
+        }
+
+        pub fn cursor_left(&mut self, k: i32) -> String {
+            let mut k = k as usize;
+            while k > 0 && !self.left.is_empty() {
+                let c = self.left.pop().unwrap();
+                self.right.push(c);
+                k -= 1;
+            }
+            self.text()
+        }
+
+        pub fn cursor_right(&mut self, k: i32) -> String {
+            let mut k = k as usize;
+            while k > 0 && !self.right.is_empty() {
+                let c = self.right.pop().unwrap();
+                self.left.push(c);
+                k -= 1;
+            }
+            self.text()
+        }
+    }
+}
