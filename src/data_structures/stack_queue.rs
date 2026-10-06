@@ -2238,3 +2238,33 @@ pub mod n2296 {
         }
     }
 }
+
+// 933. 最近的请求次数
+pub mod n933 {
+    use std::collections::VecDeque;
+
+    pub struct RecentCounter {
+        pub q: VecDeque<i32>,
+    }
+
+    impl Default for RecentCounter {
+        fn default() -> Self {
+            Self::new()
+        }
+    }
+
+    impl RecentCounter {
+        pub fn new() -> Self {
+            RecentCounter { q: VecDeque::new() }
+        }
+
+        pub fn ping(&mut self, t: i32) -> i32 {
+            self.q.push_back(t);
+            // 队首元素小于 t‑3000 就出队
+            while self.q[0] < t - 3000 {
+                self.q.pop_front();
+            }
+            self.q.len() as i32
+        }
+    }
+}
