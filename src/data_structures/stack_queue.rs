@@ -2268,3 +2268,66 @@ pub mod n933 {
         }
     }
 }
+
+// 3829. 设计共享出行系统
+pub mod n3829 {
+    use std::collections::{HashSet, VecDeque};
+
+    pub struct RideSharingSystem {
+        pub riders: VecDeque<i32>,
+        pub drivers: VecDeque<i32>,
+        pub waiting_riders: HashSet<i32>,
+    }
+
+    impl Default for RideSharingSystem {
+        fn default() -> Self {
+            Self::new()
+        }
+    }
+
+    impl RideSharingSystem {
+        pub fn new() -> Self {
+            RideSharingSystem {
+                riders: VecDeque::new(),
+                drivers: VecDeque::new(),
+                waiting_riders: HashSet::new(),
+            }
+        }
+
+        pub fn add_rider(&mut self, rider_id: i32) {
+            self.riders.push_back(rider_id);
+            self.waiting_riders.insert(rider_id);
+        }
+
+        pub fn add_driver(&mut self, driver_id: i32) {
+            self.drivers.push_back(driver_id);
+        }
+
+        pub fn match_driver_with_rider(&mut self) -> Vec<i32> {
+            // 弹出队列头部已经取消的乘客
+            while let Some(&front) = self.riders.front() {
+                if !self.waiting_riders.contains(&front) {
+                    self.riders.pop_front();
+                } else {
+                    break;
+                }
+            }
+
+            // 无乘客 或者 无司机
+            if self.riders.is_empty() || self.drivers.is_empty() {
+                return vec![-1, -1];
+            }
+
+            let driver = self.drivers.pop_front().unwrap();
+            let rider = self.riders.pop_front().unwrap();
+            // 匹配成功，移除等待标记
+            self.waiting_riders.remove(&rider);
+            vec![driver, rider]
+        }
+
+        pub fn cancel_rider(&mut self, rider_id: i32) {
+            // 不存在也不报错
+            self.waiting_riders.remove(&rider_id);
+        }
+    }
+}
