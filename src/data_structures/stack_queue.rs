@@ -2331,3 +2331,18 @@ pub mod n3829 {
         }
     }
 }
+
+// 950. 按递增顺序显示卡牌
+pub mod n950 {
+    pub fn deck_revealed_increasing(mut deck: Vec<i32>) -> Vec<i32> {
+        deck.sort_unstable_by(|a, b| b.cmp(a)); // 降序
+        let mut q = std::collections::VecDeque::new();
+        for x in deck {
+            if !q.is_empty() {
+                q.rotate_right(1);
+            }
+            q.push_front(x);
+        }
+        q.into_iter().collect()
+    }
+}
