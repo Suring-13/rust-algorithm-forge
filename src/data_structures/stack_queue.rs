@@ -2346,3 +2346,37 @@ pub mod n950 {
         q.into_iter().collect()
     }
 }
+
+// 649. Dota2 参议院
+pub mod n649 {
+    pub fn predict_party_victory(s: String) -> String {
+        let mut rd = std::collections::VecDeque::new(); // Radiant R
+        let mut dd = std::collections::VecDeque::new(); // Dire D
+        let n = s.len();
+        for (idx, ch) in s.chars().enumerate() {
+            match ch {
+                'R' => rd.push_back(idx),
+                'D' => dd.push_back(idx),
+                _ => (),
+            }
+        }
+
+        while !rd.is_empty() && !dd.is_empty() {
+            let a = rd.pop_front().unwrap();
+            let b = dd.pop_front().unwrap();
+            if a < b {
+                // R先发言，D被干掉，R进入下一轮，下标+n
+                rd.push_back(a + n);
+            } else {
+                // D先发言，R被干掉，D进入下一轮，下标+n
+                dd.push_back(b + n);
+            }
+        }
+
+        if !rd.is_empty() {
+            "Radiant".to_string()
+        } else {
+            "Dire".to_string()
+        }
+    }
+}
