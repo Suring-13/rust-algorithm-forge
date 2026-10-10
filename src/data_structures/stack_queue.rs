@@ -2380,3 +2380,91 @@ pub mod n649 {
         }
     }
 }
+
+// 1670. 设计前中后队列
+pub mod n1670 {
+    use std::collections::VecDeque;
+
+    pub struct FrontMiddleBackQueue {
+        pub left: VecDeque<i32>,
+        pub right: VecDeque<i32>,
+    }
+
+    impl Default for FrontMiddleBackQueue {
+        fn default() -> Self {
+            Self::new()
+        }
+    }
+
+    impl FrontMiddleBackQueue {
+        pub fn new() -> Self {
+            Self {
+                left: VecDeque::new(),
+                right: VecDeque::new(),
+            }
+        }
+
+        // 调整长度，保证 0 <= right.len() - left.len() <= 1
+        // 从而保证可以在正中间插入删除元素
+        pub fn balance(&mut self) {
+            if self.left.len() > self.right.len() {
+                self.right.push_front(self.left.pop_back().unwrap());
+            } else if self.right.len() > self.left.len() + 1 {
+                self.left.push_back(self.right.pop_front().unwrap());
+            }
+        }
+
+        pub fn push_front(&mut self, val: i32) {
+            self.left.push_front(val);
+            self.balance();
+        }
+
+        pub fn push_middle(&mut self, val: i32) {
+            if self.left.len() < self.right.len() {
+                self.left.push_back(val);
+            } else {
+                self.right.push_front(val);
+            }
+        }
+
+        pub fn push_back(&mut self, val: i32) {
+            self.right.push_back(val);
+            self.balance();
+        }
+
+        pub fn pop_front(&mut self) -> i32 {
+            if self.right.is_empty() {
+                // 整个队列为空
+                return -1;
+            }
+            let val = if self.left.is_empty() {
+                self.right.pop_front().unwrap()
+            } else {
+                self.left.pop_front().unwrap()
+            };
+            self.balance();
+            val
+        }
+
+        pub fn pop_middle(&mut self) -> i32 {
+            if self.right.is_empty() {
+                // 整个队列为空
+                return -1;
+            }
+            if self.left.len() == self.right.len() {
+                return self.left.pop_back().unwrap();
+            }
+            self.right.pop_front().unwrap()
+        }
+
+        pub fn pop_back(&mut self) -> i32 {
+            if self.right.is_empty() {
+                // 整个队列为空
+                return -1;
+            }
+            let val = self.right.pop_back().unwrap();
+            self.balance();
+            val
+        }
+    }
+}
