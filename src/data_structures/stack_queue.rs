@@ -2468,3 +2468,66 @@ pub mod n1670 {
         }
     }
 }
+
+// 3508. 设计路由器
+pub mod n3508 {
+    use std::collections::{HashMap, HashSet, VecDeque};
+
+    pub struct Router {
+        pub memory_limit: usize,
+        pub packet_q: VecDeque<(i32, i32, i32)>, // packet 队列
+        pub packet_set: HashSet<(i32, i32, i32)>, // packet 集合
+        pub dest_to_timestamps: HashMap<i32, (Vec<i32>, usize)>, // destination -> ([timestamp], head)
+    }
+
+    impl Router {
+        pub fn new(memory_limit: i32) -> Self {
+            Self {
+                memory_limit: memory_limit as usize,
+                packet_q: VecDeque::new(),
+                packet_set: HashSet::new(),
+                dest_to_timestamps: HashMap::new(),
+            }
+        }
+
+        pub fn add_packet(&mut self, source: i32, destination: i32, timestamp: i32) -> bool {
+            let packet = (source, destination, timestamp);
+            if !self.packet_set.insert(packet) {
+                // packet 在 packet_set 中
+                return false;
+            }
+            if self.packet_q.len() == self.memory_limit {
+                // 太多了
+                self.forward_packet();
+            }
+            self.packet_q.push_back(packet); // 入队
+            self.dest_to_timestamps
+                .entry(destination)
+                .or_insert_with(|| (vec![], 0))
+                .0
+                .push(timestamp);
+            true
+        }
+
+        pub fn forward_packet(&mut self) -> Vec<i32> {
+            if let Some(packet) = self.packet_q.pop_front() {
+                self.packet_set.remove(&packet);
+                let (source, destination, timestamp) = packet;
+                self.dest_to_timestamps.get_mut(&destination).unwrap().1 += 1; // 队首下标加一，模拟出队
+                vec![source, destination, timestamp]
+            } else {
+                vec![]
+            }
+        }
+
+        pub fn get_count(&self, destination: i32, start_time: i32, end_time: i32) -> i32 {
+            if let Some((timestamps, head)) = self.dest_to_timestamps.get(&destination) {
+                let left = timestamps[*head..].partition_point(|&x| x < start_time);
+                let right = timestamps[*head..].partition_point(|&x| x <= end_time);
+                (right - left) as _
+            } else {
+                0
+            }
+        }
+    }
+}
