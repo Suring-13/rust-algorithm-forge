@@ -2531,3 +2531,50 @@ pub mod n3508 {
         }
     }
 }
+
+// 225. 用队列实现栈
+pub mod n225 {
+    use std::collections::VecDeque;
+
+    pub struct MyStack {
+        pub queue1: VecDeque<i32>,
+        pub queue2: VecDeque<i32>,
+    }
+
+    impl Default for MyStack {
+        fn default() -> Self {
+            Self::new()
+        }
+    }
+
+    impl MyStack {
+        pub fn new() -> Self {
+            MyStack {
+                queue1: VecDeque::new(),
+                queue2: VecDeque::new(),
+            }
+        }
+
+        pub fn push(&mut self, x: i32) {
+            self.queue2.push_back(x);
+            // 把 queue1 全部转移到 queue2
+            while let Some(val) = self.queue1.pop_front() {
+                self.queue2.push_back(val);
+            }
+            // 交换两个队列，queue1 始终保存栈顺序
+            std::mem::swap(&mut self.queue1, &mut self.queue2);
+        }
+
+        pub fn pop(&mut self) -> i32 {
+            self.queue1.pop_front().unwrap()
+        }
+
+        pub fn top(&self) -> i32 {
+            *self.queue1.front().unwrap()
+        }
+
+        pub fn empty(&self) -> bool {
+            self.queue1.is_empty()
+        }
+    }
+}
