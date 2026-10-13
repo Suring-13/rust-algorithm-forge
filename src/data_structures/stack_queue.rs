@@ -2578,3 +2578,56 @@ pub mod n225 {
         }
     }
 }
+
+// 232. 用栈实现队列
+pub mod n232 {
+    use std::collections::VecDeque;
+
+    pub struct MyQueue {
+        pub in_stack: VecDeque<i32>,
+        pub out_stack: VecDeque<i32>,
+    }
+
+    impl Default for MyQueue {
+        fn default() -> Self {
+            Self::new()
+        }
+    }
+
+    impl MyQueue {
+        pub fn new() -> Self {
+            Self {
+                in_stack: VecDeque::new(),
+                out_stack: VecDeque::new(),
+            }
+        }
+
+        pub fn push(&mut self, x: i32) {
+            self.in_stack.push_back(x);
+        }
+
+        pub fn pop(&mut self) -> i32 {
+            if self.out_stack.is_empty() {
+                self.in2out();
+            }
+            self.out_stack.pop_back().unwrap()
+        }
+
+        pub fn peek(&mut self) -> i32 {
+            if self.out_stack.is_empty() {
+                self.in2out();
+            }
+            *self.out_stack.back().unwrap()
+        }
+
+        pub fn empty(&self) -> bool {
+            self.in_stack.is_empty() && self.out_stack.is_empty()
+        }
+
+        pub fn in2out(&mut self) {
+            while let Some(val) = self.in_stack.pop_back() {
+                self.out_stack.push_back(val);
+            }
+        }
+    }
+}
