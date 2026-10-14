@@ -2631,3 +2631,67 @@ pub mod n232 {
         }
     }
 }
+
+// 622. 设计循环队列
+pub mod n622 {
+    pub struct MyCircularQueue {
+        pub arr: Vec<i32>,
+        pub front: usize,
+        pub rear: usize,
+        pub capacity: usize,
+    }
+
+    impl MyCircularQueue {
+        pub fn new(k: i32) -> Self {
+            let cap = (k + 1) as usize;
+            Self {
+                arr: vec![0; cap],
+                front: 0,
+                rear: 0,
+                capacity: cap,
+            }
+        }
+
+        pub fn en_queue(&mut self, value: i32) -> bool {
+            if self.is_full() {
+                return false;
+            }
+            self.arr[self.rear] = value;
+            self.rear = (self.rear + 1) % self.capacity;
+            true
+        }
+
+        pub fn de_queue(&mut self) -> bool {
+            if self.is_empty() {
+                return false;
+            }
+            self.front = (self.front + 1) % self.capacity;
+            true
+        }
+
+        pub fn front(&self) -> i32 {
+            if self.is_empty() {
+                -1
+            } else {
+                self.arr[self.front]
+            }
+        }
+
+        pub fn rear(&self) -> i32 {
+            if self.is_empty() {
+                -1
+            } else {
+                let idx = (self.rear - 1 + self.capacity) % self.capacity;
+                self.arr[idx]
+            }
+        }
+
+        pub fn is_empty(&self) -> bool {
+            self.front == self.rear
+        }
+
+        pub fn is_full(&self) -> bool {
+            (self.rear + 1) % self.capacity == self.front
+        }
+    }
+}
