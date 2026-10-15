@@ -2695,3 +2695,85 @@ pub mod n622 {
         }
     }
 }
+
+// 641. 设计循环双端队列
+pub mod n641 {
+    pub struct MyCircularDeque {
+        pub arr: Vec<i32>,
+        pub front: usize,
+        pub rear: usize,
+        pub capacity: usize,
+    }
+
+    impl MyCircularDeque {
+        pub fn new(k: i32) -> Self {
+            let cap = (k + 1) as usize;
+            Self {
+                arr: vec![0; cap],
+                front: 0,
+                rear: 0,
+                capacity: cap,
+            }
+        }
+
+        pub fn insert_front(&mut self, value: i32) -> bool {
+            if self.is_full() {
+                return false;
+            }
+            // front = (front + cap -1) % cap，usize无符号，+capacity避免下溢
+            self.front = (self.front + self.capacity - 1).rem_euclid(self.capacity);
+            self.arr[self.front] = value;
+            true
+        }
+
+        pub fn insert_last(&mut self, value: i32) -> bool {
+            if self.is_full() {
+                return false;
+            }
+            self.arr[self.rear] = value;
+            self.rear = (self.rear + 1).rem_euclid(self.capacity);
+            true
+        }
+
+        pub fn delete_front(&mut self) -> bool {
+            if self.is_empty() {
+                return false;
+            }
+            self.front = (self.front + 1).rem_euclid(self.capacity);
+            true
+        }
+
+        pub fn delete_last(&mut self) -> bool {
+            if self.is_empty() {
+                return false;
+            }
+            self.rear = (self.rear + self.capacity - 1).rem_euclid(self.capacity);
+            true
+        }
+
+        pub fn get_front(&self) -> i32 {
+            if self.is_empty() {
+                -1
+            } else {
+                self.arr[self.front]
+            }
+        }
+
+        pub fn get_rear(&self) -> i32 {
+            if self.is_empty() {
+                -1
+            } else {
+                let idx = (self.rear + self.capacity - 1).rem_euclid(self.capacity);
+                self.arr[idx]
+            }
+        }
+
+        pub fn is_empty(&self) -> bool {
+            self.front == self.rear
+        }
+
+        pub fn is_full(&self) -> bool {
+            (self.rear + 1).rem_euclid(self.capacity) == self.front
+        }
+    }
+}
