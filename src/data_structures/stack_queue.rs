@@ -2777,3 +2777,26 @@ pub mod n641 {
         }
     }
 }
+
+// 2810. 故障键盘
+pub mod n2810 {
+    pub fn final_string(s: String) -> String {
+        let mut q = std::collections::VecDeque::new();
+        let mut tail = true; // true：往队尾追加；false：往队头追加
+        for c in s.chars() {
+            if c == 'i' {
+                tail = !tail; // 遇到i，翻转写入方向，不存字符
+            } else if tail {
+                q.push_back(c);
+            } else {
+                q.push_front(c);
+            }
+        }
+        // 最后看标记，决定是否反转输出
+        if tail {
+            q.iter().collect()
+        } else {
+            q.iter().rev().collect()
+        }
+    }
+}
