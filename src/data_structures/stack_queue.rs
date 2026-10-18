@@ -2853,3 +2853,35 @@ pub mod n2071 {
         left as i32 - 1
     }
 }
+
+// 239. 滑动窗口最大值
+pub mod n239 {
+    pub fn max_sliding_window(nums: Vec<i32>, k: i32) -> Vec<i32> {
+        let k = k as usize;
+        let mut ans = Vec::with_capacity(nums.len() - k + 1); // 预分配空间（窗口个数）
+        let mut q = std::collections::VecDeque::new(); // 双端队列
+
+        for (i, &x) in nums.iter().enumerate() {
+            // 1. 右边入
+            while !q.is_empty() && nums[*q.back().unwrap()] <= x {
+                q.pop_back(); // 维护 q 的单调性
+            }
+
+            q.push_back(i); // 注意保存的是下标，这样下面可以判断队首是否离开窗口
+
+            // 2. 左边出
+            if q[0] + k <= i {
+                // 队首离开窗口
+                q.pop_front();
+            }
+
+            // 3. 在窗口左端点处记录答案
+            if i + 1 >= k {
+                // 由于队首到队尾单调递减，所以窗口最大值就在队首
+                ans.push(nums[q[0]]);
+            }
+        }
+
+        ans
+    }
+}
