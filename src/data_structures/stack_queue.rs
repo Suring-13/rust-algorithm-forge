@@ -2885,3 +2885,49 @@ pub mod n239 {
         ans
     }
 }
+
+// 1438. 绝对差不超过限制的最长连续子数组
+pub mod n1438 {
+    pub fn longest_subarray(nums: &[i32], limit: i32) -> i32 {
+        let mut min_q = std::collections::VecDeque::new();
+        let mut max_q = std::collections::VecDeque::new();
+        let mut ans = 0;
+        let mut left = 0;
+
+        for (i, &x) in nums.iter().enumerate() {
+            // 维护单调递增队列: 存索引, 值从小到大
+            while let Some(&back) = min_q.back() {
+                if x <= nums[back] {
+                    min_q.pop_back();
+                } else {
+                    break;
+                }
+            }
+            min_q.push_back(i);
+
+            // 维护单调递减队列: 存索引, 值从大到小
+            while let Some(&back) = max_q.back() {
+                if x >= nums[back] {
+                    max_q.pop_back();
+                } else {
+                    break;
+                }
+            }
+            max_q.push_back(i);
+
+            // 窗口最大值 - 最小值 > limit，收缩左边界
+            while nums[max_q[0]] - nums[min_q[0]] > limit {
+                left += 1;
+                if min_q[0] < left {
+                    min_q.pop_front();
+                }
+                if max_q[0] < left {
+                    max_q.pop_front();
+                }
+            }
+
+            ans = ans.max((i - left + 1) as i32);
+        }
+        ans
+    }
+}
