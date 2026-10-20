@@ -2931,3 +2931,49 @@ pub mod n1438 {
         ans
     }
 }
+
+// 2762. 不间断子数组
+pub mod n2762 {
+    pub fn continuous_subarrays(nums: Vec<i32>) -> i64 {
+        let mut min_q = std::collections::VecDeque::new();
+        let mut max_q = std::collections::VecDeque::new();
+        let mut ans: i64 = 0;
+        let mut left = 0;
+
+        for (right, &x) in nums.iter().enumerate() {
+            // 维护单调递增队列: 存索引, 值从小到大
+            while let Some(&back) = min_q.back() {
+                if x <= nums[back] {
+                    min_q.pop_back();
+                } else {
+                    break;
+                }
+            }
+            min_q.push_back(right);
+
+            // 维护单调递减队列: 存索引, 值从大到小
+            while let Some(&back) = max_q.back() {
+                if x >= nums[back] {
+                    max_q.pop_back();
+                } else {
+                    break;
+                }
+            }
+            max_q.push_back(right);
+
+            // 窗口最大-最小 >2, 左边界右移
+            while nums[max_q[0]] - nums[min_q[0]] > 2 {
+                left += 1;
+                if min_q[0] < left {
+                    min_q.pop_front();
+                }
+                if max_q[0] < left {
+                    max_q.pop_front();
+                }
+            }
+
+            ans += (right - left + 1) as i64;
+        }
+        ans
+    }
+}
