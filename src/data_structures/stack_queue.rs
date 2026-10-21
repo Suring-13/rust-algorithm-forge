@@ -2977,3 +2977,51 @@ pub mod n2762 {
         ans
     }
 }
+
+// 3835. 开销小于等于 K 的子数组数目
+pub mod n3835 {
+    pub fn count_subarrays(nums: Vec<i32>, k: i64) -> i64 {
+        let mut min_q = std::collections::VecDeque::new();
+        let mut max_q = std::collections::VecDeque::new();
+        let mut ans: i64 = 0;
+        let mut left = 0;
+
+        for (right, &x) in nums.iter().enumerate() {
+            while let Some(&back) = min_q.back() {
+                if x <= nums[back] {
+                    min_q.pop_back();
+                } else {
+                    break;
+                }
+            }
+            min_q.push_back(right);
+
+            while let Some(&back) = max_q.back() {
+                if x >= nums[back] {
+                    max_q.pop_back();
+                } else {
+                    break;
+                }
+            }
+            max_q.push_back(right);
+
+            while {
+                let max_val = nums[max_q[0]] as i64;
+                let min_val = nums[min_q[0]] as i64;
+                let len = (right - left + 1) as i64;
+                (max_val - min_val) * len > k
+            } {
+                left += 1;
+                if min_q[0] < left {
+                    min_q.pop_front();
+                }
+                if max_q[0] < left {
+                    max_q.pop_front();
+                }
+            }
+
+            ans += (right - left + 1) as i64;
+        }
+        ans
+    }
+}
