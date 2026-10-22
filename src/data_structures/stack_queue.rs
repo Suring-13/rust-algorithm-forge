@@ -3025,3 +3025,47 @@ pub mod n3835 {
         ans
     }
 }
+
+// 2398. 预算内的最多机器人数目
+pub mod n2398 {
+    pub fn maximum_robots(charge_times: Vec<i32>, running_costs: Vec<i32>, budget: i64) -> i32 {
+        let n = charge_times.len();
+        let mut ans = 0;
+        let mut sum_cost: i64 = 0;
+        let mut left = 0;
+        let mut q = std::collections::VecDeque::with_capacity(n);
+
+        for right in 0..n {
+            let t = charge_times[right];
+
+            // 维护单调递减队列
+            while let Some(&back_idx) = q.back() {
+                if t >= charge_times[back_idx] {
+                    q.pop_back();
+                } else {
+                    break;
+                }
+            }
+            q.push_back(right);
+            sum_cost += running_costs[right] as i64;
+
+            // 收缩窗口
+            while let Some(&front_idx) = q.front() {
+                let window_len = (right - left + 1) as i64;
+                let total = charge_times[front_idx] as i64 + window_len * sum_cost;
+                if total > budget {
+                    if front_idx == left {
+                        q.pop_front();
+                    }
+                    sum_cost -= running_costs[left] as i64;
+                    left += 1;
+                } else {
+                    break;
+                }
+            }
+
+            ans = ans.max((right - left + 1) as i32);
+        }
+        ans
+    }
+}
