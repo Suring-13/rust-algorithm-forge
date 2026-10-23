@@ -3069,3 +3069,79 @@ pub mod n2398 {
         ans
     }
 }
+
+// 3589. 计数质数间隔平衡子数组
+pub mod n3589 {
+    pub fn prime_subarray(nums: Vec<i32>, k: i32) -> i32 {
+        const MX: usize = 50_001;
+
+        const fn build_is_prime() -> [bool; MX] {
+            let mut is_prime = [false; MX];
+            let mut i = 2;
+            while i < MX {
+                is_prime[i] = true;
+                i += 1;
+            }
+            let limit = 223; // sqrt(50001) ≈ 223.609
+            let mut i = 2;
+            while i <= limit {
+                if is_prime[i] {
+                    let mut j = i * i;
+                    while j < MX {
+                        is_prime[j] = false;
+                        j += i;
+                    }
+                }
+                i += 1;
+            }
+            is_prime
+        }
+
+        static IS_PRIME: [bool; MX] = build_is_prime();
+        let mut min_q = std::collections::VecDeque::new();
+        let mut max_q = std::collections::VecDeque::new();
+        let mut last: i32 = -1;
+        let mut last2: i32 = -1;
+        let mut ans: i32 = 0;
+        let mut left: i32 = 0;
+
+        for (i, &x) in nums.iter().enumerate() {
+            let idx = i as i32;
+            if IS_PRIME[x as usize] {
+                last2 = last;
+                last = idx;
+
+                while let Some(&back) = min_q.back() {
+                    if x <= nums[back as usize] {
+                        min_q.pop_back();
+                    } else {
+                        break;
+                    }
+                }
+                min_q.push_back(idx);
+
+                while let Some(&back) = max_q.back() {
+                    if x >= nums[back as usize] {
+                        max_q.pop_back();
+                    } else {
+                        break;
+                    }
+                }
+                max_q.push_back(idx);
+
+                while nums[max_q[0] as usize] - nums[min_q[0] as usize] > k {
+                    left += 1;
+                    if *min_q.front().unwrap() < left {
+                        min_q.pop_front();
+                    }
+                    if *max_q.front().unwrap() < left {
+                        max_q.pop_front();
+                    }
+                }
+            }
+
+            ans += last2 - left + 1;
+        }
+        ans
+    }
+}
