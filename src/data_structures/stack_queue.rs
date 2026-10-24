@@ -3145,3 +3145,40 @@ pub mod n3589 {
         ans
     }
 }
+
+// 862. 和至少为 K 的最短子数组
+pub mod n862 {
+    pub fn shortest_subarray(nums: Vec<i32>, k: i32) -> i32 {
+        let k = k as i64;
+        let mut ans = i32::MAX;
+        let mut cur_s: i64 = 0;
+        let mut q = std::collections::VecDeque::new();
+        q.push_back((0i64, -1i32));
+
+        for (i, &x) in nums.iter().enumerate() {
+            let i = i as i32;
+            cur_s += x as i64;
+
+            // 优化一：满足条件就弹出队首，尝试更新答案
+            while let Some(&(s, idx)) = q.front() {
+                if cur_s - s >= k {
+                    ans = ans.min(i - idx);
+                    q.pop_front();
+                } else {
+                    break;
+                }
+            }
+
+            // 优化二：单调递增队列，去掉尾部大于等于当前前缀和的
+            while let Some(&(s, _)) = q.back() {
+                if s >= cur_s {
+                    q.pop_back();
+                } else {
+                    break;
+                }
+            }
+            q.push_back((cur_s, i));
+        }
+        if ans == i32::MAX { -1 } else { ans }
+    }
+}
