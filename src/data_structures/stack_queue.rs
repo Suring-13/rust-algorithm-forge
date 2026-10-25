@@ -3182,3 +3182,37 @@ pub mod n862 {
         if ans == i32::MAX { -1 } else { ans }
     }
 }
+
+// 1499. 满足不等式的最大值
+pub mod n1499 {
+    pub fn find_max_value_of_equation(points: Vec<Vec<i32>>, k: i32) -> i32 {
+        let mut ans = i32::MIN;
+        let mut q = std::collections::VecDeque::new();
+        // q 里面存 (x_i, y_i - x_i)
+        for p in points {
+            let x = p[0];
+            let y = p[1];
+            // 移出 x 不在 [x-k, x] 范围内的队首
+            while let Some(&(qx, _)) = q.front() {
+                if qx < x - k {
+                    q.pop_front();
+                } else {
+                    break;
+                }
+            }
+            if let Some(&(_, val)) = q.front() {
+                ans = ans.max(x + y + val);
+            }
+            // 单调队列：保持队尾的 y-x 严格大于当前
+            while let Some(&(_, back_val)) = q.back() {
+                if back_val <= y - x {
+                    q.pop_back();
+                } else {
+                    break;
+                }
+            }
+            q.push_back((x, y - x));
+        }
+        ans
+    }
+}
