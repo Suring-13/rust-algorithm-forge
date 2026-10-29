@@ -46,3 +46,46 @@ pub mod n2558 {
         h.iter().map(|&x| x as i64).sum()
     }
 }
+
+// 2336. 无限集中的最小数字
+pub mod n2336 {
+    use std::collections::BTreeSet;
+
+    pub struct SmallestInfiniteSet {
+        pub thres: i32,
+        pub s: BTreeSet<i32>,
+    }
+
+    impl Default for SmallestInfiniteSet {
+        fn default() -> Self {
+            Self::new()
+        }
+    }
+
+    impl SmallestInfiniteSet {
+        pub fn new() -> Self {
+            Self {
+                thres: 1,
+                s: BTreeSet::new(),
+            }
+        }
+
+        pub fn pop_smallest(&mut self) -> i32 {
+            if self.s.is_empty() {
+                let ans = self.thres;
+                self.thres += 1;
+                ans
+            } else {
+                let &val = self.s.iter().next().unwrap();
+                self.s.remove(&val);
+                val
+            }
+        }
+
+        pub fn add_back(&mut self, num: i32) {
+            if num < self.thres {
+                self.s.insert(num);
+            }
+        }
+    }
+}
