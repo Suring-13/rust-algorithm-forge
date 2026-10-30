@@ -89,3 +89,22 @@ pub mod n2336 {
         }
     }
 }
+
+// 2530. 执行 K 次操作后的最大分数
+pub mod n2530 {
+    pub fn max_kelements(nums: Vec<i32>, k: i32) -> i64 {
+        let mut h = std::collections::BinaryHeap::from(nums);
+
+        let mut ans = 0i64;
+
+        for _ in 0..k {
+            let mx = h.pop().unwrap();
+
+            ans += mx as i64;
+
+            h.push((mx + 2) / 3);
+        }
+
+        ans
+    }
+}
