@@ -108,3 +108,25 @@ pub mod n2530 {
         ans
     }
 }
+
+// 3066. 超过阈值的最少操作数 II
+pub mod n3066 {
+    pub fn min_operations(nums: Vec<i32>, k: i32) -> i32 {
+        let mut h = std::collections::BinaryHeap::new();
+        for x in nums {
+            h.push(std::cmp::Reverse(x as i64));
+        }
+
+        let mut ans = 0;
+        while h.len() > 1
+            && let Some(std::cmp::Reverse(x)) = h.peek()
+            && *x < k as i64
+        {
+            let std::cmp::Reverse(x) = h.pop().unwrap();
+            let std::cmp::Reverse(y) = h.pop().unwrap();
+            h.push(std::cmp::Reverse(x * 2 + y));
+            ans += 1;
+        }
+        ans
+    }
+}
