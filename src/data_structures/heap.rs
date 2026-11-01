@@ -130,3 +130,18 @@ pub mod n3066 {
         ans
     }
 }
+
+// 1962. 移除石子使总数最小
+pub mod n1962 {
+    pub fn min_stone_sum(piles: Vec<i32>, k: i32) -> i32 {
+        let mut h = std::collections::BinaryHeap::from(piles);
+        for _ in 0..k {
+            let top = h.pop().unwrap();
+            h.push((top + 1) / 2);
+            if *h.peek().unwrap() == 1 {
+                break;
+            }
+        }
+        h.iter().sum()
+    }
+}
