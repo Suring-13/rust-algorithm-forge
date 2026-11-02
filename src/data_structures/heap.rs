@@ -145,3 +145,36 @@ pub mod n1962 {
         h.iter().sum()
     }
 }
+
+// 703. 数据流中的第 K 大元素
+pub mod n703 {
+    use std::cmp::Reverse;
+    use std::collections::BinaryHeap;
+
+    pub struct KthLargest {
+        pub k: usize,
+        pub heap: BinaryHeap<Reverse<i32>>,
+    }
+
+    impl KthLargest {
+        pub fn new(k: i32, nums: Vec<i32>) -> Self {
+            let k = k as usize;
+            let mut heap = BinaryHeap::new();
+            for v in nums {
+                heap.push(Reverse(v));
+                if heap.len() > k {
+                    heap.pop();
+                }
+            }
+            Self { k, heap }
+        }
+
+        pub fn add(&mut self, val: i32) -> i32 {
+            self.heap.push(Reverse(val));
+            if self.heap.len() > self.k {
+                self.heap.pop();
+            }
+            self.heap.peek().unwrap().0
+        }
+    }
+}
