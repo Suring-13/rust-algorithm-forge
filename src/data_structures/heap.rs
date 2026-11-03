@@ -178,3 +178,25 @@ pub mod n703 {
         }
     }
 }
+
+// 3275. 第 K 近障碍物查询
+pub mod n3275 {
+    pub fn results_array(queries: Vec<Vec<i32>>, k: i32) -> Vec<i32> {
+        let k = k as usize;
+        let mut ans = vec![-1; queries.len()];
+        let mut heap = std::collections::BinaryHeap::new();
+
+        for (idx, q) in queries.into_iter().enumerate() {
+            let d = q[0].abs() + q[1].abs();
+            heap.push(d);
+
+            if heap.len() > k {
+                heap.pop();
+            }
+            if heap.len() == k {
+                ans[idx] = *heap.peek().unwrap();
+            }
+        }
+        ans
+    }
+}
