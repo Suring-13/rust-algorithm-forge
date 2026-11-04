@@ -200,3 +200,37 @@ pub mod n3275 {
         ans
     }
 }
+
+// 1845. 座位预约管理系统
+pub mod n1845 {
+    use std::cmp::Reverse;
+    use std::collections::BinaryHeap;
+
+    pub struct SeatManager {
+        pub next: i32,
+        pub available: BinaryHeap<Reverse<i32>>,
+    }
+
+    impl SeatManager {
+        pub fn new(_n: i32) -> Self {
+            SeatManager {
+                next: 1,
+                available: BinaryHeap::new(),
+            }
+        }
+
+        pub fn reserve(&mut self) -> i32 {
+            if let Some(Reverse(x)) = self.available.pop() {
+                x
+            } else {
+                let ret = self.next;
+                self.next += 1;
+                ret
+            }
+        }
+
+        pub fn unreserve(&mut self, seat_number: i32) {
+            self.available.push(Reverse(seat_number));
+        }
+    }
+}
