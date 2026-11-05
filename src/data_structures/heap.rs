@@ -234,3 +234,28 @@ pub mod n1845 {
         }
     }
 }
+
+// 2208. 将数组和减半的最少操作次数
+pub mod n2208 {
+    pub fn halve_array(nums: Vec<i32>) -> i32 {
+        let mut heap = std::collections::BinaryHeap::new();
+
+        // 如果最优解中最大的数 x 被缩小了 t 次，那么考虑缩小它之前的时刻，所有数都不超过 x/2^(t−1)，总和 ≤n⋅x/2^(t−1)。原始和的一半至少为 x/2，所以我们有 n⋅x/2^(t−1)>x/2，即 t<log(n) + 2。
+        for &x in &nums {
+            heap.push((x as i64) << 18);
+        }
+
+        let total: i64 = heap.iter().sum();
+        let mut half = total / 2;
+        let mut ans = 0;
+
+        while half > 0 {
+            let top = heap.pop().unwrap();
+            let h = top / 2;
+            half -= h;
+            heap.push(h);
+            ans += 1;
+        }
+        ans
+    }
+}
