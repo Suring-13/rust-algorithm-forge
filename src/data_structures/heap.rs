@@ -259,3 +259,27 @@ pub mod n2208 {
         ans
     }
 }
+
+// 2233. K 次增加后的最大乘积
+pub mod n2233 {
+    use std::cmp::Reverse;
+    use std::collections::BinaryHeap;
+
+    const MOD: i64 = 1_000_000_007;
+
+    pub fn maximum_product(nums: Vec<i32>, k: i32) -> i32 {
+        let mut heap: BinaryHeap<Reverse<i64>> = nums.iter().map(|&x| Reverse(x as i64)).collect();
+
+        for _ in 0..k {
+            let mut rev_val = heap.pop().unwrap();
+            rev_val.0 += 1;
+            heap.push(rev_val);
+        }
+
+        let mut ans: i64 = 1;
+        for Reverse(v) in heap {
+            ans = (ans * v).rem_euclid(MOD);
+        }
+        ans as i32
+    }
+}
