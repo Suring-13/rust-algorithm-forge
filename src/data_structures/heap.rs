@@ -283,3 +283,27 @@ pub mod n2233 {
         ans as i32
     }
 }
+
+// 3296. 移山所需的最少秒数
+pub mod n3296 {
+    use std::cmp::Reverse;
+    use std::collections::BinaryHeap;
+
+    pub fn min_number_of_seconds(mountain_height: i32, worker_times: Vec<i32>) -> i64 {
+        let mut heap: BinaryHeap<Reverse<(i64, i64, i64)>> = worker_times
+            .into_iter()
+            .map(|t| t as i64)
+            .map(|t| Reverse((t, t, t)))
+            .collect();
+
+        let mut ans = 0;
+        for _ in 0..mountain_height {
+            let Reverse((total, cur, base)) = heap.pop().unwrap();
+            ans = total;
+            let new_cur = cur + base;
+            let new_total = total + new_cur;
+            heap.push(Reverse((new_total, new_cur, base)));
+        }
+        ans
+    }
+}
