@@ -307,3 +307,46 @@ pub mod n3296 {
         ans
     }
 }
+
+// 1942. 最小未被占据椅子的编号
+pub mod n1942 {
+    use std::cmp::Reverse;
+    use std::collections::BinaryHeap;
+
+    pub fn smallest_chair(times: Vec<Vec<i32>>, target_friend: i32) -> i32 {
+        let target_friend = target_friend as usize;
+        const MAX_TIME: usize = 100_000;
+        // events[time]: (离开的朋友id列表, 到达的朋友id列表)
+        let mut events: Vec<(Vec<usize>, Vec<usize>)> = vec![(vec![], vec![]); MAX_TIME + 1];
+        for (id, t) in times.iter().enumerate() {
+            let l = t[0] as usize;
+            let r = t[1] as usize;
+            events[r].0.push(id);
+            events[l].1.push(id);
+        }
+
+        // 空闲椅子小根堆
+        let mut free_chairs = BinaryHeap::new();
+        for chair in 0..times.len() {
+            free_chairs.push(Reverse(chair as i32));
+        }
+
+        let mut belong = vec![0i32; times.len()];
+
+        for e in events {
+            // 第一步：离开的人归还椅子
+            for &id in &e.0 {
+                free_chairs.push(Reverse(belong[id]));
+            }
+            // 第二步：新来的人分配最小椅子
+            for &id in &e.1 {
+                let chair = free_chairs.pop().unwrap().0;
+                belong[id] = chair;
+                if id == target_friend {
+                    return chair;
+                }
+            }
+        }
+        0
+    }
+}
