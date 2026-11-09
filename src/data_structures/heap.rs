@@ -350,3 +350,64 @@ pub mod n1942 {
         0
     }
 }
+
+// 1801. 积压订单中的订单总数
+pub mod n1801 {
+    use std::collections::BinaryHeap;
+
+    const MOD: i64 = 1_000_000_007;
+
+    pub fn get_number_of_backlog_orders(orders: Vec<Vec<i32>>) -> i32 {
+        // buy: 大顶堆
+        let mut buy: BinaryHeap<(i32, i32)> = BinaryHeap::new();
+        // sell: 小顶堆，Reverse包装
+        let mut sell: BinaryHeap<std::cmp::Reverse<(i32, i32)>> = BinaryHeap::new();
+
+        for ord in orders {
+            let price = ord[0];
+            let mut amount = ord[1];
+            let is_buy = ord[2] == 0;
+
+            if is_buy {
+                // 买单：匹配价格 <= 当前price 的卖单
+                while amount > 0 && !sell.is_empty() && sell.peek().unwrap().0.0 <= price {
+                    let mut top = sell.pop().unwrap().0;
+                    if top.1 > amount {
+                        top.1 -= amount;
+                        amount = 0;
+                        sell.push(std::cmp::Reverse(top));
+                    } else {
+                        amount -= top.1;
+                    }
+                }
+                if amount > 0 {
+                    buy.push((price, amount));
+                }
+            } else {
+                // 卖单：匹配价格 >= 当前price 的买单
+                while amount > 0 && !buy.is_empty() && buy.peek().unwrap().0 >= price {
+                    let mut top = buy.pop().unwrap();
+                    if top.1 > amount {
+                        top.1 -= amount;
+                        amount = 0;
+                        buy.push(top);
+                    } else {
+                        amount -= top.1;
+                    }
+                }
+                if amount > 0 {
+                    sell.push(std::cmp::Reverse((price, amount)));
+                }
+            }
+        }
+
+        let mut total: i64 = 0;
+        for (_, amt) in buy {
+            total = (total + amt as i64) % MOD;
+        }
+        for rev in sell {
+            total = (total + rev.0.1 as i64) % MOD;
+        }
+        total as i32
+    }
+}
