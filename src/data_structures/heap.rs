@@ -411,3 +411,28 @@ pub mod n1801 {
         total as i32
     }
 }
+
+// 2406. 将区间分为最少组数
+pub mod n2406 {
+    use std::cmp::Reverse;
+    use std::collections::BinaryHeap;
+
+    pub fn min_groups(mut intervals: Vec<Vec<i32>>) -> i32 {
+        // 按区间左端点排序
+        intervals.sort_by_key(|v| v[0]);
+        // 小根堆，存区间右端点
+        let mut heap = BinaryHeap::new();
+
+        for seg in intervals {
+            let l = seg[0];
+            let r = seg[1];
+            if let Some(&Reverse(top)) = heap.peek()
+                && l > top
+            {
+                heap.pop();
+            }
+            heap.push(Reverse(r));
+        }
+        heap.len() as i32
+    }
+}
