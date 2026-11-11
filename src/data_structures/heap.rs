@@ -436,3 +436,42 @@ pub mod n2406 {
         heap.len() as i32
     }
 }
+
+// 3478. 选出和最大的 K 个元素
+pub mod n3478 {
+    use std::cmp::Reverse;
+    use std::collections::BinaryHeap;
+
+    pub fn find_max_sum(nums1: Vec<i32>, nums2: Vec<i32>, k: i32) -> Vec<i64> {
+        let n = nums1.len();
+        let mut a: Vec<(i32, i32, usize)> = nums1
+            .into_iter()
+            .zip(nums2)
+            .enumerate()
+            .map(|(idx, (x, y))| (x, y, idx))
+            .collect();
+        a.sort_unstable_by_key(|t| t.0);
+
+        let mut ans = vec![0i64; n];
+        let mut heap = BinaryHeap::new();
+        let mut sum: i64 = 0;
+        let k = k as usize;
+
+        for i in 0..n {
+            let (x, y, idx) = a[i];
+            if i > 0 && x == a[i - 1].0 {
+                ans[idx] = ans[a[i - 1].2];
+            } else {
+                ans[idx] = sum;
+            }
+            let y64 = y as i64;
+            sum += y64;
+            heap.push(Reverse(y64));
+            if heap.len() > k {
+                let popped = heap.pop().unwrap().0;
+                sum -= popped;
+            }
+        }
+        ans
+    }
+}
