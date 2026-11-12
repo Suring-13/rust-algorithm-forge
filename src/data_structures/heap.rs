@@ -475,3 +475,51 @@ pub mod n3478 {
         ans
     }
 }
+
+// 2462. 雇佣 K 位工人的总代价
+pub mod n2462 {
+    use std::cmp::Reverse;
+    use std::collections::BinaryHeap;
+
+    pub fn total_cost(mut costs: Vec<i32>, k: i32, candidates: i32) -> i64 {
+        let n = costs.len();
+        let k = k as usize;
+        let c = candidates as usize;
+
+        // 如果选取了 k 个工人之后剩下的长度不够分给前后两个堆，或者说前后两个堆有重叠
+        // 说明每个工人都可能会被选到，直接选前 k 小的就可以
+        if 2 * c + k > n {
+            costs.sort_unstable();
+            return costs[..k].iter().map(|&v| v as i64).sum();
+        }
+
+        let mut left = BinaryHeap::new();
+        let mut right = BinaryHeap::new();
+
+        for idx in 0..c {
+            left.push(Reverse(costs[idx]));
+            right.push(Reverse(costs[n - 1 - idx]));
+        }
+
+        let mut res = 0i64;
+        let mut l_ptr = c;
+        let mut r_ptr = n - 1 - c;
+
+        for _ in 0..k {
+            if left.peek().unwrap() >= right.peek().unwrap() {
+                // 选左边
+                let Reverse(val) = left.pop().unwrap();
+                res += val as i64;
+                left.push(Reverse(costs[l_ptr]));
+                l_ptr += 1;
+            } else {
+                // 选右边
+                let Reverse(val) = right.pop().unwrap();
+                res += val as i64;
+                right.push(Reverse(costs[r_ptr]));
+                r_ptr -= 1;
+            }
+        }
+        res
+    }
+}
