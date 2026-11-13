@@ -523,3 +523,46 @@ pub mod n2462 {
         res
     }
 }
+
+// 1834. 单线程 CPU
+pub mod n1834 {
+    use std::cmp::Reverse;
+    use std::collections::BinaryHeap;
+
+    pub fn get_order(tasks: Vec<Vec<i32>>) -> Vec<i32> {
+        let n = tasks.len();
+        // 包装：(enqueue_time, processing_time, index)
+        let mut a: Vec<(i32, i32, usize)> = tasks
+            .into_iter()
+            .enumerate()
+            .map(|(idx, v)| (v[0], v[1], idx))
+            .collect();
+        // 按开始时间排序
+        a.sort_unstable_by_key(|&(s, _, _)| s);
+
+        let mut res = vec![0; n];
+        // 小根堆：(processing_time, index)
+        let mut heap = BinaryHeap::new();
+        let mut time = a[0].0;
+        let mut j = 0;
+        let mut i = 0;
+
+        while i < n {
+            // 所有到时间的任务进堆
+            while j < n && a[j].0 <= time {
+                let (_, pt, idx) = a[j];
+                heap.push(Reverse((pt, idx)));
+                j += 1;
+            }
+            if heap.is_empty() {
+                time = a[j].0;
+            } else {
+                let Reverse((pt, idx)) = heap.pop().unwrap();
+                res[i] = idx as i32;
+                i += 1;
+                time += pt;
+            }
+        }
+        res
+    }
+}
