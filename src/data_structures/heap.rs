@@ -566,3 +566,71 @@ pub mod n1834 {
         res
     }
 }
+
+// 1792. 最大平均通过率
+pub mod n1792 {
+    use std::cmp::Ordering;
+    use std::collections::BinaryHeap;
+
+    struct Item {
+        pass: i32,
+        total: i32,
+    }
+
+    impl Ord for Item {
+        fn cmp(&self, other: &Self) -> Ordering {
+            /*
+            给一个班级(a,b)新增1名通过学生，通过率增量：
+            Δ = (a+1)/(b+1) - a/b = (b - a) / [b * (b + 1)]
+            我们要选出 Δ 更大的班级，也就是比较 Δ1 > Δ2：
+            Δ₁ = (b₁ - a₁) / [b₁(b₁+1)]
+            Δ₂ = (b₂ - a₂) / [b₂(b₂+1)]
+            因为分母都是正数，不等号方向不变：
+            (b₁−a₁) * b₂(b₂+1)  >  (b₂−a₂) * b₁(b₁+1)
+            全部用i64整数运算，**避开浮点数精度、NaN问题**，和Java原版比较逻辑完全一致
+            s1 = (self.b - self.a) * other.b * (other.b + 1)
+            s2 = (other.b - other.a) * self.b * (self.b + 1)
+            s1 > s2 ⇒ self的增量更大，堆优先弹出self
+            */
+            let s1 =
+                (self.total - self.pass) as i64 * other.total as i64 * (other.total + 1) as i64;
+            let s2 =
+                (other.total - other.pass) as i64 * self.total as i64 * (self.total + 1) as i64;
+            s1.cmp(&s2)
+        }
+    }
+
+    impl PartialOrd for Item {
+        fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+            Some(self.cmp(other))
+        }
+    }
+
+    impl PartialEq for Item {
+        fn eq(&self, other: &Self) -> bool {
+            self.cmp(other) == Ordering::Equal
+        }
+    }
+
+    impl Eq for Item {}
+
+    pub fn max_average_ratio(classes: Vec<Vec<i32>>, extra_students: i32) -> f64 {
+        let mut heap: BinaryHeap<Item> = classes
+            .into_iter()
+            .map(|c| Item {
+                pass: c[0],
+                total: c[1],
+            })
+            .collect();
+
+        for _ in 0..extra_students {
+            let mut top = heap.pop().unwrap();
+            top.pass += 1;
+            top.total += 1;
+            heap.push(top);
+        }
+
+        let sum: f64 = heap.iter().map(|x| x.pass as f64 / x.total as f64).sum();
+        sum / heap.len() as f64
+    }
+}
