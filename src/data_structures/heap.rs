@@ -634,3 +634,49 @@ pub mod n1792 {
         sum / heap.len() as f64
     }
 }
+
+// 23. 合并 K 个升序链表
+pub mod n23 {
+    // Definition for singly-linked list.
+    #[derive(PartialEq, Eq)]
+    pub struct ListNode {
+        pub val: i32,
+        pub next: Option<Box<ListNode>>,
+    }
+
+    impl ListNode {
+        fn new(val: i32) -> Self {
+            ListNode { next: None, val }
+        }
+    }
+
+    use std::collections::BinaryHeap;
+
+    impl PartialOrd for ListNode {
+        fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+            Some(self.cmp(other))
+        }
+    }
+    impl Ord for ListNode {
+        fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+            self.val.cmp(&other.val).reverse()
+        }
+    }
+
+    pub fn merge_k_lists(lists: Vec<Option<Box<ListNode>>>) -> Option<Box<ListNode>> {
+        let mut heap = BinaryHeap::new();
+        for node in lists.into_iter().flatten() {
+            heap.push(node);
+        }
+        let mut dummy = ListNode::new(0);
+        let mut curr = &mut dummy;
+        while let Some(mut node) = heap.pop() {
+            let next = node.next.take();
+            if let Some(node) = next {
+                heap.push(node);
+            }
+            curr = curr.next.insert(node);
+        }
+        dummy.next
+    }
+}
