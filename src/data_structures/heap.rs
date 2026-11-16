@@ -680,3 +680,29 @@ pub mod n23 {
         dummy.next
     }
 }
+
+pub mod n2931 {
+    use std::cmp::Reverse;
+    use std::collections::BinaryHeap;
+
+    pub fn max_spending(mut values: Vec<Vec<i32>>) -> i64 {
+        let mut heap = BinaryHeap::new();
+        // 小根堆，存 (当前末尾数值，values 的下标)
+        for (idx, arr) in values.iter().enumerate() {
+            heap.push(Reverse((*arr.last().unwrap(), idx)));
+        }
+
+        let total = values.len() * values[0].len();
+        let mut ans = 0i64;
+
+        for d in 1..=total {
+            let Reverse((val, i)) = heap.pop().unwrap();
+            ans += val as i64 * d as i64;
+            values[i].pop();
+            if let Some(&new_val) = values[i].last() {
+                heap.push(Reverse((new_val, i)));
+            }
+        }
+        ans
+    }
+}
