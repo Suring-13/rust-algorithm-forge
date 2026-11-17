@@ -706,3 +706,18 @@ pub mod n2931 {
         ans
     }
 }
+
+// 3781. 二进制交换后的最大分数
+pub mod n3781 {
+    pub fn maximum_score(nums: Vec<i32>, s: String) -> i64 {
+        let mut ans = 0;
+        let mut h = std::collections::BinaryHeap::new();
+        for (x, ch) in nums.into_iter().zip(s.chars()) {
+            h.push(x);
+            if ch == '1' {
+                ans += h.pop().unwrap() as i64;
+            }
+        }
+        ans
+    }
+}
