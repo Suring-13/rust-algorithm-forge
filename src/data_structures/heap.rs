@@ -721,3 +721,31 @@ pub mod n3781 {
         ans
     }
 }
+
+// 502. IPO
+pub mod n502 {
+    pub fn find_maximized_capital(k: i32, mut w: i32, profits: Vec<i32>, capital: Vec<i32>) -> i32 {
+        let n = profits.len();
+        let mut list: Vec<(i32, i32)> = capital.into_iter().zip(profits).collect();
+        // 按启动资金升序排序
+        list.sort_by_key(|&(c, _)| c);
+
+        let mut heap = std::collections::BinaryHeap::new();
+        let mut i = 0;
+        let mut k = k;
+
+        while k > 0 {
+            // 把当前资本w可以启动的项目全部入最大堆
+            while i < n && list[i].0 <= w {
+                heap.push(list[i].1);
+                i += 1;
+            }
+            if heap.is_empty() {
+                break;
+            }
+            w += heap.pop().unwrap();
+            k -= 1;
+        }
+        w
+    }
+}
