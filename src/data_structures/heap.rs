@@ -749,3 +749,38 @@ pub mod n502 {
         w
     }
 }
+
+// 1705. 吃苹果的最大数目
+pub mod n1705 {
+    use std::cmp::Reverse;
+    use std::collections::BinaryHeap;
+
+    pub fn eaten_apples(apples: Vec<i32>, days: Vec<i32>) -> i32 {
+        let mut h: BinaryHeap<Reverse<(i32, i32)>> = BinaryHeap::new();
+        let mut ans = 0;
+        let mut i = 0;
+        while i < apples.len() || !h.is_empty() {
+            while let Some(&Reverse((rotten, _))) = h.peek() {
+                if rotten > i as i32 {
+                    break;
+                }
+                h.pop();
+            }
+            if i < apples.len() && apples[i] > 0 {
+                let rotten = i as i32 + days[i];
+                h.push(Reverse((rotten, apples[i])));
+            }
+            if let Some(mut top) = h.peek_mut() {
+                ans += 1;
+                top.0.1 -= 1;
+            }
+            if let Some(&Reverse((_, num))) = h.peek()
+                && num == 0
+            {
+                h.pop();
+            }
+            i += 1;
+        }
+        ans
+    }
+}
