@@ -784,3 +784,52 @@ pub mod n1705 {
         ans
     }
 }
+
+// 1882. 使用服务器处理任务
+pub mod n1882 {
+    use std::cmp::Reverse;
+    use std::collections::BinaryHeap;
+
+    pub fn assign_tasks(servers: Vec<i32>, tasks: Vec<i32>) -> Vec<i32> {
+        // idle 闲服务器堆: Reverse((权重, idx)) 小根堆，优先权重小、下标小
+        let mut idle: BinaryHeap<Reverse<(i32, usize)>> = servers
+            .iter()
+            .enumerate()
+            .map(|(i, &w)| Reverse((w, i)))
+            .collect();
+        // busy 繁忙服务器堆: Reverse((结束时刻, idx)) 小根堆，最先结束的在前
+        let mut busy: BinaryHeap<Reverse<(u64, usize)>> = BinaryHeap::new();
+        let mut now: u64 = 0;
+        let n = tasks.len();
+        let mut ans = vec![0; n];
+
+        // 把已经完成任务的服务器从 busy 移至 idle
+        let release = |busy: &mut BinaryHeap<Reverse<(u64, usize)>>,
+                       idle: &mut BinaryHeap<Reverse<(i32, usize)>>,
+                       now: u64| {
+            while let Some(&Reverse((end_time, idx))) = busy.peek() {
+                if end_time > now {
+                    break;
+                }
+                busy.pop();
+                idle.push(Reverse((servers[idx], idx)));
+            }
+        };
+
+        for (task_idx, &duration) in tasks.iter().enumerate() {
+            now = now.max(task_idx as u64);
+            release(&mut busy, &mut idle, now);
+
+            if idle.is_empty() {
+                // 跳到 busy 的堆顶时刻，从而保证我们有空闲服务器
+                now = busy.peek().unwrap().0.0;
+                release(&mut busy, &mut idle, now);
+            }
+
+            let Reverse((_, server_idx)) = idle.pop().unwrap();
+            busy.push(Reverse((now + duration as u64, server_idx)));
+            ans[task_idx] = server_idx as i32;
+        }
+        ans
+    }
+}
