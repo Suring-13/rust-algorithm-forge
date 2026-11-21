@@ -833,3 +833,29 @@ pub mod n1882 {
         ans
     }
 }
+
+// 1354. 多次求和构造目标数组
+pub mod n1354 {
+    pub fn is_possible(target: Vec<i32>) -> bool {
+        let mut heap = std::collections::BinaryHeap::new();
+        let mut s: i64 = 0;
+        for &v in &target {
+            s += v as i64;
+            heap.push(v as i64);
+        }
+
+        while *heap.peek().unwrap() > 1 {
+            let x = heap.pop().unwrap();
+            s -= x;
+
+            if s == 0 || x <= s {
+                return false;
+            }
+            // (x - 1) % s + 1 等价于 x 反复减 s，直到 <= s，余数为0时取s
+            let nx = (x - 1).rem_euclid(s) + 1;
+            s += nx;
+            heap.push(nx);
+        }
+        true
+    }
+}
