@@ -859,3 +859,44 @@ pub mod n1354 {
         true
     }
 }
+
+// 1353. 最多可以参加的会议数目
+pub mod n1353 {
+    use std::cmp::Reverse;
+    use std::collections::BinaryHeap;
+
+    pub fn max_events(events: Vec<Vec<i32>>) -> i32 {
+        let mx = events.iter().map(|e| e[1]).max().unwrap_or(0);
+        let mut groups = vec![vec![]; (mx + 1) as usize];
+        for e in events {
+            let s = e[0] as usize;
+            let end = e[1];
+            groups[s].push(end);
+        }
+
+        let mut ans = 0;
+        let mut h: BinaryHeap<Reverse<i32>> = BinaryHeap::new();
+
+        for (i, g) in groups.into_iter().enumerate() {
+            let day = i as i32;
+            // 移除已经过期的会议
+            while let Some(&Reverse(top)) = h.peek() {
+                if top < day {
+                    h.pop();
+                } else {
+                    break;
+                }
+            }
+            // 把今天开始的会议加入堆
+            for end in g {
+                h.push(Reverse(end));
+            }
+            // 选结束最早的一个参加
+            if !h.is_empty() {
+                ans += 1;
+                h.pop();
+            }
+        }
+        ans
+    }
+}
