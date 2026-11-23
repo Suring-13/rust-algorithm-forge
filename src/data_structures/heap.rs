@@ -900,3 +900,50 @@ pub mod n1353 {
         ans
     }
 }
+
+// 632. 最小区间
+pub mod n632 {
+    use std::cmp::Reverse;
+    use std::collections::BinaryHeap;
+
+    pub fn smallest_range(nums: Vec<Vec<i32>>) -> Vec<i32> {
+        // 最小堆：Reverse((数值, 数组下标, 该数组内元素位置))
+        let mut heap = BinaryHeap::with_capacity(nums.len());
+        // 当前窗口里所有选中元素的最大值
+        let mut right = i32::MIN;
+
+        // 初始化：每个有序数组取第一个元素入堆
+        for (idx, arr) in nums.iter().enumerate() {
+            let val = arr[0];
+            heap.push(Reverse((val, idx, 0)));
+            right = right.max(val);
+        }
+
+        // 记录最优区间
+        let mut ans_left = heap.peek().unwrap().0.0;
+        let mut ans_right = right;
+
+        // 循环条件：堆顶所在数组还有下一个元素可以推进
+        while {
+            let Reverse((_, arr_idx, pos)) = heap.peek().unwrap();
+            pos + 1 < nums[*arr_idx].len()
+        } {
+            // 弹出当前最小元素
+            let Reverse((_, arr_idx, pos)) = heap.pop().unwrap();
+            // 取该数组的下一个更大元素
+            let next_val = nums[arr_idx][pos + 1];
+            heap.push(Reverse((next_val, arr_idx, pos + 1)));
+            // 更新窗口最大值
+            right = right.max(next_val);
+
+            // 当前窗口左边界是堆顶最小值
+            let curr_left = heap.peek().unwrap().0.0;
+            // 如果新区间更短，更新答案
+            if right - curr_left < ans_right - ans_left {
+                ans_left = curr_left;
+                ans_right = right;
+            }
+        }
+        vec![ans_left, ans_right]
+    }
+}
