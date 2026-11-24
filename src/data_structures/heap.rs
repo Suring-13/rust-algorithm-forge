@@ -947,3 +947,37 @@ pub mod n632 {
         vec![ans_left, ans_right]
     }
 }
+
+// 2542. 最大子序列的分数
+pub mod n2542 {
+    use std::cmp::Reverse;
+    use std::collections::BinaryHeap;
+
+    pub fn max_score(nums1: Vec<i32>, nums2: Vec<i32>, k: i32) -> i64 {
+        let n = nums1.len();
+        let k = k as usize;
+        let mut ids = (0..n).collect::<Vec<_>>();
+        // nums2 降序：nums2[j].cmp(&nums2[i])
+        ids.sort_unstable_by(|&i, &j| nums2[j].cmp(&nums2[i]));
+
+        let mut h = BinaryHeap::new();
+        let mut sum = 0i64;
+        for idx in 0..k {
+            let val = nums1[ids[idx]];
+            sum += val as i64;
+            h.push(Reverse(val));
+        }
+
+        let mut ans = sum * nums2[ids[k - 1]] as i64;
+        for i in k..n {
+            let x = nums1[ids[i]];
+            // Reverse 包裹，堆顶是最小的 nums1
+            if x > h.peek().unwrap().0 {
+                sum += (x - h.pop().unwrap().0) as i64;
+                h.push(Reverse(x));
+                ans = ans.max(sum * nums2[ids[i]] as i64);
+            }
+        }
+        ans
+    }
+}
