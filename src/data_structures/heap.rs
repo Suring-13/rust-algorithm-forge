@@ -981,3 +981,38 @@ pub mod n2542 {
         ans
     }
 }
+
+// 1383. 最大的团队表现值
+pub mod n1383 {
+    use std::cmp::Reverse;
+    use std::collections::BinaryHeap;
+
+    const MOD: i64 = 1_000_000_007;
+
+    pub fn max_performance(n: i32, speed: Vec<i32>, efficiency: Vec<i32>, k: i32) -> i32 {
+        let n = n as usize;
+        let k = k as usize;
+        let mut ids: Vec<usize> = (0..n).collect();
+        ids.sort_unstable_by(|&i, &j| efficiency[j].cmp(&efficiency[i]));
+
+        let mut heap = BinaryHeap::new();
+        let mut sum: i64 = 0;
+        let mut res: i64 = 0;
+
+        for &idx in &ids {
+            let sp = speed[idx];
+            let ef = efficiency[idx];
+
+            heap.push(Reverse(sp));
+            sum += sp as i64;
+
+            if heap.len() > k {
+                let popped = heap.pop().unwrap().0;
+                sum -= popped as i64;
+            }
+            res = res.max(sum * ef as i64);
+        }
+
+        (res.rem_euclid(MOD)) as i32
+    }
+}
