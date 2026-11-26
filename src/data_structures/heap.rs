@@ -1016,3 +1016,56 @@ pub mod n1383 {
         (res.rem_euclid(MOD)) as i32
     }
 }
+
+// 2402. 会议室 III
+pub mod n2402 {
+    use std::cmp::Reverse;
+    use std::collections::BinaryHeap;
+
+    pub fn most_booked(n: i32, mut meetings: Vec<Vec<i32>>) -> i32 {
+        let n = n as usize;
+        // 按会议开始时间升序
+        meetings.sort_by_key(|m| m[0]);
+
+        // idle：空闲会议室，小根堆，编号从小到大
+        let mut idle: BinaryHeap<Reverse<usize>> = (0..n).map(Reverse).collect();
+        // using：(结束时间, 会议室id)，小根堆，先按结束时间；时间相同则编号小优先
+        let mut using = BinaryHeap::new();
+        let mut cnt = vec![0usize; n];
+
+        for m in meetings {
+            let start = m[0] as i64;
+            let mut end = m[1] as i64;
+
+            // 把在start前已经结束的会议室释放回空闲堆
+            while let Some(&Reverse((e, id))) = using.peek() {
+                if e <= start {
+                    using.pop();
+                    idle.push(Reverse(id));
+                } else {
+                    break;
+                }
+            }
+
+            let room_id: usize;
+            if let Some(Reverse(id)) = idle.pop() {
+                room_id = id;
+            } else {
+                // 没有空闲，取最早结束的会议室
+                let Reverse((e, id)) = using.pop().unwrap();
+                room_id = id;
+                end += e - start;
+            }
+
+            using.push(Reverse((end, room_id)));
+            cnt[room_id] += 1;
+        }
+
+        // 找次数最多；次数相同取编号最小
+        cnt.iter()
+            .enumerate()
+            .max_by_key(|&(i, &c)| (c, usize::MAX - i))
+            .unwrap()
+            .0 as i32
+    }
+}
