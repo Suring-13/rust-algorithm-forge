@@ -1069,3 +1069,56 @@ pub mod n2402 {
             .0 as i32
     }
 }
+
+// 2503. 矩阵查询可获得的最大分数
+pub mod n2503 {
+    use std::cmp::Reverse;
+    use std::collections::BinaryHeap;
+
+    pub fn max_points(mut grid: Vec<Vec<i32>>, queries: Vec<i32>) -> Vec<i32> {
+        let m = grid.len();
+        let n = grid[0].len();
+        let mut ans = vec![0; queries.len()];
+
+        // 离线处理：保存 (查询值, 原下标)，之后按查询值升序
+        let mut qs: Vec<_> = queries
+            .into_iter()
+            .enumerate()
+            .map(|(idx, val)| (val, idx))
+            .collect();
+        qs.sort_unstable_by_key(|&(v, _)| v);
+
+        // 最小堆 Reverse((格子值, i, j))
+        let mut heap = BinaryHeap::new();
+        heap.push(Reverse((grid[0][0], 0, 0)));
+        grid[0][0] = 0; // 原地标记已访问，等价vis数组
+
+        let mut cnt = 0;
+        const DIRS: [(isize, isize); 4] = [(1, 0), (-1, 0), (0, 1), (0, -1)];
+
+        for (q_val, q_idx) in qs {
+            // 把所有小于当前查询值的格子取出、扩散
+            while let Some(&Reverse((v, i, j))) = heap.peek() {
+                if v >= q_val {
+                    break;
+                }
+                heap.pop();
+                cnt += 1;
+                for &(dx, dy) in &DIRS {
+                    let ni = i as isize + dx;
+                    let nj = j as isize + dy;
+                    if ni >= 0 && ni < m as isize && nj >= 0 && nj < n as isize {
+                        let ni = ni as usize;
+                        let nj = nj as usize;
+                        if grid[ni][nj] != 0 {
+                            heap.push(Reverse((grid[ni][nj], ni, nj)));
+                            grid[ni][nj] = 0;
+                        }
+                    }
+                }
+            }
+            ans[q_idx] = cnt;
+        }
+        ans
+    }
+}
